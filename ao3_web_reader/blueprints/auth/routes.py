@@ -1,0 +1,37 @@
+from flask import Blueprint, render_template, redirect, url_for, flash
+import flask_login
+from ao3_web_reader.app_modules import forms
+from ao3_web_reader import models
+from werkzeug.security import check_password_hash
+
+
+auth = Blueprint("auth", __name__, template_folder="templates", static_folder="static", url_prefix="/auth")
+
+
+@auth.route("/login", methods=["GET", "POST"])
+def login():
+    if flask_login.current_user.is_authenticated:
+        return redirect(url_for("main.home"))
+
+    login_form = forms.LoginForm()
+
+    if login_form.validate_on_submit():
+        user = models.User.query.filter_by(username=login_form.username.data).first()
+
+        if user and check_password_hash(user.password, login_form.password.data):
+            flask_login.login_user(user)
+
+            return redirect(url_for("main.home"))
+
+        else:
+            flash("login error", "danger")
+
+    return render_template("login.html", login_form=login_form)
+
+
+@auth.route("/logout")
+@flask_login.login_required
+def logout():
+    flask_login.logout_user()
+
+    return redirect(url_for("main.home"))

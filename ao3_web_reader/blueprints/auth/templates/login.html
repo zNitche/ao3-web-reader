@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div>
+    <form action="{{ url_for('auth.login') }}" method="POST">
+        {{ login_form.csrf_token }}
+
+        <div>
+            {% for field in login_form %}
+                {% if field.type not in login_form.html_ignored_fields %}
+                    <div>
+                        <label for='{{ field.label }}'>
+                            {{ field.label }}
+                        </label>
+                        <span>
+                            {{ field }}
+                        </span>
+                    </div>
+                    <div>
+                        {% for error in field.errors %}
+                            <span>
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <button type="submit">
+            Login
+        </button>
+    </form>
+</div>
+
+{% endblock %}

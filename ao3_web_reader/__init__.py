@@ -25,8 +25,12 @@ def init_migrations(app):
 
 def register_blueprints(app):
     from ao3_web_reader.blueprints.main.routes import main
+    from ao3_web_reader.blueprints.errors.routes import errors
+    from ao3_web_reader.blueprints.auth.routes import auth
 
     app.register_blueprint(main)
+    app.register_blueprint(errors)
+    app.register_blueprint(auth)
 
 
 def create_app(config_class=Config):

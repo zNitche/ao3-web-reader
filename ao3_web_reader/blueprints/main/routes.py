@@ -6,5 +6,6 @@ main = Blueprint("main", __name__, template_folder="templates", static_folder="s
 
 
 @main.route("/")
+@flask_login.login_required
 def home():
     return render_template("index.html")

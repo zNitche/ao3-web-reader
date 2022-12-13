@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
-    <h1>Hello World</h1>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+
+<div>
+    Hello World {{ current_user.username }}
+</div>
+<a href="{{ url_for('auth.logout') }}">Logout</a>
+
+{% endblock %}
