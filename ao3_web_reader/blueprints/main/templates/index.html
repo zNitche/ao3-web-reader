@@ -1,9 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div>
-    Hello World {{ current_user.username }}
+<div class="main-container">
+    <div class="navbar main-navbar navbar-dark fixed-top navbar-expand-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand navbar-logo" href="{{ url_for('main.home') }}">
+                AO3 Reader
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}">
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
-<a href="{{ url_for('auth.logout') }}">Logout</a>
 
 {% endblock %}
