@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 import flask_login
+from werkzeug.security import check_password_hash
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader import models
-from werkzeug.security import check_password_hash
+from ao3_web_reader.consts import MessagesConsts, FlashConsts
 
 
 auth = Blueprint("auth", __name__, template_folder="templates", static_folder="static", url_prefix="/auth")
@@ -24,7 +25,7 @@ def login():
             return redirect(url_for("main.home"))
 
         else:
-            flash("login error", "danger")
+            flash(MessagesConsts.LOGIN_ERROR, FlashConsts.DANGER)
 
     return render_template("login.html", login_form=login_form)
 

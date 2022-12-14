@@ -16,7 +16,9 @@ class UsersManager:
 
     def get_users_names(self):
         with self.db_session() as session:
-            for user in session.query(User).all():
+            users = session.query(User).all()
+
+            for user in users:
                 self.users_names.append(user.username)
 
     def hash_password(self, plain_password):

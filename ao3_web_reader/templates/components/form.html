@@ -1,0 +1,19 @@
+<div class="form-container">
+    {{ form.csrf_token }}
+
+    {% for field in form %}
+        {% if field.type not in form.html_ignored_fields %}
+            <div class="form-inputs-container">
+                {{ field.label }}
+                {{ field }}
+            </div>
+            <div class="form-errors-container">
+                {% for error in field.errors %}
+                    <span>
+                        {{ error }}
+                    </span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

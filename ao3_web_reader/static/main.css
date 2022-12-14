@@ -1,0 +1,84 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+body {
+    background-color: #1A1A1D !important;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: #ffffff;
+}
+
+.login-container {
+    margin: auto;
+    background-color: #4E4E50;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.flashed-messages-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.flashed-message-container {
+    padding: 10px;
+    color: #ffffff;
+}
+
+.flashed-message-container-success {
+    background-color: #28a745;
+}
+
+.flashed-message-container-danger {
+    background-color: #dc3545;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0;
+}
+
+.login-btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.form-inputs-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-errors-container {
+    color: #FF0000;
+}
+
+
+@media (max-width: 576px) {
+    .login-container {
+        width: 95%;
+    }
+}
+
+@media (max-width: 768px) {
+
+}
+
+@media (max-width: 992px) {
+
+}
+
+@media (max-width: 1200px) {
+
+}
+
+@media (max-width: 1400px) {
+
+}
