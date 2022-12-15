@@ -22,7 +22,7 @@ class Work(db.Model):
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
     last_updated = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.utcnow)
 
-    chapters = db.relationship("Chapter", backref="work", lazy=True)
+    chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
 
@@ -35,7 +35,7 @@ class Chapter(db.Model):
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
-    rows = db.relationship("TextRow", backref="chapter", lazy=True)
+    rows = db.relationship("TextRow", backref="chapter", cascade="all, delete-orphan", lazy=True)
 
 
 class TextRow(db.Model):

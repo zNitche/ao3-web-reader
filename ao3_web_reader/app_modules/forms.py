@@ -3,6 +3,7 @@ from wtforms import StringField, PasswordField, ValidationError
 from wtforms.validators import DataRequired
 from ao3_web_reader.utils import works_utils
 from ao3_web_reader.consts import MessagesConsts
+from ao3_web_reader import models
 
 
 class FormBase(FlaskForm):
@@ -23,3 +24,8 @@ class AddWorkForm(FormBase):
     def validate_work_id(self, work_id):
         if not works_utils.check_if_work_exists(work_id.data):
             raise ValidationError(MessagesConsts.WORK_DOESNT_EXIST)
+
+        work = models.Work.query.filter_by(work_id=work_id.data).first()
+
+        if work:
+            raise ValidationError(MessagesConsts.WORK_ALREADY_ADDED)

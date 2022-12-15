@@ -2,19 +2,33 @@
 {% block page_content %}
 
 <div class="main-content-wrapper">
-    <div class="data-container">
+    <div class="main-content-container">
         {% if works|length > 0 %}
             {% for work in works %}
-               <div class="data-item">
+               <div class="content-item">
                     <div class="item-title">
                         <a href="{{ url_for('works.chapters', work_id=work.work_id) }}">
                             {{ work.name }}
                         </a>
                     </div>
                     <div class="item-content-wrapper">
-                        <div class="content-item">
-                           <span class="content-item-name">Chapters:</span> {{ work.chapters|length }}
+                        <div>
+                            <span class="content-item-name">Work ID:</span> {{ work.work_id }}
                         </div>
+                        <div>
+                            <span class="content-item-name">Chapters:</span> {{ work.chapters|length }}
+                        </div>
+                        <div>
+                            <span class="content-item-name">Added:</span> {{ work.date }}
+                        </div>
+                        <div>
+                            <span class="content-item-name">Updated:</span> {{ work.last_updated }}
+                        </div>
+                    </div>
+                   <div class="work-management-wrapper">
+                        <a href="{{ url_for('works.management', work_id=work.work_id) }}">
+                            Manage
+                        </a>
                     </div>
                 </div>
             {% endfor %}

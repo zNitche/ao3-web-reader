@@ -2,9 +2,9 @@
 {% block page_content %}
 
 <div class="main-content-wrapper">
-    <div class="data-container">
+    <div class="main-content-container">
         {% for chapter in work.chapters %}
-            <div class="data-item">
+            <div class="content-item">
                 <div class="item-title">
                     <a href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
                         {{ chapter.title }}

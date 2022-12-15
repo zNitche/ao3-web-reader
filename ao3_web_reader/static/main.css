@@ -43,7 +43,7 @@ body {
     margin-bottom: 20px;
 }
 
-.data-container {
+.main-content-container {
     width: 50%;
     display: flex;
     flex-direction: column;
@@ -52,7 +52,7 @@ body {
     gap: 10px 0;
 }
 
-.data-item {
+.content-item {
     width: 100%;
     padding: 20px;
     display: flex;
@@ -80,6 +80,15 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
+}
+
+.work-management-wrapper a {
+    color: #ffffff;
+}
+
+.modal-content {
+    background-color: #4E4E50 !important;
 }
 
 .content-item {
@@ -147,7 +156,7 @@ body {
         width: 95%;
     }
 
-    .data-container {
+    .main-content-container {
         width: 90% !important;
     }
 }
@@ -157,7 +166,7 @@ body {
 }
 
 @media (max-width: 992px) {
-    .data-container {
+    .main-content-container {
         width: 70%;
     }
 }

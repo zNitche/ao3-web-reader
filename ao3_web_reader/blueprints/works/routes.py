@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, abort
+from flask import Blueprint, render_template, flash, abort, redirect, url_for
 import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
@@ -15,6 +15,18 @@ def all_works():
     user_works = models.Work.query.filter_by(owner_id=flask_login.current_user.id).all()
 
     return render_template("works.html", works=user_works)
+
+
+@works.route("/<work_id>")
+@flask_login.login_required
+def management(work_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        return render_template("management.html", work=user_work)
+
+    else:
+        abort(404)
 
 
 @works.route("/add", methods=["GET", "POST"])
@@ -45,6 +57,21 @@ def add_work():
         flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
     return render_template("add_work.html", add_work_form=add_work_form)
+
+
+@works.route("/<work_id>/remove", methods=["POST"])
+@flask_login.login_required
+def remove_work(work_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        db_utils.remove_object_from_db(user_work)
+
+        flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
+        return redirect(url_for("works.all_works"))
+
+    else:
+        abort(404)
 
 
 @works.route("/<work_id>/chapters")

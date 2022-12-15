@@ -2,14 +2,17 @@
 {% block page_content %}
 
 <div class="main-content-wrapper">
-    <div class="data-container">
-        <h3>{{ chapter.title }}</h3>
-
-        {% for row in chapter.rows %}
-            <p>
-                {{ row.content }}
-            </p>
-        {% endfor %}
+    <div class="main-content-container">
+        <div class="chapter-title-wrapper">
+            <h3>{{ chapter.title }}</h3>
+        </div>
+        <div class="chapter-title-content-wrapper">
+            {% for row in chapter.rows %}
+                <p>
+                    {{ row.content }}
+                </p>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
