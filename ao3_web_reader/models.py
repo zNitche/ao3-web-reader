@@ -10,6 +10,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(128), unique=False, nullable=False)
 
+    works = db.relationship("Work", backref="owner", lazy=True)
+
 
 class Work(db.Model):
     __tablename__ = "works"
@@ -20,6 +22,7 @@ class Work(db.Model):
     last_updated = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.utcnow)
 
     chapters = db.relationship("Chapter", backref="work", lazy=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
 
 class Chapter(db.Model):
