@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash
+from flask import Blueprint, render_template, flash, abort
 import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
@@ -25,7 +25,7 @@ def add_work():
     if add_work_form.validate_on_submit():
         work_data = works_utils.get_work(add_work_form.work_id.data)
 
-        work = models.Work(name=work_data["name"], owner_id=flask_login.current_user.id)
+        work = models.Work(name=work_data["name"], owner_id=flask_login.current_user.id, work_id=work_data["work_id"])
 
         for chapter_data in work_data["chapters_data"]:
             title = chapter_data["name"]
@@ -49,7 +49,13 @@ def add_work():
 @works.route("/<work_id>/chapters")
 @flask_login.login_required
 def chapters(work_id):
-    return render_template("chapters.html")
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        return render_template("chapters.html", chapters=user_work.chapters)
+
+    else:
+        abort(404)
 
 
 @works.route("/<work_id>/chapters/<chapter_id>")

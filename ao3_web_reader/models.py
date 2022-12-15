@@ -17,6 +17,7 @@ class Work(db.Model):
     __tablename__ = "works"
 
     id = db.Column(db.Integer, primary_key=True)
+    work_id = db.Column(db.Integer, unique=True, nullable=False)
     name = db.Column(db.String(100), unique=True, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
     last_updated = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.utcnow)

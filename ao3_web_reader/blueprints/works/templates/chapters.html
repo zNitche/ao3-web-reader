@@ -1,8 +1,18 @@
 {% extends "page_layout.html" %}
 {% block page_content %}
 
-<p>
-    Chapters
-</p>
+<div class="main-content-wrapper">
+    <div class="data-container">
+        {% for chapter in chapters %}
+            <div class="data-item">
+                <div class="item-title">
+                    <a href="#">
+                        {{ chapter.title }}
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 {% endblock %}

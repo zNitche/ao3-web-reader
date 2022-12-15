@@ -62,6 +62,7 @@ def get_work(work_id):
 
     work_data = {
         "name": get_work_name(work_soup),
+        "work_id": work_id,
         "chapters_data": []
     }
 

@@ -7,7 +7,7 @@
             {% for work in works %}
                <div class="data-item">
                     <div class="item-title">
-                        <a href="#">
+                        <a href="{{ url_for('works.chapters', work_id=work.work_id) }}">
                             {{ work.name }}
                         </a>
                     </div>
