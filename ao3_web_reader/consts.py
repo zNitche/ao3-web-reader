@@ -9,4 +9,11 @@ class FlashConsts:
 
 class MessagesConsts:
     LOGIN_ERROR = "Wrong username of password"
+    SCRAPING_PROCESS_STARTED = "Started work scraping"
+    WORK_DOESNT_EXIST = "Work doesn't exist"
 
+
+class AO3Consts:
+    AO3_URL = "https://archiveofourown.org/"
+    AO3_WORKS_URL = AO3_URL + "works/{work_id}"
+    AO3_WORKS_NAVIGATION_URL = AO3_URL + "works/{work_id}/navigate"
