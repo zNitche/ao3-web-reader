@@ -3,10 +3,10 @@
 
 <div class="main-content-wrapper">
     <div class="data-container">
-        {% for chapter in chapters %}
+        {% for chapter in work.chapters %}
             <div class="data-item">
                 <div class="item-title">
-                    <a href="#">
+                    <a href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
                         {{ chapter.title }}
                     </a>
                 </div>

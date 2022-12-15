@@ -30,6 +30,7 @@ class Chapter(db.Model):
     __tablename__ = "chapters"
 
     id = db.Column(db.Integer, primary_key=True)
+    chapter_id = db.Column(db.Integer, unique=True, nullable=False)
     title = db.Column(db.String(100), unique=True, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 

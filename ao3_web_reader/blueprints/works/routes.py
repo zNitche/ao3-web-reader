@@ -28,10 +28,11 @@ def add_work():
         work = models.Work(name=work_data["name"], owner_id=flask_login.current_user.id, work_id=work_data["work_id"])
 
         for chapter_data in work_data["chapters_data"]:
+            chapter_id = chapter_data["id"]
             title = chapter_data["name"]
             content = chapter_data["content"]
 
-            chapter = models.Chapter(title=title)
+            chapter = models.Chapter(title=title, chapter_id=chapter_id)
 
             for text in content:
                 text_row = models.TextRow(content=text)
@@ -52,7 +53,7 @@ def chapters(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
-        return render_template("chapters.html", chapters=user_work.chapters)
+        return render_template("chapters.html", work=user_work)
 
     else:
         abort(404)
@@ -61,4 +62,12 @@ def chapters(work_id):
 @works.route("/<work_id>/chapters/<chapter_id>")
 @flask_login.login_required
 def chapter(work_id, chapter_id):
-    return render_template("chapter.html")
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        work_chapter = models.Chapter.query.filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
+
+        if work_chapter:
+            return render_template("chapter.html", chapter=work_chapter)
+
+    abort(404)
