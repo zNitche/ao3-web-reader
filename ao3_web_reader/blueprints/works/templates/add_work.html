@@ -1,0 +1,33 @@
+{% extends "page_layout.html" %}
+{% block page_content %}
+
+<div class="main-content-wrapper">
+    <div class="data-container">
+        <div class="data-form-wrapper">
+            <form action="{{ url_for('works.add_work') }}" method="POST">
+                {% with form=add_work_form %}
+                    {% include "components/form.html" %}
+                {% endwith %}
+
+                <button class="login-btn btn btn-success" type="submit">
+                    Add
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="data-container">
+        <div class="running-processes-wrapper">
+            <div class="running-processes-title">
+                Running Processes
+            </div>
+            {% for _ in range(10) %}
+                <div class="running-process-name">
+                    Work #111
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

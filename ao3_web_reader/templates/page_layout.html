@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% set menuItems = [
+  {
+    'title': 'Works',
+    'url': url_for('works.all_works'),
+  },
+  {
+    'title': 'Add Work',
+    'url': url_for('works.add_work'),
+  },
+  {
+    'title': 'Logout',
+    'url': url_for('auth.logout'),
+  }
+] %}
+
+<div class="main-container">
+    <div class="navbar main-navbar navbar-dark sticky-top navbar-expand-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand navbar-logo" href="{{ url_for('main.home') }}">
+                AO3 Reader
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto">
+                    {% for menuItem in menuItems %}
+                      <li class="nav-item">
+                          <a href="{{ menuItem['url'] }}">
+                            {{ menuItem['title'] }}
+                          </a>
+                      </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% block page_content %}
+    {% endblock %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "page_layout.html" %}
+{% block page_content %}
+
+<div class="main-content-wrapper">
+    <div class="data-container">
+        {% for _ in range(10) %}
+           <div class="data-item">
+                <div class="item-title">
+                    <a href="#">
+                        Work #0
+                    </a>
+                </div>
+                <div class="item-content-wrapper">
+                    <div class="content-item">
+                       <span class="content-item-name">Chapters:</span> 12
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
