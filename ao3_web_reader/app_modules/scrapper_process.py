@@ -3,8 +3,7 @@ import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from datetime import datetime
-from ao3_web_reader import models
-from ao3_web_reader.utils import works_utils
+from ao3_web_reader.utils import works_utils, db_utils
 
 
 class ScrapperProcess:
@@ -28,9 +27,18 @@ class ScrapperProcess:
         return session()
 
     def start_process(self):
-        self.process.start()
-        self.process_pid = self.process.pid
         self.is_running = True
 
+        self.process.start()
+        self.process_pid = self.process.pid
+
     def mainloop(self):
+        work_data = works_utils.get_work(self.work_id)
+
+        with db_utils.db_session_scope(self.db_session) as session:
+            work = works_utils.create_work_model(work_data, self.owner_id)
+            work.chapters = works_utils.create_chapters_models(work_data)
+
+            session.add(work)
+
         self.is_running = False

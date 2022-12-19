@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, flash, abort, redirect, url_for
+from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app
 import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
-from ao3_web_reader.utils import works_utils, db_utils
+from ao3_web_reader.utils import db_utils
 from ao3_web_reader import models
+from ao3_web_reader.app_modules.scrapper_process import ScrapperProcess
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -35,14 +36,11 @@ def add_work():
     add_work_form = forms.AddWorkForm()
 
     if add_work_form.validate_on_submit():
-        work_data = works_utils.get_work(add_work_form.work_id.data)
-
-        work = works_utils.create_work_model(work_data, flask_login.current_user.id)
-        work.chapters = works_utils.create_chapters_models(work_data)
-
-        db_utils.add_object_to_db(work)
+        ScrapperProcess(flask_login.current_user.id, current_app, add_work_form.work_id.data).start_process()
 
         flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
+
+        return redirect(url_for("works.add_work"))
 
     return render_template("add_work.html", add_work_form=add_work_form)
 
