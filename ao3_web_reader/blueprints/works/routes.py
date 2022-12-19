@@ -37,20 +37,8 @@ def add_work():
     if add_work_form.validate_on_submit():
         work_data = works_utils.get_work(add_work_form.work_id.data)
 
-        work = models.Work(name=work_data["name"], owner_id=flask_login.current_user.id, work_id=work_data["work_id"])
-
-        for chapter_data in work_data["chapters_data"]:
-            chapter_id = chapter_data["id"]
-            title = chapter_data["name"]
-            content = chapter_data["content"]
-
-            chapter = models.Chapter(title=title, chapter_id=chapter_id)
-
-            for text in content:
-                text_row = models.TextRow(content=text)
-                chapter.rows.append(text_row)
-
-            work.chapters.append(chapter)
+        work = works_utils.create_work_model(work_data, flask_login.current_user.id)
+        work.chapters = works_utils.create_chapters_models(work_data)
 
         db_utils.add_object_to_db(work)
 

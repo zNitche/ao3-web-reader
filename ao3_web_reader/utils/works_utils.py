@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from ao3_web_reader.consts import AO3Consts
+from ao3_web_reader import models
 
 
 def check_if_work_exists(work_id):
@@ -74,3 +75,42 @@ def get_work(work_id):
         })
 
     return work_data
+
+
+def create_chapters_models(work_data):
+    chapters = []
+
+    for chapter_data in work_data["chapters_data"]:
+        chapter_id = chapter_data["id"]
+        title = chapter_data["name"]
+        content = chapter_data["content"]
+
+        chapter = models.Chapter(title=title, chapter_id=chapter_id)
+
+        for text in content:
+            text_row = models.TextRow(content=text)
+            chapter.rows.append(text_row)
+
+        chapters.append(chapter)
+
+    return chapters
+
+
+def create_chapter_model(chapter_data):
+    chapter_id = chapter_data["id"]
+    title = chapter_data["name"]
+    content = chapter_data["content"]
+
+    chapter = models.Chapter(title=title, chapter_id=chapter_id)
+
+    for text in content:
+        text_row = models.TextRow(content=text)
+        chapter.rows.append(text_row)
+
+    return chapter
+
+
+def create_work_model(work_data, owner_id):
+    work = models.Work(name=work_data["name"], owner_id=owner_id, work_id=work_data["work_id"])
+
+    return work
