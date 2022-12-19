@@ -1,4 +1,8 @@
+import dotenv
 import os
+
+
+dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".env"))
 
 
 class Config:
@@ -13,3 +17,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SQLALCHEMY_DATABASE_URI = f"sqlite:////{CURRENT_DIR}/database/app.db"
+
+    REDIS_SERVER_ADDRESS = os.environ.get("REDIS_SERVER_ADDRESS")
+    REDIS_SERVER_PORT = os.environ.get("REDIS_SERVER_PORT")

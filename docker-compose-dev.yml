@@ -1,0 +1,9 @@
+version: "3"
+services:
+  redis:
+    command: --port 6000
+    image: redis:alpine
+    container_name: redis
+    restart: "no"
+    ports:
+      - "6000:6000"

@@ -4,7 +4,7 @@ from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.utils import db_utils
 from ao3_web_reader import models
-from ao3_web_reader.app_modules.scrapper_process import ScrapperProcess
+from ao3_web_reader.app_modules.processes.scrapper_process import ScrapperProcess
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -34,15 +34,17 @@ def management(work_id):
 @flask_login.login_required
 def add_work():
     add_work_form = forms.AddWorkForm()
+    running_processes = current_app.processes_manager.get_processes_data()
 
     if add_work_form.validate_on_submit():
-        ScrapperProcess(flask_login.current_user.id, current_app, add_work_form.work_id.data).start_process()
+        ScrapperProcess(current_app, flask_login.current_user.id, add_work_form.work_id.data).start_process()
 
         flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         return redirect(url_for("works.add_work"))
 
-    return render_template("add_work.html", add_work_form=add_work_form)
+    return render_template("add_work.html", add_work_form=add_work_form,
+                           running_processes=running_processes)
 
 
 @works.route("/<work_id>/remove", methods=["POST"])

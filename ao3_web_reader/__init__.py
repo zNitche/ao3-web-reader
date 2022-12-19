@@ -11,6 +11,18 @@ db = SQLAlchemy()
 migrate = Migrate(compare_type=True)
 
 
+def setup_app_managers(app):
+    from ao3_web_reader.app_modules.managers.redis_manager import RedisManager
+    from ao3_web_reader.app_modules.managers.processes_manager import ProcessesManager
+
+    managers = [RedisManager(app, 0), ProcessesManager(app)]
+
+    for manager in managers:
+        manager.setup()
+
+        setattr(app, manager.get_name(), manager)
+
+
 def init_migrations(app):
     migrations_dir_path = app.config["MIGRATIONS_DIR_PATH"]
 
@@ -54,7 +66,9 @@ def create_app(config_class=Config):
 
     with app.app_context():
         db.create_all()
+
         init_migrations(app)
+        setup_app_managers(app)
 
         register_blueprints(app)
 

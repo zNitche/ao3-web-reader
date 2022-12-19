@@ -26,15 +26,6 @@ def get_works_urls_data(soup):
     return works_data
 
 
-def get_work_name(soup):
-    name_wrapper = soup.find("h2", class_="title heading")
-    raw_name = name_wrapper.text
-
-    name = raw_name.replace("\n", "").strip()
-
-    return name
-
-
 def get_work_content(work_url):
     content_data = []
 
@@ -52,17 +43,38 @@ def get_work_content(work_url):
     return content_data
 
 
-def get_work(work_id):
+def get_work_soup(work_id):
+    html_work_content = requests.get(AO3Consts.AO3_WORKS_URL.format(work_id=work_id)).text
+    work_soup = BeautifulSoup(html_work_content, "html.parser")
+
+    return work_soup
+
+
+def get_work_nav_soup(work_id):
     html_nav_content = requests.get(AO3Consts.AO3_WORKS_NAVIGATION_URL.format(work_id=work_id)).text
     nav_soup = BeautifulSoup(html_nav_content, "html.parser")
 
-    html_work_content = requests.get(AO3Consts.AO3_WORKS_URL.format(work_id=work_id)).text
-    work_soup = BeautifulSoup(html_work_content, "html.parser")
+    return nav_soup
+
+
+def get_work_name(work_id):
+    work_soup = get_work_soup(work_id)
+
+    name_wrapper = work_soup.find("h2", class_="title heading")
+    raw_name = name_wrapper.text
+
+    name = raw_name.replace("\n", "").strip()
+
+    return name
+
+
+def get_work(work_id):
+    nav_soup = get_work_nav_soup(work_id)
 
     works_urls_data = get_works_urls_data(nav_soup)
 
     work_data = {
-        "name": get_work_name(work_soup),
+        "name": get_work_name(work_id),
         "work_id": work_id,
         "chapters_data": []
     }

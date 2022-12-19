@@ -17,16 +17,18 @@
     </div>
 
     <div class="main-content-container">
-        <div class="running-processes-wrapper">
-            <div class="running-processes-title">
-                Running Processes
-            </div>
-            {% for _ in range(10) %}
-                <div class="running-process-name">
-                    Work #111
+        {% if running_processes|length > 0 %}
+            <div class="running-processes-wrapper">
+                <div class="running-processes-title">
+                    Running Processes
                 </div>
-            {% endfor %}
-        </div>
+                {% for process_data in running_processes %}
+                    <div class="running-process-name">
+                        {{ process_data['work_title'] }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </div>
 
