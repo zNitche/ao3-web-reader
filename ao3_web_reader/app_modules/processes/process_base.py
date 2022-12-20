@@ -3,6 +3,7 @@ from datetime import datetime
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
+from ao3_web_reader.consts import ProcessesConsts
 
 
 class ProcessBase:
@@ -17,6 +18,9 @@ class ProcessBase:
 
         self.db_session = self.init_db_session()
 
+    def get_process_name(self):
+        return type(self).__name__
+
     def init_db_session(self):
         db_engine = sqlalchemy.create_engine(self.app.config["SQLALCHEMY_DATABASE_URI"], poolclass=NullPool)
         session = sessionmaker(bind=db_engine, expire_on_commit=False)
@@ -28,8 +32,9 @@ class ProcessBase:
 
     def update_process_data(self):
         process_data = {
-            "pid": self.process_pid,
-            "owner_id": self.owner_id
+            ProcessesConsts.PID: self.process_pid,
+            ProcessesConsts.OWNER_ID: self.owner_id,
+            ProcessesConsts.PROCESS_NAME: self.get_process_name(),
         }
 
         self.app.processes_manager.set_process_data(self.timestamp, process_data)

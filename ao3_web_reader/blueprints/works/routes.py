@@ -34,7 +34,7 @@ def management(work_id):
 @flask_login.login_required
 def add_work():
     add_work_form = forms.AddWorkForm()
-    running_processes = current_app.processes_manager.get_processes_data()
+    running_processes = current_app.processes_manager.get_processes_data("ScrapperProcess")
 
     if add_work_form.validate_on_submit():
         ScrapperProcess(current_app, flask_login.current_user.id, add_work_form.work_id.data).start_process()

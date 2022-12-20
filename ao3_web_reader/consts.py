@@ -19,3 +19,11 @@ class AO3Consts:
     AO3_URL = "https://archiveofourown.org/"
     AO3_WORKS_URL = AO3_URL + "works/{work_id}"
     AO3_WORKS_NAVIGATION_URL = AO3_URL + "works/{work_id}/navigate"
+
+
+class ProcessesConsts:
+    PID = "pid"
+    OWNER_ID = "owner_id"
+    WORK_ID = "work_id"
+    WORK_TITLE = "work_title"
+    PROCESS_NAME = "process_name"

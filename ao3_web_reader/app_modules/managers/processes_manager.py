@@ -1,4 +1,5 @@
 from ao3_web_reader.app_modules.managers.app_manager_base import AppManagerBase
+from ao3_web_reader.consts import ProcessesConsts
 
 
 class ProcessesManager(AppManagerBase):
@@ -19,18 +20,26 @@ class ProcessesManager(AppManagerBase):
 
         return timestamps
 
-    def get_processes_data(self):
+    def get_processes_data(self, process_type=None):
         processes_timestamps = self.get_processes_timestamps()
+        processes_data = []
 
-        processes_data = [self.get_process_data(timestamp) for timestamp in processes_timestamps]
+        for timestamp in processes_timestamps:
+            data = self.get_process_data(timestamp, process_type)
+
+            if data is not None:
+                processes_data.append(data)
 
         return processes_data
 
     def set_process_data(self, timestamp, data):
         self.redis_manager.set_value(timestamp, data)
 
-    def get_process_data(self, timestamp):
+    def get_process_data(self, timestamp, process_type=None):
         process_data = self.redis_manager.get_value(timestamp)
+
+        if process_type is not None and process_data[ProcessesConsts.PROCESS_NAME] != process_type:
+            process_data = None
 
         return process_data
 

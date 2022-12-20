@@ -1,5 +1,6 @@
 from ao3_web_reader.utils import works_utils, db_utils
 from ao3_web_reader.app_modules.processes.process_base import ProcessBase
+from ao3_web_reader.consts import ProcessesConsts
 
 
 class ScrapperProcess(ProcessBase):
@@ -34,10 +35,11 @@ class ScrapperProcess(ProcessBase):
 
     def update_process_data(self):
         process_data = {
-            "pid": self.process_pid,
-            "owner_id": self.owner_id,
-            "work_id": self.work_id,
-            "work_title": self.work_title
+            ProcessesConsts.PID: self.process_pid,
+            ProcessesConsts.OWNER_ID: self.owner_id,
+            ProcessesConsts.WORK_ID: self.work_id,
+            ProcessesConsts.WORK_TITLE: self.work_title,
+            ProcessesConsts.PROCESS_NAME: self.get_process_name(),
         }
 
         self.app.processes_manager.set_process_data(self.timestamp, process_data)
