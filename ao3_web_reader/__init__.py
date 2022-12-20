@@ -23,6 +23,12 @@ def setup_app_managers(app):
         setattr(app, manager.get_name(), manager)
 
 
+def start_background_processes(app):
+    from ao3_web_reader.app_modules.background_processes.works_updater_process import WorksUpdaterProcess
+
+    WorksUpdaterProcess(app).start_process()
+
+
 def init_migrations(app):
     migrations_dir_path = app.config["MIGRATIONS_DIR_PATH"]
 
@@ -69,6 +75,7 @@ def create_app(config_class=Config):
 
         init_migrations(app)
         setup_app_managers(app)
+        start_background_processes(app)
 
         register_blueprints(app)
 

@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from ao3_web_reader.consts import AO3Consts
 from ao3_web_reader import models
+from ao3_web_reader.consts import WorksConsts
 
 
 def check_if_work_exists(work_id):
@@ -18,8 +19,8 @@ def get_works_urls_data(soup):
 
     for item in chapters_nav_children:
         works_data.append({
-            "name": item.text,
-            "url": item.attrs["href"]
+            WorksConsts.NAME: item.text,
+            WorksConsts.URL: item.attrs["href"]
             }
         )
 
@@ -74,16 +75,16 @@ def get_work(work_id):
     works_urls_data = get_works_urls_data(nav_soup)
 
     work_data = {
-        "name": get_work_name(work_id),
-        "work_id": work_id,
-        "chapters_data": []
+        WorksConsts.NAME: get_work_name(work_id),
+        WorksConsts.WORK_ID: work_id,
+        WorksConsts.CHAPTERS_DATA: []
     }
 
     for id, work_url_data in enumerate(works_urls_data):
-        work_data["chapters_data"].append({
-            "id": id,
-            "name": work_url_data['name'],
-            "content": get_work_content(work_url_data["url"])
+        work_data[WorksConsts.CHAPTERS_DATA].append({
+            WorksConsts.ID: id,
+            WorksConsts.NAME: work_url_data[WorksConsts.NAME],
+            WorksConsts.CONTENT: get_work_content(work_url_data[WorksConsts.URL])
         })
 
     return work_data
@@ -92,10 +93,10 @@ def get_work(work_id):
 def create_chapters_models(work_data):
     chapters = []
 
-    for chapter_data in work_data["chapters_data"]:
-        chapter_id = chapter_data["id"]
-        title = chapter_data["name"]
-        content = chapter_data["content"]
+    for chapter_data in work_data[WorksConsts.CHAPTERS_DATA]:
+        chapter_id = chapter_data[WorksConsts.ID]
+        title = chapter_data[WorksConsts.NAME]
+        content = chapter_data[WorksConsts.CONTENT]
 
         chapter = models.Chapter(title=title, chapter_id=chapter_id)
 
@@ -109,9 +110,9 @@ def create_chapters_models(work_data):
 
 
 def create_chapter_model(chapter_data):
-    chapter_id = chapter_data["id"]
-    title = chapter_data["name"]
-    content = chapter_data["content"]
+    chapter_id = chapter_data[WorksConsts.ID]
+    title = chapter_data[WorksConsts.NAME]
+    content = chapter_data[WorksConsts.CONTENT]
 
     chapter = models.Chapter(title=title, chapter_id=chapter_id)
 
@@ -123,6 +124,8 @@ def create_chapter_model(chapter_data):
 
 
 def create_work_model(work_data, owner_id):
-    work = models.Work(name=work_data["name"], owner_id=owner_id, work_id=work_data["work_id"])
+    work = models.Work(name=work_data[WorksConsts.NAME],
+                       owner_id=owner_id,
+                       work_id=work_data[WorksConsts.WORK_ID])
 
     return work

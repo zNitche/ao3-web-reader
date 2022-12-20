@@ -27,3 +27,12 @@ class ProcessesConsts:
     WORK_ID = "work_id"
     WORK_TITLE = "work_title"
     PROCESS_NAME = "process_name"
+
+
+class WorksConsts:
+    NAME = "name"
+    URL = "url"
+    ID = "id"
+    WORK_ID = "work_id"
+    CHAPTERS_DATA = "chapters_data"
+    CONTENT = "content"
