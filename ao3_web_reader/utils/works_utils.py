@@ -14,14 +14,16 @@ def get_works_urls_data(soup):
     works_data = []
 
     chapters_nav = soup.find("ol", class_="chapter index group")
-    chapters_nav_children = chapters_nav.findChildren("a", recursive=True)
 
-    for item in chapters_nav_children:
-        works_data.append({
-            WorksConsts.NAME: item.text,
-            WorksConsts.URL: item.attrs["href"]
-            }
-        )
+    if chapters_nav:
+        chapters_nav_children = chapters_nav.findChildren("a", recursive=True)
+
+        for item in chapters_nav_children:
+            works_data.append({
+                WorksConsts.NAME: item.text,
+                WorksConsts.URL: item.attrs["href"]
+                }
+            )
 
     return works_data
 

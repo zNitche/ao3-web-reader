@@ -55,4 +55,4 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 time.sleep(Config.WORKS_UPDATER_INTERVAL)
 
             except Exception as e:
-                pass
+                self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")

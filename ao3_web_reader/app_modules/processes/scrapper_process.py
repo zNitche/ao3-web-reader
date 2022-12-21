@@ -28,7 +28,7 @@ class ScrapperProcess(ProcessBase):
                 session.add(work)
 
         except Exception as e:
-            pass
+            self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")
 
         finally:
             self.finish_process()
