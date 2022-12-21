@@ -8,7 +8,7 @@ dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".e
 class Config:
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
     APP_DIR_PATH = os.path.join(CURRENT_DIR, "ao3_web_reader")
-    MIGRATIONS_DIR_PATH = os.path.join(CURRENT_DIR, "migrations")
+    MIGRATIONS_DIR_PATH = os.path.join(CURRENT_DIR, "database", "migrations")
 
     APP_PORT = 8080
     APP_HOST = "0.0.0.0"

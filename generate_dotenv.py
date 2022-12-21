@@ -6,6 +6,8 @@ def get_config():
         "REDIS_SERVER_ADDRESS": "redis",
         "REDIS_SERVER_PORT": "6000",
         "WORKS_UPDATER_INTERVAL": "600",
+        "DB_PATH": "",
+        "LOGS_PATH": "",
     }
 
     return args
