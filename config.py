@@ -18,5 +18,7 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = f"sqlite:////{CURRENT_DIR}/database/app.db"
 
-    REDIS_SERVER_ADDRESS = os.environ.get("REDIS_SERVER_ADDRESS")
-    REDIS_SERVER_PORT = os.environ.get("REDIS_SERVER_PORT")
+    REDIS_SERVER_ADDRESS = os.getenv("REDIS_SERVER_ADDRESS")
+    REDIS_SERVER_PORT = os.getenv("REDIS_SERVER_PORT")
+
+    WORKS_UPDATER_INTERVAL = int(os.getenv("WORKS_UPDATER_INTERVAL", 600))

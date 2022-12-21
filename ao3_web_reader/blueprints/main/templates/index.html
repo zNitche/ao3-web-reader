@@ -2,7 +2,24 @@
 {% block page_content %}
 
 <div class="main-content-wrapper">
-    Home
+    <div class="main-content-container">
+        {% if messages|length > 0 %}
+            {% for message in messages %}
+               <div class="content-item">
+                    <div class="item-title">
+                        {{ message.date }}
+                    </div>
+                    <div class="item-content-wrapper">
+                        <div>
+                            {{ message.get_message() }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No update messages to show</p>
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}

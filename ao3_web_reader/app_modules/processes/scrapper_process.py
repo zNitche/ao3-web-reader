@@ -1,4 +1,4 @@
-from ao3_web_reader.utils import works_utils, db_utils
+from ao3_web_reader.utils import works_utils, db_utils, models_utils
 from ao3_web_reader.app_modules.processes.process_base import ProcessBase
 from ao3_web_reader.consts import ProcessesConsts
 
@@ -22,8 +22,8 @@ class ScrapperProcess(ProcessBase):
             work_data = works_utils.get_work(self.work_id)
 
             with db_utils.db_session_scope(self.db_session) as session:
-                work = works_utils.create_work_model(work_data, self.owner_id)
-                work.chapters = works_utils.create_chapters_models(work_data)
+                work = models_utils.create_work_model(work_data, self.owner_id)
+                work.chapters = [models_utils.create_chapters_models(work_data)[0]]
 
                 session.add(work)
 

@@ -45,3 +45,16 @@ class TextRow(db.Model):
     content = db.Column(db.String, unique=False, nullable=True)
 
     chapter_id = db.Column(db.Integer, db.ForeignKey("chapters.id"), nullable=False)
+
+
+class UpdateMessage(db.Model):
+    __tablename__ = "update_messages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    chapter_name = db.Column(db.String, unique=False, nullable=True)
+    work_name = db.Column(db.String, unique=False, nullable=True)
+
+    date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
+
+    def get_message(self):
+        return f"Added '{self.chapter_name}' to '{self.work_name}'."

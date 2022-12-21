@@ -4,7 +4,8 @@ import os
 def get_config():
     args = {
         "REDIS_SERVER_ADDRESS": "redis",
-        "REDIS_SERVER_PORT": "6000"
+        "REDIS_SERVER_PORT": "6000",
+        "WORKS_UPDATER_INTERVAL": "600",
     }
 
     return args

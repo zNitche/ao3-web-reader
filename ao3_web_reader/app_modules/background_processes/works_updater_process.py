@@ -1,6 +1,7 @@
-from ao3_web_reader.utils import works_utils, db_utils
+from ao3_web_reader.utils import works_utils, db_utils, models_utils
 from ao3_web_reader.app_modules.background_processes.background_process_base import BackgroundProcessBase
 from ao3_web_reader import models
+from config import Config
 from datetime import datetime
 import time
 
@@ -38,7 +39,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                         if work:
                             work_data = works_utils.get_work(work.work_id)
-                            chapters = works_utils.create_chapters_models(work_data)
+                            chapters = models_utils.create_chapters_models(work_data)
 
                             for fresh_chapter in chapters:
                                 if self.check_if_chapter_should_be_added(fresh_chapter, work):
@@ -46,7 +47,12 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                                     work.last_updated = datetime.now()
 
-                time.sleep(600)
+                                    update_message = models_utils.create_update_message_model(work.name,
+                                                                                              fresh_chapter.title)
+
+                                    session.add(update_message)
+
+                time.sleep(Config.WORKS_UPDATER_INTERVAL)
 
             except Exception as e:
                 raise e

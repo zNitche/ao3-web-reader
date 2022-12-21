@@ -1,5 +1,4 @@
 import multiprocessing
-from datetime import datetime
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
