@@ -150,6 +150,19 @@ body {
     color: #FF0000;
 }
 
+.pagination-controls {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.pagination-controls-item {
+    color: #ffffff;
+}
+
+.left-p-controls-item {
+    margin-left: auto
+}
 
 @media (max-width: 576px) {
     .login-container {

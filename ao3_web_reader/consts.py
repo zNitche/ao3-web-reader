@@ -15,6 +15,10 @@ class MessagesConsts:
     WORK_REMOVED = "Work removed successfully"
 
 
+class PaginationConsts:
+    UPDATE_MESSAGES_PER_PAGE = 50
+
+
 class AO3Consts:
     AO3_URL = "https://archiveofourown.org/"
     AO3_WORKS_URL = AO3_URL + "works/{work_id}"

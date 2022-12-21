@@ -16,6 +16,24 @@
                     </div>
                 </div>
             {% endfor %}
+            {% if messages_pagination.has_next or messages_pagination.has_prev %}
+                <div class="pagination-controls">
+                    {% if messages_pagination.has_prev %}
+                        <a class="pagination-controls-item" href="{{ url_for('main.home',
+                         page_id=messages_pagination.prev_num) }}">
+                            Prev
+                        </a>
+                    {% endif %}
+                    {% if messages_pagination.has_next %}
+                        <a class="pagination-controls-item {{ 'left-p-controls-item' if not messages_pagination.has_prev else '' }}"
+                           href="{{ url_for('main.home',
+                                 page_id=messages_pagination.next_num) }}">
+
+                            Next
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% else %}
             <p>No update messages to show</p>
         {% endif %}

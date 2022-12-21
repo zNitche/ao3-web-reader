@@ -23,7 +23,7 @@ class ScrapperProcess(ProcessBase):
 
             with db_utils.db_session_scope(self.db_session) as session:
                 work = models_utils.create_work_model(work_data, self.owner_id)
-                work.chapters = [models_utils.create_chapters_models(work_data)[0]]
+                work.chapters = models_utils.create_chapters_models(work_data)
 
                 session.add(work)
 
