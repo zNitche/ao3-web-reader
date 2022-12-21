@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app
+from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app, send_file
 import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.utils import db_utils
 from ao3_web_reader import models
 from ao3_web_reader.app_modules.processes.scrapper_process import ScrapperProcess
+import tempfile
+import zipfile
+import os
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -62,6 +65,38 @@ def remove_work(work_id):
 
         flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works"))
+
+    else:
+        abort(404)
+
+
+@works.route("/<work_id>/download", methods=["GET"])
+@flask_login.login_required
+def download_work(work_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for chapter in user_work.chapters:
+                tmp_dir_path = os.path.join(tempfile.gettempdir(), tmpdir)
+                chapter_file_path = os.path.join(tmp_dir_path, f"{chapter.title}.txt")
+
+                with open(chapter_file_path, "a") as chapter_file:
+                    for row in chapter.rows:
+                        chapter_file.write(row.content)
+                        chapter_file.write("\n")
+
+            archive_name = f"{user_work.name.replace(' ', '_')}.zip"
+            archive_path = os.path.join(tmp_dir_path, archive_name)
+
+            with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
+                for file in os.listdir(tmp_dir_path):
+                    if file.endswith(".txt"):
+                        file_path = os.path.join(tmp_dir_path, file)
+
+                        archive.write(file_path, file)
+
+            return send_file(archive_path, as_attachment=True, max_age=0, download_name=archive_name)
 
     else:
         abort(404)

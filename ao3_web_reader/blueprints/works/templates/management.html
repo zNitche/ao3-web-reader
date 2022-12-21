@@ -2,10 +2,13 @@
 {% block page_content %}
 
 <div class="main-content-wrapper">
-    <div class="main-content-container">
+    <div class="main-content-container manage-work-buttons-container">
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeWorkModal">
             Remove
         </button>
+        <a href="{{ url_for('works.download_work', work_id=work.work_id) }}" class="btn btn-success">
+            Download
+        </a>
     </div>
 
     <!-- removeWorkModal -->

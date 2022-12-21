@@ -156,6 +156,14 @@ body {
     justify-content: space-between;
 }
 
+.manage-work-buttons-container button {
+    width: 100%;
+}
+
+.manage-work-buttons-container a {
+    width: 100%;
+}
+
 .pagination-controls-item {
     color: #ffffff;
 }
