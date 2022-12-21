@@ -53,7 +53,12 @@ def remove_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
+        work_related_messages = models.UpdateMessage.query.filter_by(work_name=user_work.name).all()
+
         db_utils.remove_object_from_db(user_work)
+
+        for message in work_related_messages:
+            db_utils.remove_object_from_db(message)
 
         flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works"))

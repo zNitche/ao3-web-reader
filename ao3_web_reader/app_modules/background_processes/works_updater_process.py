@@ -55,4 +55,4 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 time.sleep(Config.WORKS_UPDATER_INTERVAL)
 
             except Exception as e:
-                raise e
+                pass
