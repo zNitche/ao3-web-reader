@@ -3,8 +3,12 @@
 
 {% set menuItems = [
   {
-    'title': 'Works',
-    'url': url_for('works.all_works'),
+    'title': 'Tags',
+    'url': url_for('main.tags'),
+  },
+  {
+    'title': 'Add Tag',
+    'url': url_for('main.add_tag'),
   },
   {
     'title': 'Add Work',
@@ -13,7 +17,7 @@
   {
     'title': 'Logout',
     'url': url_for('auth.logout'),
-  }
+  },
 ] %}
 
 <div class="main-container">

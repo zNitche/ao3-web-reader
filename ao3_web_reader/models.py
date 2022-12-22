@@ -10,28 +10,41 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(128), unique=False, nullable=False)
 
+    tags = db.relationship("Tag", backref="owner", lazy=True)
     works = db.relationship("Work", backref="owner", lazy=True)
+
+
+class Tag(db.Model):
+    __tablename__ = "tags"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=False, nullable=False)
+
+    works = db.relationship("Work", backref="tag", cascade="all, delete-orphan", lazy=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
 
 class Work(db.Model):
     __tablename__ = "works"
 
     id = db.Column(db.Integer, primary_key=True)
-    work_id = db.Column(db.Integer, unique=True, nullable=False)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    work_id = db.Column(db.Integer, unique=False, nullable=False)
+    name = db.Column(db.String(100), unique=False, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
     last_updated = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.utcnow)
 
-    chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
 
 
 class Chapter(db.Model):
     __tablename__ = "chapters"
 
     id = db.Column(db.Integer, primary_key=True)
-    chapter_id = db.Column(db.Integer, unique=True, nullable=False)
-    title = db.Column(db.String(100), unique=True, nullable=False)
+    chapter_id = db.Column(db.Integer, unique=False, nullable=False)
+    title = db.Column(db.String(100), unique=False, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)

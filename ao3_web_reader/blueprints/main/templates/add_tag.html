@@ -1,0 +1,20 @@
+{% extends "page_layout.html" %}
+{% block page_content %}
+
+<div class="main-content-wrapper">
+    <div class="main-content-container">
+        <div class="data-form-wrapper">
+            <form action="{{ url_for('main.add_tag') }}" method="POST">
+                {% with form=add_tag_form %}
+                    {% include "components/form.html" %}
+                {% endwith %}
+
+                <button class="login-btn btn btn-success" type="submit">
+                    Add
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

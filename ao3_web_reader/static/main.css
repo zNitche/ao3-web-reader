@@ -66,6 +66,7 @@ body {
     padding: 20px;
     background-color: #72727c;
     border-radius: 6px;
+    width: 100%;
 }
 
 .item-title {

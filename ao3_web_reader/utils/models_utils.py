@@ -35,9 +35,10 @@ def create_chapter_model(chapter_data):
     return chapter
 
 
-def create_work_model(work_data, owner_id):
+def create_work_model(work_data, owner_id, tag_id):
     work = models.Work(name=work_data[WorksConsts.NAME],
                        owner_id=owner_id,
+                       tag_id=tag_id,
                        work_id=work_data[WorksConsts.WORK_ID])
 
     return work

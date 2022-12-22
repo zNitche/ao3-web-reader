@@ -13,6 +13,10 @@ class MessagesConsts:
     WORK_DOESNT_EXIST = "Work doesn't exist"
     WORK_ALREADY_ADDED = "Work already added"
     WORK_REMOVED = "Work removed successfully"
+    TAG_ALREADY_ADDED = "Tag already added"
+    ADDED_TAG = "New tag has been added: {tag_name}"
+    TAG_DOESNT_EXIST = "Tag doesn't exist"
+    TAG_REMOVED = "Tag removed"
 
 
 class PaginationConsts:

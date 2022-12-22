@@ -1,0 +1,27 @@
+{% extends "page_layout.html" %}
+{% block page_content %}
+
+<div class="main-content-wrapper">
+    <div class="main-content-container">
+        {% if tags|length > 0 %}
+            {% for tag in tags %}
+               <div class="content-item">
+                    <div class="item-title">
+                        <a href="{{ url_for('works.all_works', tag_name=tag.name) }}">
+                            {{ tag.name }}
+                        </a>
+                    </div>
+                   <div class="work-management-wrapper">
+                        <a href="{{ url_for('main.tag_management', tag_name=tag.name) }}">
+                            Manage
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No tags to show</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

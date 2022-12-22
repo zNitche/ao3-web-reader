@@ -13,12 +13,17 @@ import os
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
 
 
-@works.route("/")
+@works.route("/<tag_name>")
 @flask_login.login_required
-def all_works():
-    user_works = models.Work.query.filter_by(owner_id=flask_login.current_user.id).all()
+def all_works(tag_name):
+    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, name=tag_name).first()
 
-    return render_template("works.html", works=user_works)
+    if tag:
+        user_works = models.Work.query.filter_by(owner_id=flask_login.current_user.id, tag_id=tag.id).all()
+
+        return render_template("works.html", works=user_works)
+
+    abort(404)
 
 
 @works.route("/<work_id>/management")
@@ -29,24 +34,31 @@ def management(work_id):
     if user_work:
         return render_template("management.html", work=user_work)
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @works.route("/add", methods=["GET", "POST"])
 @flask_login.login_required
 def add_work():
     add_work_form = forms.AddWorkForm()
+
+    tags = models.Tag.query.filter_by(owner_id=flask_login.current_user.id).all()
+    add_work_form.tag_name.choices = [tag.name for tag in tags]
+
     running_processes = current_app.processes_manager.get_processes_data("ScrapperProcess")
 
     if add_work_form.validate_on_submit():
-        ScrapperProcess(current_app, flask_login.current_user.id, add_work_form.work_id.data).start_process()
+        work_id = add_work_form.work_id.data
+        tag_name = add_work_form.tag_name.data
+
+        ScrapperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
 
         flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         return redirect(url_for("works.add_work"))
 
-    return render_template("add_work.html", add_work_form=add_work_form,
+    return render_template("add_work.html",
+                           add_work_form=add_work_form,
                            running_processes=running_processes)
 
 
@@ -56,6 +68,7 @@ def remove_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
+        tag = user_work.tag
         work_related_messages = models.UpdateMessage.query.filter_by(work_name=user_work.name).all()
 
         db_utils.remove_object_from_db(user_work)
@@ -64,7 +77,7 @@ def remove_work(work_id):
             db_utils.remove_object_from_db(message)
 
         flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works"))
+        return redirect(url_for("works.all_works", tag_name=tag.name))
 
     else:
         abort(404)
