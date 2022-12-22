@@ -20,7 +20,7 @@
                     Do you want to remove: {{ tag.name }}
                 </div>
                 <div class="modal-footer">
-                    <form action="{{ url_for('main.remove_tag', tag_id=tag.id) }}" method="POST">
+                    <form action="{{ url_for('tags.remove_tag', tag_id=tag.id) }}" method="POST">
                         <button type="submit" class="btn btn-danger">
                             Remove
                         </button>

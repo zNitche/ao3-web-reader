@@ -46,11 +46,13 @@ def register_blueprints(app):
     from ao3_web_reader.blueprints.errors.routes import errors
     from ao3_web_reader.blueprints.auth.routes import auth
     from ao3_web_reader.blueprints.works.routes import works
+    from ao3_web_reader.blueprints.tags.routes import tags
 
     app.register_blueprint(main)
     app.register_blueprint(errors)
     app.register_blueprint(auth)
     app.register_blueprint(works)
+    app.register_blueprint(tags)
 
 
 def create_app(config_class=Config):
