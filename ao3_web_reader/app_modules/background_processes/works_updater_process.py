@@ -7,8 +7,10 @@ import time
 
 
 class WorksUpdaterProcess(BackgroundProcessBase):
-    def __init__(self, app):
+    def __init__(self, app, user_id):
         super().__init__(app)
+
+        self.user_id = user_id
 
     def start_process(self):
         self.process.start()
@@ -16,7 +18,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
     def get_works_titles(self):
         with db_utils.db_session_scope(self.db_session) as session:
-            works = session.query(models.Work).all()
+            works = session.query(models.Work).filter_by(owner_id=self.user_id).all()
 
             titles = [work.name for work in works]
 
@@ -52,7 +54,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                                     session.add(update_message)
 
-                time.sleep(Config.WORKS_UPDATER_INTERVAL)
-
             except Exception as e:
                 self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")
+
+            time.sleep(Config.WORKS_UPDATER_INTERVAL)

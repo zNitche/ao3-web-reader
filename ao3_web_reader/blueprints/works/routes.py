@@ -21,7 +21,7 @@ def all_works():
     return render_template("works.html", works=user_works)
 
 
-@works.route("/<work_id>")
+@works.route("/<work_id>/management")
 @flask_login.login_required
 def management(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
@@ -50,7 +50,7 @@ def add_work():
                            running_processes=running_processes)
 
 
-@works.route("/<work_id>/remove", methods=["POST"])
+@works.route("/<work_id>/management/remove", methods=["POST"])
 @flask_login.login_required
 def remove_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
