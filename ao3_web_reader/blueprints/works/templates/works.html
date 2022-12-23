@@ -8,7 +8,9 @@
                <div class="content-item">
                     <div class="item-title">
                         <a href="{{ url_for('works.chapters', work_id=work.work_id) }}">
-                            {{ work.name }}
+                            <h2>
+                                {{ work.name }}
+                            </h2>
                         </a>
                     </div>
                     <div class="item-content-wrapper">
@@ -19,10 +21,10 @@
                             <span class="content-item-name">Chapters:</span> {{ work.chapters|length }}
                         </div>
                         <div>
-                            <span class="content-item-name">Added:</span> {{ work.date }}
+                            <span class="content-item-name">Added:</span> {{ work.date.isoformat(' ', 'seconds') }}
                         </div>
                         <div>
-                            <span class="content-item-name">Updated:</span> {{ work.last_updated }}
+                            <span class="content-item-name">Updated:</span> {{ work.last_updated.isoformat(' ', 'seconds') }}
                         </div>
                     </div>
                    <div class="work-management-wrapper">

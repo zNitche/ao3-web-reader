@@ -181,6 +181,10 @@ body {
     .main-content-container {
         width: 90% !important;
     }
+
+    .nav-item {
+        margin: 10px 0;
+    }
 }
 
 @media (max-width: 768px) {
