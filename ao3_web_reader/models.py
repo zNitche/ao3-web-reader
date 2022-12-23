@@ -37,6 +37,7 @@ class Work(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
+    update_messages = db.relationship("UpdateMessage", backref="work", cascade="all, delete-orphan", lazy=True)
 
 
 class Chapter(db.Model):
@@ -65,9 +66,9 @@ class UpdateMessage(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     chapter_name = db.Column(db.String, unique=False, nullable=True)
-    work_name = db.Column(db.String, unique=False, nullable=True)
-
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
+    work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
+
     def get_message(self):
-        return f"Added '{self.chapter_name}' to '{self.work_name}'."
+        return f"Added '{self.chapter_name}' to '{self.work.name}'."

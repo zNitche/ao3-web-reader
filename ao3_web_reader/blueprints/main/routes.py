@@ -11,7 +11,11 @@ main = Blueprint("main", __name__, template_folder="templates", static_folder="s
 @main.route("/page/<int:page_id>")
 @flask_login.login_required
 def home(page_id):
-    messages_query = models.UpdateMessage.query.order_by(models.UpdateMessage.date.desc())
+    user_works_ids = [work.id for work in flask_login.current_user.works]
+
+    messages_query = models.UpdateMessage.query.filter(models.UpdateMessage.work_id.in_(user_works_ids)).order_by(
+        models.UpdateMessage.date.desc())
+
     messages_pagination = messages_query.paginate(page=page_id, per_page=PaginationConsts.UPDATE_MESSAGES_PER_PAGE)
 
     return render_template("index.html",

@@ -8,7 +8,7 @@ from config import Config
 
 
 db = SQLAlchemy()
-migrate = Migrate(compare_type=True)
+migrate = Migrate(compare_type=True, render_as_batch=False)
 
 
 def setup_app_managers(app):

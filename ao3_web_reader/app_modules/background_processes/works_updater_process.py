@@ -49,10 +49,12 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                                     work.last_updated = datetime.now()
 
-                                    update_message = models_utils.create_update_message_model(work.name,
+                                    update_message = models_utils.create_update_message_model(work.id,
                                                                                               fresh_chapter.title)
 
                                     session.add(update_message)
+
+                            time.sleep(Config.WORKS_UPDATER_JOBS_DELAY)
 
             except Exception as e:
                 self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")

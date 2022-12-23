@@ -19,9 +19,7 @@ def all_works(tag_name):
     tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, name=tag_name).first()
 
     if tag:
-        user_works = models.Work.query.filter_by(owner_id=flask_login.current_user.id, tag_id=tag.id).all()
-
-        return render_template("works.html", works=user_works)
+        return render_template("works.html", works=tag.works)
 
     abort(404)
 
@@ -68,16 +66,10 @@ def remove_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
-        tag = user_work.tag
-        work_related_messages = models.UpdateMessage.query.filter_by(work_name=user_work.name).all()
-
         db_utils.remove_object_from_db(user_work)
 
-        for message in work_related_messages:
-            db_utils.remove_object_from_db(message)
-
         flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=tag.name))
+        return redirect(url_for("works.all_works", tag_name=user_work.tag.name))
 
     else:
         abort(404)

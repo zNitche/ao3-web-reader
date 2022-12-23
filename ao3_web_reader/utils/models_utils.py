@@ -44,7 +44,7 @@ def create_work_model(work_data, owner_id, tag_id):
     return work
 
 
-def create_update_message_model(work_name, chapter_name):
-    message = models.UpdateMessage(work_name=work_name, chapter_name=chapter_name)
+def create_update_message_model(work_id, chapter_name):
+    message = models.UpdateMessage(work_id=work_id, chapter_name=chapter_name)
 
     return message

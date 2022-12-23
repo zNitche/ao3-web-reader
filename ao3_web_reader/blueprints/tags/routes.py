@@ -50,12 +50,6 @@ def remove_tag(tag_id):
     user_tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
 
     if user_tag:
-        for work in user_tag.works:
-            work_related_messages = models.UpdateMessage.query.filter_by(work_name=work.name).all()
-
-            for message in work_related_messages:
-                db_utils.remove_object_from_db(message)
-
         db_utils.remove_object_from_db(user_tag)
 
         flash(MessagesConsts.TAG_REMOVED, FlashConsts.SUCCESS)
