@@ -58,6 +58,21 @@ class UsersManager:
 
             return 1
 
+    def reset_user_password(self, user_name, password):
+        with self.db_session() as session:
+            user = session.query(User).filter_by(username=user_name).first()
+
+            if not user:
+                return 0
+
+            encrypted_password = self.hash_password(password)
+
+            user.password = encrypted_password
+
+            session.commit()
+
+        return 1
+
 
 def show_users(users):
     for user_name in users:
@@ -80,7 +95,8 @@ def main():
     print("1) Add new user")
     print("2) Delete user")
     print("3) Show users")
-    print("4) Exit")
+    print("4) Reset user password")
+    print("5) Exit")
 
     choice = int(input("> "))
     os.system("clear")
@@ -124,6 +140,23 @@ def main():
         main()
 
     elif choice == 4:
+        print("---Reset user password---")
+
+        print("Username: ")
+        user_name = input("> ")
+
+        print("Password: ")
+        password = input("> ")
+
+        check = manager.reset_user_password(user_name, password)
+
+        print("User doesn't exist") if not check else print("Done")
+
+        input("\nPress any key to continue")
+
+        main()
+
+    elif choice == 5:
         return
 
     else:
