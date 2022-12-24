@@ -4,7 +4,7 @@ from ao3_web_reader.consts import ProcessesConsts, WorksConsts
 from ao3_web_reader import models
 
 
-class ScrapperProcess(ProcessBase):
+class ScraperProcess(ProcessBase):
     def __init__(self, app, owner_id, tag_name, work_id):
         super().__init__(app, owner_id)
 

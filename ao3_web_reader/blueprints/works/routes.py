@@ -4,7 +4,7 @@ from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.utils import db_utils
 from ao3_web_reader import models
-from ao3_web_reader.app_modules.processes.scrapper_process import ScrapperProcess
+from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
 import tempfile
 import zipfile
 import os
@@ -43,13 +43,13 @@ def add_work():
     tags = models.Tag.query.filter_by(owner_id=flask_login.current_user.id).all()
     add_work_form.tag_name.choices = [tag.name for tag in tags]
 
-    running_processes = current_app.processes_manager.get_processes_data("ScrapperProcess")
+    running_processes = current_app.processes_manager.get_processes_data("ScraperProcess")
 
     if add_work_form.validate_on_submit():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
 
-        ScrapperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
+        ScraperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
 
         flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 

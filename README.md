@@ -1,6 +1,6 @@
 ## AO3 Web Reader
 
-AO3 web reader / scrapper app created using Flask, SQLite, Redis and Bootstrap, supporting:
+AO3 web reader / scraper app created using Flask, SQLite, Redis and Bootstrap, supporting:
 - Accounts authentication.
 - Getting works from ao3.
 - Grouping works using tags.
