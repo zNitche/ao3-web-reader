@@ -35,6 +35,7 @@ class ProcessesConsts:
     WORK_ID = "work_id"
     WORK_TITLE = "work_title"
     PROCESS_NAME = "process_name"
+    PROGRESS = "progress"
 
 
 class WorksConsts:

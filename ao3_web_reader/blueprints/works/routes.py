@@ -66,10 +66,11 @@ def remove_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
+        tag_name = user_work.tag.name
         db_utils.remove_object_from_db(user_work)
 
         flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=user_work.tag.name))
+        return redirect(url_for("works.all_works", tag_name=tag_name))
 
     else:
         abort(404)

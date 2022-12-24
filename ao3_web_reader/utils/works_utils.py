@@ -10,8 +10,8 @@ def check_if_work_exists(work_id):
     return r.status_code == 200
 
 
-def get_works_urls_data(soup):
-    works_data = []
+def get_chapters_urls_data(soup):
+    chapters_data = []
 
     chapters_nav = soup.find("ol", class_="chapter index group")
 
@@ -19,13 +19,13 @@ def get_works_urls_data(soup):
         chapters_nav_children = chapters_nav.findChildren("a", recursive=True)
 
         for item in chapters_nav_children:
-            works_data.append({
+            chapters_data.append({
                 WorksConsts.NAME: item.text,
                 WorksConsts.URL: item.attrs["href"]
                 }
             )
 
-    return works_data
+    return chapters_data
 
 
 def get_work_content(work_url):
@@ -70,22 +70,34 @@ def get_work_name(work_id):
     return name
 
 
-def get_work(work_id):
-    nav_soup = get_work_nav_soup(work_id)
-
-    works_urls_data = get_works_urls_data(nav_soup)
-
-    work_data = {
+def get_work_struct(work_id):
+    struct = {
         WorksConsts.NAME: get_work_name(work_id),
         WorksConsts.WORK_ID: work_id,
         WorksConsts.CHAPTERS_DATA: []
     }
 
-    for id, work_url_data in enumerate(works_urls_data):
-        work_data[WorksConsts.CHAPTERS_DATA].append({
-            WorksConsts.ID: id,
-            WorksConsts.NAME: work_url_data[WorksConsts.NAME],
-            WorksConsts.CONTENT: get_work_content(work_url_data[WorksConsts.URL])
-        })
+    return struct
+
+
+def get_work(work_id):
+    nav_soup = get_work_nav_soup(work_id)
+
+    chapters_urls_data = get_chapters_urls_data(nav_soup)
+
+    work_data = get_work_struct(work_id)
+
+    for id, chapter_url_data in enumerate(chapters_urls_data):
+        work_data[WorksConsts.CHAPTERS_DATA].append(get_chapter_data_from_url_data(id, chapter_url_data))
 
     return work_data
+
+
+def get_chapter_data_from_url_data(chapter_id, url_data):
+    chapter_data = {
+            WorksConsts.ID: chapter_id,
+            WorksConsts.NAME: url_data[WorksConsts.NAME],
+            WorksConsts.CONTENT: get_work_content(url_data[WorksConsts.URL])
+        }
+
+    return chapter_data
