@@ -75,10 +75,11 @@ def create_app(config_class=Config):
     with app.app_context():
         db.create_all()
 
-        init_migrations(app)
         setup_app_managers(app)
 
-        setup_background_processes(app, models)
+        if not app.config["TESTING"]:
+            init_migrations(app)
+            setup_background_processes(app, models)
 
         register_blueprints(app)
 
