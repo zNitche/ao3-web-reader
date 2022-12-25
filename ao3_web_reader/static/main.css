@@ -119,6 +119,7 @@ body {
 .running-processes-container {
     display: flex;
     justify-content: left;
+    flex-direction: column;
 }
 
 .running-process-progress {

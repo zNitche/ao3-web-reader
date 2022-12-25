@@ -19,7 +19,9 @@ def all_works(tag_name):
     tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, name=tag_name).first()
 
     if tag:
-        return render_template("works.html", works=tag.works)
+        works = models.Work.query.filter_by(tag_id=tag.id).order_by(models.Work.last_updated.desc()).all()
+
+        return render_template("works.html", works=works)
 
     abort(404)
 

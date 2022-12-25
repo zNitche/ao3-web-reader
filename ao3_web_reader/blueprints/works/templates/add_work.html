@@ -24,11 +24,13 @@
                 </div>
                 <div class="running-processes-container">
                     {% for process_data in running_processes %}
-                        <div class="running-process-name">
-                            {{ process_data['work_title'] }}
-                        </div>
-                        <div class="running-process-progress">
-                            {{ process_data['progress'] }}%
+                        <div class="running-process-container">
+                            <div class="running-process-name">
+                                {{ process_data['work_title'] }}
+                            </div>
+                            <div class="running-process-progress">
+                                {{ process_data['progress'] }}%
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
