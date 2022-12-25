@@ -8,7 +8,7 @@ class FlashConsts:
 
 
 class MessagesConsts:
-    LOGIN_ERROR = "Wrong username of password"
+    LOGIN_ERROR = "Wrong username or password"
     SCRAPING_PROCESS_STARTED = "Started work scraping"
     WORK_DOESNT_EXIST = "Work doesn't exist"
     WORK_ALREADY_ADDED = "Work already added"

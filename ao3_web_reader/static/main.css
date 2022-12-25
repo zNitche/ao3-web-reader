@@ -122,6 +122,10 @@ body {
     flex-direction: column;
 }
 
+.running-process-container {
+    display: flex;
+}
+
 .running-process-progress {
     margin-left: auto;
 }
