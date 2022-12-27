@@ -20,11 +20,13 @@ def test_tag():
 def test_work():
     name = "work"
     work_id = "123321"
+    description = "test desc"
 
-    work = models.Work(name=name, work_id=work_id, owner_id=0, tag_id=0)
+    work = models.Work(name=name, work_id=work_id, owner_id=0, tag_id=0, description=description)
 
     assert work.name == name
     assert work.work_id == work_id
+    assert work.description == description
 
 
 def test_chapter():

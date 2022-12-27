@@ -70,6 +70,15 @@ def get_work_name(work_id):
     return name
 
 
+def get_work_description(work_id):
+    work_soup = get_work_soup(work_id)
+
+    description_wrapper = work_soup.find("blockquote", class_="userstuff")
+    raw_description = description_wrapper.text
+
+    return raw_description
+
+
 def get_work_struct(work_id):
     struct = {
         WorksConsts.NAME: get_work_name(work_id),

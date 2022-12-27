@@ -36,6 +36,10 @@ body {
     gap: 0 20px !important;
 }
 
+.main-container a:hover {
+    color: #cccccc;
+}
+
 .main-content-wrapper {
     display: flex;
     align-items: center;
@@ -52,7 +56,14 @@ body {
     gap: 10px 0;
 }
 
-.main-content-title {
+.work-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0;
+    margin-bottom: 20px;
+}
+
+.work-description {
 
 }
 
@@ -77,6 +88,11 @@ body {
     width: 100%;
 }
 
+.chapter-nav-bar {
+    width: 100%;
+    color: #ffffff;
+}
+
 .item-title {
 
 }
@@ -98,10 +114,6 @@ body {
 
 .modal-content {
     background-color: #4E4E50 !important;
-}
-
-.content-item {
-
 }
 
 .content-item-name {

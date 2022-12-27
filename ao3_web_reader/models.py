@@ -28,8 +28,11 @@ class Work(db.Model):
     __tablename__ = "works"
 
     id = db.Column(db.Integer, primary_key=True)
+
     work_id = db.Column(db.Integer, unique=False, nullable=False)
-    name = db.Column(db.String(100), unique=False, nullable=False)
+    name = db.Column(db.String(200), unique=False, nullable=False)
+    description = db.Column(db.String, unique=False, nullable=True)
+
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
     last_updated = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.utcnow)
 
@@ -45,7 +48,7 @@ class Chapter(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     chapter_id = db.Column(db.Integer, unique=False, nullable=False)
-    title = db.Column(db.String(100), unique=False, nullable=False)
+    title = db.Column(db.String(200), unique=False, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)

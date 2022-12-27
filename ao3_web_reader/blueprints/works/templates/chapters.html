@@ -3,19 +3,24 @@
 
 <div class="main-content-wrapper">
     <div class="main-content-container">
-        <div class="main-content-title">
+        <div class="work-header">
             <h2>
                 {{ work.name }}
             </h2>
+            {% if work.description %}
+                <div class="work-description">
+                    {{ work.description }}
+                </div>
+            {% endif %}
         </div>
         {% for chapter in work.chapters %}
-            <div class="content-item">
-                <div class="item-title">
-                    <a href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
+            <a class="chapter-nav-bar" href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
+                <div class="content-item">
+                    <div class="item-title">
                         {{ chapter.title }}
-                    </a>
+                    </div>
                 </div>
-            </div>
+            </a>
         {% endfor %}
     </div>
 </div>
