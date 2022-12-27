@@ -52,6 +52,14 @@ body {
     gap: 10px 0;
 }
 
+.main-content-title {
+
+}
+
+.chapter-title-content-wrapper {
+    word-break: break-all;
+}
+
 .content-item {
     width: 100%;
     padding: 20px;
