@@ -45,3 +45,10 @@ App contains some example tests for available blueprints. To run them:
 ```
 pytest -v tests/
 ```
+
+
+### Scripts
+- Fill empty work descriptions:
+```
+python3 db_scripts/fill_works_descriptions.py
+```
