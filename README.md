@@ -50,5 +50,5 @@ pytest -v tests/
 ### Scripts
 - Fill empty work descriptions:
 ```
-python3 db_scripts/fill_works_descriptions.py
+python3 scripts/fill_works_descriptions.py
 ```
