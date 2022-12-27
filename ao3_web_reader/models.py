@@ -10,8 +10,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(128), unique=False, nullable=False)
 
-    tags = db.relationship("Tag", backref="owner", lazy=True)
-    works = db.relationship("Work", backref="owner", lazy=True)
+    tags = db.relationship("Tag", backref="owner", cascade="all, delete-orphan", lazy=True)
+    works = db.relationship("Work", backref="owner", cascade="all, delete-orphan", lazy=True)
 
 
 class Tag(db.Model):
