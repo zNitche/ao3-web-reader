@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, flash, redirect, url_for, abort, send_file
 import flask_login
 from ao3_web_reader import models
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.app_modules import forms
-from ao3_web_reader.utils import db_utils
+from ao3_web_reader.utils import db_utils, files_utils
+import tempfile
+import os
 
 
 tags = Blueprint("tags", __name__, template_folder="templates", static_folder="static", url_prefix="/tags")
@@ -54,6 +56,32 @@ def remove_tag(tag_id):
 
         flash(MessagesConsts.TAG_REMOVED, FlashConsts.SUCCESS)
         return redirect(url_for("tags.all_tags"))
+
+    else:
+        abort(404)
+
+
+@tags.route("/<tag_id>/download", methods=["GET"])
+@flask_login.login_required
+def download_tag(tag_id):
+    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
+
+    if tag:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dir_path = os.path.join(tempfile.gettempdir(), tmpdir)
+
+            for work in tag.works:
+                work_path = os.path.join(tmp_dir_path, work.name)
+                os.mkdir(work_path)
+
+                files_utils.write_work_to_files(work, work_path)
+
+            archive_name = f"{tag.name}.zip"
+            archive_path = os.path.join(tmp_dir_path, archive_name)
+
+            files_utils.zip_dirs(archive_path, tmp_dir_path, (".zip",))
+
+            return send_file(archive_path, as_attachment=True, max_age=0, download_name=archive_name)
 
     else:
         abort(404)

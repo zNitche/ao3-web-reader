@@ -2,11 +2,10 @@ from flask import Blueprint, render_template, flash, abort, redirect, url_for, c
 import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
-from ao3_web_reader.utils import db_utils
+from ao3_web_reader.utils import db_utils, files_utils
 from ao3_web_reader import models
 from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
 import tempfile
-import zipfile
 import os
 
 
@@ -85,24 +84,13 @@ def download_work(work_id):
 
     if user_work:
         with tempfile.TemporaryDirectory() as tmpdir:
-            for chapter in user_work.chapters:
-                tmp_dir_path = os.path.join(tempfile.gettempdir(), tmpdir)
-                chapter_file_path = os.path.join(tmp_dir_path, f"{chapter.title}.txt")
-
-                with open(chapter_file_path, "a") as chapter_file:
-                    for row in chapter.rows:
-                        chapter_file.write(row.content)
-                        chapter_file.write("\n")
+            tmp_dir_path = os.path.join(tempfile.gettempdir(), tmpdir)
+            files_utils.write_work_to_files(user_work, tmp_dir_path)
 
             archive_name = f"{user_work.name.replace(' ', '_')}.zip"
             archive_path = os.path.join(tmp_dir_path, archive_name)
 
-            with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
-                for file in os.listdir(tmp_dir_path):
-                    if file.endswith(".txt"):
-                        file_path = os.path.join(tmp_dir_path, file)
-
-                        archive.write(file_path, file)
+            files_utils.zip_files(archive_path, tmp_dir_path, (".zip",))
 
             return send_file(archive_path, as_attachment=True, max_age=0, download_name=archive_name)
 

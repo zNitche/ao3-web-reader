@@ -6,6 +6,11 @@
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeTagModal">
             Remove
         </button>
+        {% if tag.works|length > 0 %}
+            <a href="{{ url_for('tags.download_tag', tag_id=tag.id) }}" class="btn btn-success">
+                Download {{ tag.works|length }} works
+            </a>
+        {% endif %}
     </div>
 
     <!-- removeTagModal -->
