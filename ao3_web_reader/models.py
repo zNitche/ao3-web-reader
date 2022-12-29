@@ -82,6 +82,3 @@ class UpdateMessage(db.Model):
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
-
-    def get_message(self):
-        return f"Added '{self.chapter_name}' to '{self.work.name}'."
