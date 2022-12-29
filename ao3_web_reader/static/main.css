@@ -89,6 +89,10 @@ body {
     border-radius: 6px;
 }
 
+.update-message-container a {
+    color: #ffffff;
+}
+
 .data-form-wrapper {
     padding: 20px;
     background-color: #72727c;
