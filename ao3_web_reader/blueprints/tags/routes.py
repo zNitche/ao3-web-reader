@@ -79,7 +79,7 @@ def download_tag(tag_id):
             archive_name = f"{tag.name}.zip"
             archive_path = os.path.join(tmp_dir_path, archive_name)
 
-            files_utils.zip_dirs(archive_path, tmp_dir_path, (".zip",))
+            files_utils.zip_files(archive_path, tmp_dir_path, (".zip",))
 
             return send_file(archive_path, as_attachment=True, max_age=0, download_name=archive_name)
 
