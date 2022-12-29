@@ -6,13 +6,27 @@
         <div class="chapter-title-wrapper">
             <h3>{{ chapter.title }}</h3>
         </div>
-        <div class="chapter-title-content-wrapper">
+        <div class="chapter-content-wrapper">
             {% for row in chapter.rows %}
                 <p>
                     {{ row.content }}
                 </p>
             {% endfor %}
         </div>
+        {% if chapter.check_if_next_chapter_exists() or chapter.check_if_prev_chapter_exists() %}
+            <div class="chapter-controls-wrapper">
+                {% if chapter.check_if_prev_chapter_exists() %}
+                    <a class="btn btn-secondary" href="{{ url_for('works.chapter', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id - 1) }}">
+                        Prev Chapter
+                    </a>
+                {% endif %}
+                {% if chapter.check_if_next_chapter_exists() %}
+                    <a class="btn btn-secondary" href="{{ url_for('works.chapter', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id + 1) }}">
+                        Next Chapter
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </div>
 

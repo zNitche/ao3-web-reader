@@ -54,6 +54,16 @@ class Chapter(db.Model):
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
     rows = db.relationship("TextRow", backref="chapter", cascade="all, delete-orphan", lazy=True)
 
+    def check_if_next_chapter_exists(self):
+        prev_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_id=self.chapter_id + 1).first()
+
+        return True if prev_chapter else False
+
+    def check_if_prev_chapter_exists(self):
+        next_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_id=self.chapter_id - 1).first()
+
+        return True if next_chapter else False
+
 
 class TextRow(db.Model):
     __tablename__ = "text_rows"

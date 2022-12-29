@@ -67,8 +67,16 @@ body {
 
 }
 
-.chapter-title-content-wrapper {
+.chapter-content-wrapper {
     word-break: break-all;
+}
+
+.chapter-controls-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 0 10px;
+    width: 100%;
+    justify-content: center;
 }
 
 .content-item {
@@ -221,6 +229,11 @@ body {
 
     .nav-item {
         margin: 10px 0;
+    }
+
+    .chapter-controls-wrapper {
+        flex-direction: column !important;
+        gap: 20px 0 !important;
     }
 }
 
