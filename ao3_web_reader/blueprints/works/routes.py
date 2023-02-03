@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app, send_file
 import flask_login
 from ao3_web_reader.app_modules import forms
-from ao3_web_reader.consts import FlashConsts, MessagesConsts
+from ao3_web_reader.consts import FlashConsts, MessagesConsts, ProcessesConsts
 from ao3_web_reader.utils import db_utils, files_utils
 from ao3_web_reader import models
 from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
@@ -50,9 +50,16 @@ def add_work():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
 
-        ScraperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
+        running_processes_with_same_work_id = \
+            [process for process in running_processes if process[ProcessesConsts.WORK_ID] == work_id]
 
-        flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
+        if len(running_processes_with_same_work_id) == 0:
+            ScraperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
+
+            flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
+
+        else:
+            flash(MessagesConsts.SCRAPING_PROCESS_FOR_WORK_ID_RUNNING.format(work_id=work_id), FlashConsts.DANGER)
 
         return redirect(url_for("works.add_work"))
 
