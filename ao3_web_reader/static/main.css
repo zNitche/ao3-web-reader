@@ -68,7 +68,7 @@ body {
 }
 
 .chapter-content-wrapper {
-    word-break: break-all;
+    word-break: break-word;
 }
 
 .chapter-controls-wrapper {
