@@ -22,6 +22,7 @@ class MessagesConsts:
 
 class PaginationConsts:
     UPDATE_MESSAGES_PER_PAGE = 50
+    WORKS_PER_PAGE = 10
 
 
 class AO3Consts:

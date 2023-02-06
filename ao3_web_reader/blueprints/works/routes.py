@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app, send_file
 import flask_login
 from ao3_web_reader.app_modules import forms
-from ao3_web_reader.consts import FlashConsts, MessagesConsts, ProcessesConsts
+from ao3_web_reader.consts import FlashConsts, MessagesConsts, ProcessesConsts, PaginationConsts
 from ao3_web_reader.utils import db_utils, files_utils
 from ao3_web_reader import models
 from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
@@ -12,15 +12,23 @@ import os
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
 
 
-@works.route("/<tag_name>")
+@works.route("/<tag_name>", defaults={"page_id": 1})
+@works.route("/<tag_name>/<int:page_id>")
 @flask_login.login_required
-def all_works(tag_name):
-    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, name=tag_name).first()
+def all_works(tag_name, page_id):
+    user_id = flask_login.current_user.id
+    tag = models.Tag.query.filter_by(owner_id=user_id, name=tag_name).first()
 
     if tag:
-        works = models.Work.query.filter_by(tag_id=tag.id).order_by(models.Work.last_updated.desc()).all()
+        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user_id).order_by(
+            models.Work.last_updated.desc())
 
-        return render_template("works.html", works=works)
+        works_pagination = works_query.paginate(page=page_id, per_page=PaginationConsts.WORKS_PER_PAGE)
+
+        return render_template("works.html",
+                               tag=tag,
+                               works_pagination=works_pagination,
+                               works=works_pagination.items)
 
     abort(404)
 

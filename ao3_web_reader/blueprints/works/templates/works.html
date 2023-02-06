@@ -34,6 +34,23 @@
                     </div>
                 </div>
             {% endfor %}
+            {% if works_pagination.has_next or works_pagination.has_prev %}
+                <div class="pagination-controls">
+                    {% if works_pagination.has_prev %}
+                        <a class="pagination-controls-item" href="{{ url_for('works.all_works',
+                         page_id=works_pagination.prev_num, tag_name=tag.name) }}">
+                            Prev
+                        </a>
+                    {% endif %}
+                    {% if works_pagination.has_next %}
+                        <a class="pagination-controls-item {{ 'left-p-controls-item' if not works_pagination.has_prev else '' }}"
+                           href="{{ url_for('works.all_works',
+                                 page_id=works_pagination.next_num, tag_name=tag.name) }}">
+                            Next
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% else %}
             <p>No works to show</p>
         {% endif %}
