@@ -6,17 +6,7 @@ def create_chapters_models(work_data):
     chapters = []
 
     for chapter_data in work_data[WorksConsts.CHAPTERS_DATA]:
-        chapter_id = chapter_data[WorksConsts.ID]
-        title = chapter_data[WorksConsts.NAME]
-        content = chapter_data[WorksConsts.CONTENT]
-
-        chapter = models.Chapter(title=title, chapter_id=chapter_id)
-
-        for text in content:
-            text_row = models.TextRow(content=text)
-            chapter.rows.append(text_row)
-
-        chapters.append(chapter)
+        chapters.append(create_chapter_model(chapter_data))
 
     return chapters
 
@@ -26,11 +16,7 @@ def create_chapter_model(chapter_data):
     title = chapter_data[WorksConsts.NAME]
     content = chapter_data[WorksConsts.CONTENT]
 
-    chapter = models.Chapter(title=title, chapter_id=chapter_id)
-
-    for text in content:
-        text_row = models.TextRow(content=text)
-        chapter.rows.append(text_row)
+    chapter = models.Chapter(title=title, chapter_id=chapter_id, text="\n".join(content))
 
     return chapter
 

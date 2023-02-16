@@ -6,20 +6,12 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from ao3_web_reader.models import Work
 from ao3_web_reader.utils import works_utils
-from config import Config
-import sqlalchemy
-import sqlalchemy.orm
-
-
-def init_db_session():
-    engine = sqlalchemy.create_engine(Config.SQLALCHEMY_DATABASE_URI)
-
-    return sqlalchemy.orm.sessionmaker(engine)
+from scripts import common_utils
 
 
 def main():
     print("creating db session...")
-    db_session = init_db_session()
+    db_session = common_utils.init_db_session()
 
     with db_session() as session:
         print("db session created...")

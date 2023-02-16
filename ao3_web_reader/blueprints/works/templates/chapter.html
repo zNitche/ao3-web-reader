@@ -7,9 +7,9 @@
             <h3>{{ chapter.title }}</h3>
         </div>
         <div class="chapter-content-wrapper">
-            {% for row in chapter.rows %}
+            {% for row in chapter.get_formatted_text() %}
                 <p>
-                    {{ row.content }}
+                    {{ row }}
                 </p>
             {% endfor %}
         </div>

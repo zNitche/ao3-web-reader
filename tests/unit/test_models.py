@@ -32,19 +32,13 @@ def test_work():
 def test_chapter():
     chapter_id = "321123"
     title = "chapter"
+    text = "test text"
 
-    chapter = models.Chapter(chapter_id=chapter_id, title=title, work_id=1)
+    chapter = models.Chapter(chapter_id=chapter_id, title=title, work_id=1, text=text)
 
     assert chapter.chapter_id == chapter_id
     assert chapter.title == title
-
-
-def test_text_row():
-    content = "test content"
-
-    row = models.TextRow(content=content, chapter_id=0)
-
-    assert row.content == content
+    assert chapter.text == text
 
 
 def test_update_message():

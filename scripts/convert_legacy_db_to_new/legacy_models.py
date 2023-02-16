@@ -50,12 +50,9 @@ class Chapter(db.Model):
     chapter_id = db.Column(db.Integer, unique=False, nullable=False)
     title = db.Column(db.String(200), unique=False, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
-    text = db.Column(db.String, unique=False, nullable=False)
 
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
-
-    def get_formatted_text(self):
-        return self.text.split("\n")
+    rows = db.relationship("TextRow", backref="chapter", cascade="all, delete-orphan", lazy=True)
 
     def check_if_next_chapter_exists(self):
         prev_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_id=self.chapter_id + 1).first()
@@ -66,6 +63,15 @@ class Chapter(db.Model):
         next_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_id=self.chapter_id - 1).first()
 
         return True if next_chapter else False
+
+
+class TextRow(db.Model):
+    __tablename__ = "text_rows"
+
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String, unique=False, nullable=True)
+
+    chapter_id = db.Column(db.Integer, db.ForeignKey("chapters.id"), nullable=False)
 
 
 class UpdateMessage(db.Model):

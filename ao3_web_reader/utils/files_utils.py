@@ -7,9 +7,7 @@ def write_work_to_files(work, files_path):
         chapter_file_path = os.path.join(files_path, f"{chapter.title}.txt")
 
         with open(chapter_file_path, "a") as chapter_file:
-            for row in chapter.rows:
-                chapter_file.write(row.content)
-                chapter_file.write("\n")
+            chapter_file.write(chapter.text)
 
 
 def zip_files(archive_path, dirs_path, exclude_extensions=None):
