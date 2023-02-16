@@ -52,3 +52,17 @@ pytest -v tests/
 ```
 python3 scripts/fill_works_descriptions.py
 ```
+
+- Convert old database (with TextRows) to new one (commit: `5b1385d5b15e75f527fa88f95a6a1dfb00cbd8e4`):
+  1. generate database json file:
+    ```
+    python3 scripts/dump_old_db_data.py --old_db_path "old_db_path" --output_path "data_output_path"
+    ```
+  2. create database
+    ```
+    python3 app.py
+    ```
+  3. create fill database with dumped data:
+    ```
+    python3 scripts/create_new_db_from_data.py --new_db_path "new_db_path" --db_data_path "dumped_data_path"
+    ```
