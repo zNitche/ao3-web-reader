@@ -6,8 +6,8 @@ import os
 bind = f"{Config.APP_HOST}:{Config.APP_PORT}"
 
 
-workers = multiprocessing.cpu_count()
-threads = 2
+workers = 2 * multiprocessing.cpu_count() + 1
+threads = multiprocessing.cpu_count()
 worker_class = "gthread"
 
 timeout = 10
