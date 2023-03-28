@@ -24,8 +24,7 @@ class ScraperProcess(ProcessBase):
     def get_work(self):
         # like works_utils.get_work()
 
-        nav_soup = works_utils.get_work_nav_soup(self.work_id)
-        chapters_urls_data = works_utils.get_chapters_urls_data(nav_soup)
+        chapters_urls_data = works_utils.get_chapters_data(self.work_id)
 
         work_data = works_utils.get_work_struct(self.work_id)
 

@@ -10,10 +10,10 @@ def check_if_work_exists(work_id):
     return r.status_code == 200
 
 
-def get_chapters_urls_data(soup):
+def get_chapters_urls_data(nav_soup):
     chapters_data = []
 
-    chapters_nav = soup.find("ol", class_="chapter index group")
+    chapters_nav = nav_soup.find("ol", class_="chapter index group")
 
     if chapters_nav:
         chapters_nav_children = chapters_nav.findChildren("a", recursive=True)
@@ -28,16 +28,15 @@ def get_chapters_urls_data(soup):
     return chapters_data
 
 
-def get_work_content(work_url):
+def get_chapter_content(chapter_url):
     content_data = []
 
-    url = AO3Consts.AO3_URL + work_url
+    url = AO3Consts.AO3_URL + chapter_url
     html_content = requests.get(url).text
 
     soup = BeautifulSoup(html_content, "html.parser")
 
-    content = soup.find("div", class_="userstuff module")
-    content_paragraphs = content.findChildren("p", recursive=True)
+    content_paragraphs = soup.find("div", class_="userstuff module").findChildren("p", recursive=True)
 
     for line in content_paragraphs:
         content_data.append(line.text)
@@ -89,10 +88,12 @@ def get_work_struct(work_id):
     return struct
 
 
-def get_work(work_id):
-    nav_soup = get_work_nav_soup(work_id)
+def get_chapters_data(work_id):
+    return get_chapters_urls_data(get_work_nav_soup(work_id))
 
-    chapters_urls_data = get_chapters_urls_data(nav_soup)
+
+def get_work(work_id, chapters_urls_data=None):
+    chapters_urls_data = chapters_urls_data if chapters_urls_data is not None else get_chapters_data(work_id)
 
     work_data = get_work_struct(work_id)
 
@@ -103,10 +104,12 @@ def get_work(work_id):
 
 
 def get_chapter_data_from_url_data(chapter_id, url_data):
+    content_data = get_chapter_content(url_data[WorksConsts.URL])
+
     chapter_data = {
             WorksConsts.ID: chapter_id,
             WorksConsts.NAME: url_data[WorksConsts.NAME],
-            WorksConsts.CONTENT: get_work_content(url_data[WorksConsts.URL])
+            WorksConsts.CONTENT: content_data,
         }
 
     return chapter_data

@@ -7,26 +7,16 @@ import time
 
 
 class WorksUpdaterProcess(BackgroundProcessBase):
-    def __init__(self, app, user_id):
+    def __init__(self, app):
         super().__init__(app)
-
-        self.user_id = user_id
 
     def start_process(self):
         self.process.start()
         self.process_pid = self.process.pid
 
-    def get_works_titles(self):
-        with db_utils.db_session_scope(self.db_session) as session:
-            works = session.query(models.Work).filter_by(owner_id=self.user_id).all()
-
-            titles = [work.name for work in works]
-
-        return titles
-
-    def check_if_chapter_should_be_added(self, chapter_model, work_model):
-        work_chapters_ids = [chapter.chapter_id for chapter in work_model.chapters]
-        check = [id for id in work_chapters_ids if id == chapter_model.chapter_id]
+    def check_if_chapter_should_be_added(self, chapter_id, work_chapters):
+        work_chapters_ids = [chapter.chapter_id for chapter in work_chapters]
+        check = [id for id in work_chapters_ids if id == chapter_id]
 
         status = False if len(check) > 0 else True
 
@@ -35,24 +25,27 @@ class WorksUpdaterProcess(BackgroundProcessBase):
     def mainloop(self):
         while True:
             try:
-                for work_name in self.get_works_titles():
-                    with db_utils.db_session_scope(self.db_session) as session:
-                        work = session.query(models.Work).filter_by(name=work_name).first()
+                with db_utils.db_session_scope(self.db_session) as session:
+                    users = session.query(models.User).all()
 
-                        if work:
-                            work_data = works_utils.get_work(work.work_id)
-                            chapters = models_utils.create_chapters_models(work_data)
+                    for user in users:
+                        for work in user.works:
+                            chapters_data = works_utils.get_chapters_data(work.work_id)
 
-                            for fresh_chapter in chapters:
-                                if self.check_if_chapter_should_be_added(fresh_chapter, work):
-                                    work.chapters.append(fresh_chapter)
+                            if len(chapters_data) > len(work.chapters):
+                                work_data = works_utils.get_work(work.work_id, chapters_urls_data=chapters_data)
+                                chapters = models_utils.create_chapters_models(work_data)
 
-                                    work.last_updated = datetime.now()
+                                for fresh_chapter in chapters:
+                                    if self.check_if_chapter_should_be_added(fresh_chapter.chapter_id, work.chapters):
+                                        work.chapters.append(fresh_chapter)
 
-                                    update_message = models_utils.create_update_message_model(work.id,
-                                                                                              fresh_chapter.title)
+                                        work.last_updated = datetime.now()
 
-                                    session.add(update_message)
+                                        update_message = models_utils.create_update_message_model(work.id,
+                                                                                                  fresh_chapter.title)
+
+                                        session.add(update_message)
 
                             time.sleep(Config.WORKS_UPDATER_JOBS_DELAY)
 
