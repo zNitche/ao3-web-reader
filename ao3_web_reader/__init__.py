@@ -23,10 +23,10 @@ def setup_app_managers(app):
         setattr(app, manager.get_name(), manager)
 
 
-def setup_background_processes(app, models):
+def setup_background_processes(app):
     from ao3_web_reader.utils import processes_utils
 
-    processes_utils.start_work_updater_processes(app, models.User.query.all())
+    processes_utils.start_work_updater_processes(app)
 
 
 def init_migrations(app):
@@ -79,7 +79,7 @@ def create_app(config_class=Config):
 
         if not app.config["TESTING"]:
             init_migrations(app)
-            setup_background_processes(app, models)
+            setup_background_processes(app)
 
         register_blueprints(app)
 
