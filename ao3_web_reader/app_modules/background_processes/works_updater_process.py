@@ -30,22 +30,21 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                     for user in users:
                         for work in user.works:
-                            chapters_data = works_utils.get_chapters_data(work.work_id)
+                            chapters_struct = works_utils.get_chapters_struct(work.work_id)
 
-                            if len(chapters_data) > len(work.chapters):
-                                work_data = works_utils.get_work(work.work_id, chapters_urls_data=chapters_data)
-                                chapters = models_utils.create_chapters_models(work_data)
+                            work_data = works_utils.get_work(work.work_id, chapters_struct=chapters_struct)
+                            fresh_chapters = models_utils.create_chapters_models(work_data)
 
-                                for fresh_chapter in chapters:
-                                    if self.check_if_chapter_should_be_added(fresh_chapter.chapter_id, work.chapters):
-                                        work.chapters.append(fresh_chapter)
+                            for fresh_chapter in fresh_chapters:
+                                if self.check_if_chapter_should_be_added(fresh_chapter.chapter_id, work.chapters):
+                                    work.chapters.append(fresh_chapter)
 
-                                        work.last_updated = datetime.now()
+                                    work.last_updated = datetime.now()
 
-                                        update_message = models_utils.create_update_message_model(work.id,
-                                                                                                  fresh_chapter.title)
+                                    update_message = models_utils.create_update_message_model(work.id,
+                                                                                              fresh_chapter.title)
 
-                                        session.add(update_message)
+                                    session.add(update_message)
 
                             time.sleep(Config.WORKS_UPDATER_JOBS_DELAY)
 

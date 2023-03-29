@@ -1,7 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 from ao3_web_reader.consts import AO3Consts
-from ao3_web_reader.consts import WorksConsts
+from ao3_web_reader.consts import WorksConsts, ChaptersConsts
+from datetime import datetime
+import time
 
 
 def check_if_work_exists(work_id):
@@ -10,18 +12,29 @@ def check_if_work_exists(work_id):
     return r.status_code == 200
 
 
-def get_chapters_urls_data(nav_soup):
+def get_chapters_struct(work_id):
     chapters_data = []
+
+    html_nav_content = requests.get(AO3Consts.AO3_WORKS_NAVIGATION_URL.format(work_id=work_id)).text
+    nav_soup = BeautifulSoup(html_nav_content, "html.parser")
 
     chapters_nav = nav_soup.find("ol", class_="chapter index group")
 
     if chapters_nav:
-        chapters_nav_children = chapters_nav.findChildren("a", recursive=True)
+        chapters_nav_children = chapters_nav.findChildren("li", recursive=True)
 
-        for item in chapters_nav_children:
+        for id, item in enumerate(chapters_nav_children):
+            chapter_href = item.findChild("a")
+            chapter_date = item.findChild("span", class_="datetime").text.replace("(", "").replace(")", "")
+            chapter_url = AO3Consts.AO3_URL + chapter_href.attrs["href"]
+
             chapters_data.append({
-                WorksConsts.NAME: item.text,
-                WorksConsts.URL: item.attrs["href"]
+                ChaptersConsts.WORK_ID: work_id,
+                ChaptersConsts.NAME: chapter_href.text,
+                ChaptersConsts.ID: chapter_url.split("/")[-1],
+                ChaptersConsts.URL: chapter_url,
+                ChaptersConsts.DATE: datetime.strptime(chapter_date, "%Y-%m-%d"),
+                ChaptersConsts.ORDER_ID: id
                 }
             )
 
@@ -31,17 +44,22 @@ def get_chapters_urls_data(nav_soup):
 def get_chapter_content(chapter_url):
     content_data = []
 
-    url = AO3Consts.AO3_URL + chapter_url
-    html_content = requests.get(url).text
+    html_content = requests.get(chapter_url).text
 
     soup = BeautifulSoup(html_content, "html.parser")
-
     content_paragraphs = soup.find("div", class_="userstuff module").findChildren("p", recursive=True)
 
     for line in content_paragraphs:
         content_data.append(line.text)
 
     return content_data
+
+
+def get_chapter_data_struct(chapter_struct):
+    chapter_content = get_chapter_content(chapter_struct[ChaptersConsts.URL])
+    chapter_struct[ChaptersConsts.CONTENT] = chapter_content
+
+    return chapter_struct
 
 
 def get_work_soup(work_id):
@@ -51,15 +69,8 @@ def get_work_soup(work_id):
     return work_soup
 
 
-def get_work_nav_soup(work_id):
-    html_nav_content = requests.get(AO3Consts.AO3_WORKS_NAVIGATION_URL.format(work_id=work_id)).text
-    nav_soup = BeautifulSoup(html_nav_content, "html.parser")
-
-    return nav_soup
-
-
-def get_work_name(work_id):
-    work_soup = get_work_soup(work_id)
+def get_work_name(work_id, work_soup=None):
+    work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
     name_wrapper = work_soup.find("h2", class_="title heading")
     raw_name = name_wrapper.text
@@ -69,8 +80,8 @@ def get_work_name(work_id):
     return name
 
 
-def get_work_description(work_id):
-    work_soup = get_work_soup(work_id)
+def get_work_description(work_id, work_soup=None):
+    work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
     description_wrapper = work_soup.find("blockquote", class_="userstuff")
     raw_description = description_wrapper.text
@@ -88,28 +99,16 @@ def get_work_struct(work_id):
     return struct
 
 
-def get_chapters_data(work_id):
-    return get_chapters_urls_data(get_work_nav_soup(work_id))
+def get_work(work_id, chapters_struct=None, progress_callback=None, delay_between_chapters=1):
+    chapters_struct = chapters_struct if chapters_struct is not None else get_chapters_struct(work_id)
+    work_data_struct = get_work_struct(work_id)
 
+    for id, chapter_struct in enumerate(chapters_struct):
+        work_data_struct[WorksConsts.CHAPTERS_DATA].append(get_chapter_data_struct(chapter_struct))
 
-def get_work(work_id, chapters_urls_data=None):
-    chapters_urls_data = chapters_urls_data if chapters_urls_data is not None else get_chapters_data(work_id)
+        if progress_callback is not None:
+            progress_callback(id, len(chapters_struct))
 
-    work_data = get_work_struct(work_id)
+        time.sleep(delay_between_chapters)
 
-    for id, chapter_url_data in enumerate(chapters_urls_data):
-        work_data[WorksConsts.CHAPTERS_DATA].append(get_chapter_data_from_url_data(id, chapter_url_data))
-
-    return work_data
-
-
-def get_chapter_data_from_url_data(chapter_id, url_data):
-    content_data = get_chapter_content(url_data[WorksConsts.URL])
-
-    chapter_data = {
-            WorksConsts.ID: chapter_id,
-            WorksConsts.NAME: url_data[WorksConsts.NAME],
-            WorksConsts.CONTENT: content_data,
-        }
-
-    return chapter_data
+    return work_data_struct

@@ -26,7 +26,8 @@ def setup_app_managers(app):
 def setup_background_processes(app):
     from ao3_web_reader.utils import processes_utils
 
-    processes_utils.start_work_updater_processes(app)
+    # Temporary disabled
+    # processes_utils.start_work_updater_processes(app)
 
 
 def init_migrations(app):

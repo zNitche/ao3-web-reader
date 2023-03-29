@@ -11,7 +11,7 @@
                     </div>
                     <div class="item-content-wrapper">
                         <div class="update-message-container">
-                            Added "{{ message.chapter_name }}" to <a href="{{ url_for('works.chapters', work_id=message.work.work_id) }}">{{ message.work.name }}</a>.
+                            {{ message.get_message_by_type() }} <a href="{{ url_for('works.chapters', work_id=message.work.work_id) }}">{{ message.work.name }}</a>.
                         </div>
                     </div>
                 </div>

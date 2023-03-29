@@ -1,4 +1,4 @@
-# converts legacy db (with text rows) to new one
+# converts legacy db (with text rows) to new one (last commit 9a075d3)
 
 import sys
 import os
@@ -7,20 +7,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 import argparse
-import json
-from datetime import datetime
-from scripts import common_utils
+from migrations_stripts import common_utils
 from ao3_web_reader import models
-
-
-def copy_models(model_db_data, model, session):
-    models_ids_in_db = [model.id for model in session.query(model).all()]
-
-    for data in model_db_data:
-        model_id = data["id"]
-        if model_id not in models_ids_in_db:
-            new_model = model(**data)
-            session.add(new_model)
 
 
 def get_textrows_content_for_chapter(textrows_data, chapter_id):
@@ -40,38 +28,21 @@ def convert_chapters(chapters_data, textrows_data, session):
             textrows_content_for_chapter = get_textrows_content_for_chapter(textrows_data, chapter_id)
             chapter_data["text"] = "\n".join([textrow for textrow in textrows_content_for_chapter])
 
-            new_chapter = models.Chapter(**chapter_data)
-            session.add(new_chapter)
+            common_utils.add_model(models.Chapter, session, chapter_data)
 
 
 def write_data_to_new_models(new_session, db_data):
     models_to_copy = [models.User, models.Tag, models.UpdateMessage, models.Work]
 
+    print("copying models...")
     for model in models_to_copy:
         print(f"writing data for {model.__name__}...")
-        copy_models(db_data[model.__name__], model, new_session)
+        common_utils.copy_models(db_data[model.__name__], model, new_session)
 
     print(f"writing + converting data for chapters and textrows...")
     convert_chapters(db_data[models.Chapter.__name__], db_data["TextRow"], new_session)
 
     new_session.commit()
-
-
-def tweak_json_dates(data):
-    for model_name in data:
-        for model in data[model_name]:
-            for model_key in model:
-                if "date" in model_key:
-                    model[model_key] = datetime.fromisoformat(model[model_key])
-
-    return data
-
-
-def load_db_data(data_path):
-    with open(data_path, "r") as file:
-        data = json.loads(file.read())
-
-    return data
 
 
 def main(args):
@@ -87,8 +58,8 @@ def main(args):
         with new_db_session() as new_session:
             print("db session created...")
 
-            db_data = load_db_data(db_data_path)
-            db_data = tweak_json_dates(db_data)
+            db_data = common_utils.load_db_data(db_data_path)
+            db_data = common_utils.tweak_json_dates(db_data)
 
             write_data_to_new_models(new_session, db_data)
 
@@ -97,8 +68,8 @@ def main(args):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--db_data_path", type=str, default=None, help="database dumped json data path")
-    parser.add_argument("--new_db_path", type=str, default=None, help="new database path")
+    parser.add_argument("--db_data_path", type=str, default=None, help="database dumped json data path", required=True)
+    parser.add_argument("--new_db_path", type=str, default=None, help="new database path", required=True)
     opt = parser.parse_args()
 
     return opt

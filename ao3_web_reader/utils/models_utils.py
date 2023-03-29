@@ -1,5 +1,5 @@
 from ao3_web_reader import models
-from ao3_web_reader.consts import WorksConsts
+from ao3_web_reader.consts import WorksConsts, ChaptersConsts
 
 
 def create_chapters_models(work_data):
@@ -12,11 +12,14 @@ def create_chapters_models(work_data):
 
 
 def create_chapter_model(chapter_data):
-    chapter_id = chapter_data[WorksConsts.ID]
-    title = chapter_data[WorksConsts.NAME]
-    content = chapter_data[WorksConsts.CONTENT]
+    chapter_id = chapter_data[ChaptersConsts.ID]
+    title = chapter_data[ChaptersConsts.NAME]
+    content = chapter_data[ChaptersConsts.CONTENT]
+    chapter_order_id = chapter_data[ChaptersConsts.ORDER_ID]
+    chapter_date = chapter_data[ChaptersConsts.DATE]
 
-    chapter = models.Chapter(title=title, chapter_id=chapter_id, text="\n".join(content))
+    chapter = models.Chapter(title=title, chapter_id=chapter_id, text="\n".join(content),
+                             chapter_order_id=chapter_order_id, date=chapter_date)
 
     return chapter
 
@@ -31,7 +34,7 @@ def create_work_model(work_data, owner_id, tag_id, description):
     return work
 
 
-def create_update_message_model(work_id, chapter_name):
-    message = models.UpdateMessage(work_id=work_id, chapter_name=chapter_name)
+def create_update_message_model(work_id, chapter_name, message_type):
+    message = models.UpdateMessage(work_id=work_id, chapter_name=chapter_name, type=message_type)
 
     return message

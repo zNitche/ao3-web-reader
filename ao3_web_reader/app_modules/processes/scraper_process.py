@@ -1,6 +1,6 @@
 from ao3_web_reader.utils import works_utils, db_utils, models_utils
 from ao3_web_reader.app_modules.processes.process_base import ProcessBase
-from ao3_web_reader.consts import ProcessesConsts, WorksConsts
+from ao3_web_reader.consts import ProcessesConsts
 from ao3_web_reader import models
 
 
@@ -21,30 +21,16 @@ class ScraperProcess(ProcessBase):
     def calc_progres(self, current_step, max_steps):
         self.progress = int(current_step * 100 / max_steps)
 
-    def get_work(self):
-        # like works_utils.get_work()
-
-        chapters_urls_data = works_utils.get_chapters_data(self.work_id)
-
-        work_data = works_utils.get_work_struct(self.work_id)
-
-        for id, chapter_url_data in enumerate(chapters_urls_data):
-            chapter_data = works_utils.get_chapter_data_from_url_data(id, chapter_url_data)
-
-            work_data[WorksConsts.CHAPTERS_DATA].append(chapter_data)
-
-            self.calc_progres(id, len(chapters_urls_data))
-            self.update_process_data()
-
-        return work_data
+    def get_work_update_callback(self, current_step, total_steps):
+        self.calc_progres(current_step, total_steps)
+        self.update_process_data()
 
     def mainloop(self):
         self.work_title = works_utils.get_work_name(self.work_id)
         self.update_process_data()
 
         try:
-            # work_data = works_utils.get_work(self.work_id)
-            work_data = self.get_work()
+            work_data = works_utils.get_work(self.work_id, progress_callback=self.get_work_update_callback)
 
             work_description = works_utils.get_work_description(self.work_id)
 

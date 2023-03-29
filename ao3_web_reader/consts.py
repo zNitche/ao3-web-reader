@@ -47,3 +47,16 @@ class WorksConsts:
     WORK_ID = "work_id"
     CHAPTERS_DATA = "chapters_data"
     CONTENT = "content"
+
+class ChaptersConsts:
+    NAME = "name"
+    URL = "url"
+    ID = "id"
+    CONTENT = "content"
+    DATE = "date"
+    ORDER_ID = "order_id"
+    WORK_ID = "work_id"
+
+
+class UpdateMessagesConsts:
+    MESSAGE_ADDED_TYPE = "added"

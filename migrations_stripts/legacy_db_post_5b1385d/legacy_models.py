@@ -1,7 +1,8 @@
+# Pre commit 5b1385d5b15e75f527fa88f95a6a1dfb00cbd8e4
+
 from ao3_web_reader import db
 from flask_login import UserMixin
 from datetime import datetime
-from ao3_web_reader.consts import UpdateMessagesConsts
 
 
 class User(db.Model, UserMixin):
@@ -40,8 +41,6 @@ class Work(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-    was_removed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
-
     chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
     update_messages = db.relationship("UpdateMessage", backref="work", cascade="all, delete-orphan", lazy=True)
 
@@ -51,29 +50,30 @@ class Chapter(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     chapter_id = db.Column(db.Integer, unique=False, nullable=False)
-    chapter_order_id = db.Column(db.Integer, unique=False, nullable=False)
-
     title = db.Column(db.String(200), unique=False, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
-    text = db.Column(db.String, unique=False, nullable=False)
-
-    was_removed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
-
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
+    rows = db.relationship("TextRow", backref="chapter", cascade="all, delete-orphan", lazy=True)
 
-    def get_formatted_text(self):
-        return self.text.split("\n")
+    def check_if_next_chapter_exists(self):
+        prev_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_id=self.chapter_id + 1).first()
 
-    def get_next_chapter(self):
-        prev_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_order_id=self.chapter_order_id + 1).first()
+        return True if prev_chapter else False
 
-        return prev_chapter
+    def check_if_prev_chapter_exists(self):
+        next_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_id=self.chapter_id - 1).first()
 
-    def get_prev_chapter(self):
-        next_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_order_id=self.chapter_order_id - 1).first()
+        return True if next_chapter else False
 
-        return next_chapter
+
+class TextRow(db.Model):
+    __tablename__ = "text_rows"
+
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String, unique=False, nullable=True)
+
+    chapter_id = db.Column(db.Integer, db.ForeignKey("chapters.id"), nullable=False)
 
 
 class UpdateMessage(db.Model):
@@ -81,15 +81,6 @@ class UpdateMessage(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     chapter_name = db.Column(db.String, unique=False, nullable=True)
-    type = db.Column(db.String, unique=False, nullable=False, default=UpdateMessagesConsts.MESSAGE_ADDED_TYPE)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
-
-    def get_message_by_type(self):
-        message = None
-
-        if self.type == UpdateMessagesConsts.MESSAGE_ADDED_TYPE:
-            message = f"Added '{ self.chapter_name }' to"
-
-        return message

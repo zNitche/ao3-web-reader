@@ -13,15 +13,15 @@
                 </p>
             {% endfor %}
         </div>
-        {% if chapter.check_if_next_chapter_exists() or chapter.check_if_prev_chapter_exists() %}
+        {% if chapter.get_next_chapter() or chapter.get_prev_chapter() %}
             <div class="chapter-controls-wrapper">
-                {% if chapter.check_if_prev_chapter_exists() %}
-                    <a class="btn btn-secondary" href="{{ url_for('works.chapter', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id - 1) }}">
+                {% if chapter.get_prev_chapter() %}
+                    <a class="btn btn-secondary" href="{{ url_for('works.chapter', work_id=chapter.work.work_id, chapter_id=chapter.get_prev_chapter().chapter_id) }}">
                         Prev Chapter
                     </a>
                 {% endif %}
-                {% if chapter.check_if_next_chapter_exists() %}
-                    <a class="btn btn-secondary" href="{{ url_for('works.chapter', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id + 1) }}">
+                {% if chapter.get_next_chapter() %}
+                    <a class="btn btn-secondary" href="{{ url_for('works.chapter', work_id=chapter.work.work_id, chapter_id=chapter.get_next_chapter().chapter_id) }}">
                         Next Chapter
                     </a>
                 {% endif %}
