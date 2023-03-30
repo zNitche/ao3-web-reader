@@ -4,7 +4,7 @@ import os
 
 def write_work_to_files(work, files_path):
     for chapter in work.chapters:
-        chapter_file_path = os.path.join(files_path, f"{chapter.title}.txt")
+        chapter_file_path = os.path.join(files_path, f"{chapter.title.replace('/', '-')}.txt")
 
         with open(chapter_file_path, "a") as chapter_file:
             chapter_file.write(chapter.text)
