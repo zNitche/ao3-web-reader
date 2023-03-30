@@ -24,7 +24,7 @@ class AddWorkForm(FormBase):
     tag_name = SelectField("Tag", choices=[], validators=[DataRequired()])
 
     def validate_work_id(self, work_id):
-        if not works_utils.check_if_work_exists(work_id.data):
+        if not works_utils.check_if_work_is_accessible(work_id.data):
             raise ValidationError(MessagesConsts.WORK_DOESNT_EXIST)
 
         work = models.Work.query.filter_by(work_id=work_id.data, owner_id=current_user.id).first()

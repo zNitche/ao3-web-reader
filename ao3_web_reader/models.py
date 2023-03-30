@@ -30,7 +30,7 @@ class Work(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    work_id = db.Column(db.Integer, unique=False, nullable=False)
+    work_id = db.Column(db.String, unique=False, nullable=False)
     name = db.Column(db.String(200), unique=False, nullable=False)
     description = db.Column(db.String, unique=False, nullable=True)
 
@@ -50,7 +50,7 @@ class Chapter(db.Model):
     __tablename__ = "chapters"
 
     id = db.Column(db.Integer, primary_key=True)
-    chapter_id = db.Column(db.Integer, unique=False, nullable=False)
+    chapter_id = db.Column(db.String, unique=False, nullable=False)
     chapter_order_id = db.Column(db.Integer, unique=False, nullable=False)
 
     title = db.Column(db.String(200), unique=False, nullable=False)
@@ -91,5 +91,8 @@ class UpdateMessage(db.Model):
 
         if self.type == UpdateMessagesConsts.MESSAGE_ADDED_TYPE:
             message = f"Added '{ self.chapter_name }' to"
+
+        elif self.type == UpdateMessagesConsts.MESSAGE_REMOVED_TYPE:
+            message = f"Removed '{self.chapter_name}' from"
 
         return message

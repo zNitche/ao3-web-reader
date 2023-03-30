@@ -9,6 +9,12 @@ import time
 def check_if_work_exists(work_id):
     r = requests.get(AO3Consts.AO3_WORKS_URL.format(work_id=work_id))
 
+    return not r.status_code == 404
+
+
+def check_if_work_is_accessible(work_id):
+    r = requests.get(AO3Consts.AO3_WORKS_URL.format(work_id=work_id))
+
     return r.status_code == 200
 
 

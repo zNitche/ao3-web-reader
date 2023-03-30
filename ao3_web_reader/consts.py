@@ -60,3 +60,4 @@ class ChaptersConsts:
 
 class UpdateMessagesConsts:
     MESSAGE_ADDED_TYPE = "added"
+    MESSAGE_REMOVED_TYPE = "removed"
