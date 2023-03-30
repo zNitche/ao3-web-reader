@@ -13,15 +13,39 @@
                 </div>
             {% endif %}
         </div>
-        {% for chapter in work.chapters|sort(attribute="chapter_order_id") %}
-            <a class="chapter-nav-bar" href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
-                <div class="content-item">
-                    <div class="item-title">
-                        {{ chapter.title }}
+        {% if available_chapters|length > 0 or removed_chapters|length > 0 %}
+            <div class="chapters-container-wrapper">
+                {% if available_chapters|length > 0 %}
+                    <div class="chapters-wrapper">
+                        {% for chapter in available_chapters|sort(attribute="chapter_order_id") %}
+                            <a class="chapter-nav-bar" href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
+                                <div class="content-item">
+                                    <div class="item-title">
+                                        {{ chapter.title }}
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
                     </div>
-                </div>
-            </a>
-        {% endfor %}
+                {% endif %}
+                {% if removed_chapters|length > 0 %}
+                    <div class="chapters-wrapper">
+                        <p>
+                            Removed chapters:
+                        </p>
+                        {% for chapter in removed_chapters|sort(attribute="chapter_order_id") %}
+                            <a class="chapter-nav-bar" href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
+                                <div class="content-item">
+                                    <div class="item-title">
+                                        {{ chapter.title }}
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </div>
 

@@ -35,17 +35,6 @@ def add_tag():
     return render_template("add_tag.html", add_tag_form=add_tag_form)
 
 
-@tags.route("/tags/<tag_name>/management")
-@flask_login.login_required
-def tag_management(tag_name):
-    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, name=tag_name).first()
-
-    if tag:
-        return render_template("tag_management.html", tag=tag)
-
-    abort(404)
-
-
 @tags.route("/<tag_id>/management/remove", methods=["POST"])
 @flask_login.login_required
 def remove_tag(tag_id):
@@ -71,7 +60,10 @@ def download_tag(tag_id):
             tmp_dir_path = os.path.join(tempfile.gettempdir(), tmpdir)
 
             for work in tag.works:
-                work_path = os.path.join(tmp_dir_path, work.name)
+                work_name = work.name.replace("/", "-")
+
+                work_path = os.path.join(tmp_dir_path, work_name)
+
                 os.mkdir(work_path)
 
                 files_utils.write_work_to_files(work, work_path)

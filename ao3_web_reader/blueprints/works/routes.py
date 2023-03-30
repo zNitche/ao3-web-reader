@@ -20,7 +20,7 @@ def all_works(tag_name, page_id):
     tag = models.Tag.query.filter_by(owner_id=user_id, name=tag_name).first()
 
     if tag:
-        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user_id).order_by(
+        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user_id, was_removed=False).order_by(
             models.Work.last_updated.desc())
 
         works_pagination = works_query.paginate(page=page_id, per_page=PaginationConsts.WORKS_PER_PAGE)
@@ -33,13 +33,23 @@ def all_works(tag_name, page_id):
     abort(404)
 
 
-@works.route("/<work_id>/management")
+@works.route("/<tag_name>/removed_works", defaults={"page_id": 1})
+@works.route("/<tag_name>/removed_works/<int:page_id>")
 @flask_login.login_required
-def management(work_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+def removed_works(tag_name, page_id):
+    user_id = flask_login.current_user.id
+    tag = models.Tag.query.filter_by(owner_id=user_id, name=tag_name).first()
 
-    if user_work:
-        return render_template("management.html", work=user_work)
+    if tag:
+        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user_id, was_removed=True).order_by(
+            models.Work.last_updated.desc())
+
+        works_pagination = works_query.paginate(page=page_id, per_page=PaginationConsts.WORKS_PER_PAGE)
+
+        return render_template("works.html",
+                               tag=tag,
+                               works_pagination=works_pagination,
+                               works=works_pagination.items)
 
     abort(404)
 
@@ -119,7 +129,11 @@ def chapters(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
-        return render_template("chapters.html", work=user_work)
+        available_chapters = [chapter for chapter in user_work.chapters if not chapter.was_removed]
+        removed_chapters = [chapter for chapter in user_work.chapters if chapter.was_removed]
+
+        return render_template("chapters.html", work=user_work, available_chapters=available_chapters,
+                               removed_chapters=removed_chapters)
 
     else:
         abort(404)

@@ -6,6 +6,13 @@
         {% if works|length > 0 %}
             {% for work in works %}
                <div class="content-item">
+                   <div class="delete-icon-wrapper">
+                       <button type="button" class="btn" onclick="showRemoveModal('removeWorkModal',
+                       '{{ work.name }}',
+                       '{{ url_for('works.remove_work', work_id=work.work_id) }}',);">
+                            <img src="{{ url_for('static', filename='icons/delete_icon.svg') }}" alt="remove work">
+                       </button>
+                   </div>
                     <div class="item-title">
                         <a href="{{ url_for('works.chapters', work_id=work.work_id) }}">
                             <h2>
@@ -28,8 +35,8 @@
                         </div>
                     </div>
                    <div class="work-management-wrapper">
-                        <a href="{{ url_for('works.management', work_id=work.work_id) }}">
-                            Manage
+                        <a href="{{ url_for('works.download_work', work_id=work.work_id) }}">
+                            <img src="{{ url_for('static', filename='icons/download_icon.svg') }}" alt="download work">
                         </a>
                     </div>
                 </div>
@@ -54,6 +61,28 @@
         {% else %}
             <p>No works to show</p>
         {% endif %}
+    </div>
+
+    <!-- removeWorkModal -->
+    <div class="modal fade" id="removeWorkModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                        <h5 class="modal-title">Remove work</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Do you want to remove: <span id="remove-modal-item-name"></span>
+                </div>
+                <div class="modal-footer">
+                    <form action="" id="remove-modal-form" method="POST">
+                        <button type="submit" class="btn btn-danger">
+                            Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
