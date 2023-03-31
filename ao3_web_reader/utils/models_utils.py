@@ -15,11 +15,11 @@ def create_chapter_model(chapter_data):
     chapter_id = chapter_data[ChaptersConsts.ID]
     title = chapter_data[ChaptersConsts.NAME]
     content = chapter_data[ChaptersConsts.CONTENT]
-    chapter_order_id = chapter_data[ChaptersConsts.ORDER_ID]
+    order_id = chapter_data[ChaptersConsts.ORDER_ID]
     chapter_date = chapter_data[ChaptersConsts.DATE]
 
     chapter = models.Chapter(title=title, chapter_id=chapter_id, text="\n".join(content),
-                             chapter_order_id=chapter_order_id, date=chapter_date)
+                             order_id=order_id, date=chapter_date)
 
     return chapter
 

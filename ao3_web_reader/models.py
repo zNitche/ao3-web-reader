@@ -51,7 +51,7 @@ class Chapter(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     chapter_id = db.Column(db.String, unique=False, nullable=False)
-    chapter_order_id = db.Column(db.Integer, unique=False, nullable=False)
+    order_id = db.Column(db.Integer, unique=False, nullable=True)
 
     title = db.Column(db.String(200), unique=False, nullable=False)
     date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
@@ -66,12 +66,12 @@ class Chapter(db.Model):
         return self.text.split("\n")
 
     def get_next_chapter(self):
-        prev_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_order_id=self.chapter_order_id + 1).first()
+        prev_chapter = Chapter.query.filter_by(work_id=self.work_id, order_id=self.order_id + 1).first()
 
         return prev_chapter
 
     def get_prev_chapter(self):
-        next_chapter = Chapter.query.filter_by(work_id=self.work_id, chapter_order_id=self.chapter_order_id - 1).first()
+        next_chapter = Chapter.query.filter_by(work_id=self.work_id, order_id=self.order_id - 1).first()
 
         return next_chapter
 

@@ -53,17 +53,17 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
     def update_chapters_order_ids(self, chapters):
         not_removed_chapters = [chapter for chapter in chapters if not chapter.was_removed]
-        not_removed_chapters.sort(key=lambda chapter: chapter.chapter_order_id)
+        not_removed_chapters.sort(key=lambda chapter: chapter.order_id)
 
         for order_id, chapter in enumerate(not_removed_chapters):
-            chapter.chapter_order_id = order_id
+            chapter.order_id = order_id
 
     def update_works(self, works):
         for work in works:
-            if not works_utils.check_if_work_exists(work.work_id):
+            if not works_utils.check_if_work_is_accessible(work.work_id):
                 work.was_removed = True
 
-            time.sleep(Config.WORKS_UPDATER_JOBS_DELAY)
+            time.sleep(Config.WORKS_EXIST_CHECK_JOBS_DELAY)
 
     def add_chapter(self, work, chapter, session):
         work.chapters.append(chapter)
@@ -77,7 +77,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
     def mark_chapter_as_removed(self, work, chapter, session):
         chapter.was_removed = True
-        chapter.chapter_order_id = None
+        chapter.order_id = None
         work.last_updated = datetime.now()
 
         update_message = models_utils.create_update_message_model(work.id,

@@ -48,7 +48,7 @@ def convert_chapters(chapters_data, chapters_structs, session):
 
             if chapter_struct:
                 chapter_data["chapter_id"] = chapter_struct[ChaptersConsts.ID]
-                chapter_data["chapter_order_id"] = chapter_struct[ChaptersConsts.ORDER_ID]
+                chapter_data["order_id"] = chapter_struct[ChaptersConsts.ORDER_ID]
                 chapter_data["date"] = chapter_struct[ChaptersConsts.DATE]
                 chapter_data["was_removed"] = False
 

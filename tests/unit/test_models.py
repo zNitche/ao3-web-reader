@@ -36,16 +36,16 @@ def test_chapter():
     chapter_id = "321123"
     title = "chapter"
     text = "test text"
-    chapter_order_id = "1"
+    order_id = "1"
     was_removed = False
 
     chapter = models.Chapter(chapter_id=chapter_id, title=title, work_id=1, text=text,
-                             chapter_order_id=chapter_order_id, was_removed=was_removed)
+                             order_id=order_id, was_removed=was_removed)
 
     assert chapter.chapter_id == chapter_id
     assert chapter.title == title
     assert chapter.text == text
-    assert chapter.chapter_order_id == chapter_order_id
+    assert chapter.order_id == order_id
     assert chapter.was_removed == was_removed
 
 
