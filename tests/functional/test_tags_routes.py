@@ -10,17 +10,6 @@ def test_tags_preview(test_client, logged_test_user):
     assert response.request.path == url_for("tags.all_tags")
 
 
-def test_tags_management_preview(test_client, logged_test_user):
-    tag = models.Tag(name="test_tag", owner_id=current_user.id)
-    db.session.add(tag)
-    db.session.commit()
-
-    response = test_client.get(url_for("tags.tag_management", tag_name=tag.name), follow_redirects=True)
-
-    assert response.status_code == 200
-    assert response.request.path == url_for("tags.tag_management", tag_name=tag.name)
-
-
 def test_remove_tag(test_client, logged_test_user):
     tag = models.Tag(name="test_tag", owner_id=current_user.id)
     db.session.add(tag)

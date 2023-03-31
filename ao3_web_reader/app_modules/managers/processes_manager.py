@@ -38,7 +38,7 @@ class ProcessesManager(AppManagerBase):
     def get_process_data(self, timestamp, process_type=None):
         process_data = self.redis_manager.get_value(timestamp)
 
-        if process_type is not None and process_data[ProcessesConsts.PROCESS_NAME] != process_type:
+        if process_type is not None and process_data.get(ProcessesConsts.PROCESS_NAME) != process_type:
             process_data = None
 
         return process_data
