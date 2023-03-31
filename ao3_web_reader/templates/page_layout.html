@@ -23,10 +23,13 @@
 <div class="main-container">
     <div class="navbar main-navbar navbar-dark sticky-top navbar-expand-sm">
         <div class="container-fluid">
-            <a class="navbar-brand navbar-logo" href="{{ url_for('main.home') }}">
-                AO3 Reader
-            </a>
-
+            <div class="navbar-title-wrapper">
+                <a class="navbar-brand navbar-logo" href="{{ url_for('main.home') }}">
+                    AO3 Reader
+                </a>
+                <img id="sync-icon" class="d-none" src="{{ url_for('static', filename='icons/cloud_sync_icon.svg') }}"
+                     alt="sync in progress">
+            </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                     aria-controls="mainNavbar" aria-expanded="false">
                 <span class="navbar-toggler-icon"></span>
@@ -47,5 +50,10 @@
     {% block page_content %}
     {% endblock %}
 </div>
+
+<script>
+    updateCloudSyncIcon();
+    setInterval(updateCloudSyncIcon, 10000);
+</script>
 
 {% endblock %}

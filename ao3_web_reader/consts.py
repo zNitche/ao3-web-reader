@@ -39,6 +39,8 @@ class ProcessesConsts:
     PROCESS_NAME = "process_name"
     PROGRESS = "progress"
 
+    IS_RUNNING = "is_running"
+
 
 class WorksConsts:
     NAME = "name"

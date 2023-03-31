@@ -16,3 +16,29 @@ function showRemoveModal(modalID, itemName, actionURL) {
 
     modal.show();
 }
+
+
+function updateCloudSyncIcon() {
+    getData("/api/sync_status").then((data) => {
+      if (data.is_running) {
+        document.getElementById("sync-icon").classList.remove("d-none");
+      }
+      else {
+        document.getElementById("sync-icon").classList.add("d-none");
+      }
+    });
+}
+
+
+async function getData(url) {
+    const options = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }
+
+    const response = await fetch(url, options);
+
+    return response.json();
+}

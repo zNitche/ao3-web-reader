@@ -43,6 +43,14 @@ class ProcessesManager(AppManagerBase):
 
         return process_data
 
+    def set_background_process_data(self, process_name, data):
+        self.redis_manager.set_value(process_name, data)
+
+    def get_background_process_data(self, process_name):
+        process_data = self.redis_manager.get_value(process_name)
+
+        return process_data
+
     def remove_process_data(self, timestamp):
         processes_timestamps = self.get_processes_timestamps()
 

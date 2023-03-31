@@ -1,7 +1,7 @@
 from ao3_web_reader.utils import works_utils, db_utils, models_utils
 from ao3_web_reader.app_modules.background_processes.background_process_base import BackgroundProcessBase
 from ao3_web_reader import models
-from ao3_web_reader.consts import UpdateMessagesConsts
+from ao3_web_reader.consts import UpdateMessagesConsts, ProcessesConsts
 from config import Config
 from datetime import datetime
 import time
@@ -11,9 +11,18 @@ class WorksUpdaterProcess(BackgroundProcessBase):
     def __init__(self, app):
         super().__init__(app)
 
+        self.is_sync_running = False
+
     def start_process(self):
         self.process.start()
         self.process_pid = self.process.pid
+
+    def get_process_data(self):
+        process_data = {
+            ProcessesConsts.IS_RUNNING: self.is_sync_running
+        }
+
+        return process_data
 
     def check_if_new_chapter(self, chapter_id, work_chapters):
         status = False if chapter_id in [chapter.chapter_id for chapter in work_chapters] else True
@@ -72,6 +81,9 @@ class WorksUpdaterProcess(BackgroundProcessBase):
     def mainloop(self):
         while True:
             try:
+                self.is_sync_running = True
+                self.set_process_data()
+
                 with db_utils.db_session_scope(self.db_session) as session:
                     users = session.query(models.User).all()
 
@@ -98,5 +110,9 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
             except Exception as e:
                 self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")
+
+            finally:
+                self.is_sync_running = False
+                self.set_process_data()
 
             time.sleep(Config.WORKS_UPDATER_INTERVAL)

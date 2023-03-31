@@ -253,6 +253,10 @@ body {
     gap: 15px 0;
 }
 
+.navbar-title-wrapper {
+    display: flex;
+}
+
 @media (max-width: 576px) {
     .login-container {
         width: 95%;
