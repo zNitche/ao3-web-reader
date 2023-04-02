@@ -27,8 +27,11 @@
                 <a class="navbar-brand navbar-logo" href="{{ url_for('main.home') }}">
                     AO3 Reader
                 </a>
-                <img id="sync-icon" class="d-none" src="{{ url_for('static', filename='icons/cloud_sync_icon.svg') }}"
+                <div id="sync-container" class="d-none">
+                    <img id="sync-icon" src="{{ url_for('static', filename='icons/cloud_sync_icon.svg') }}"
                      alt="sync in progress">
+                    <span id="sync-progress" class="sync-progress"></span>
+                </div>
             </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                     aria-controls="mainNavbar" aria-expanded="false">

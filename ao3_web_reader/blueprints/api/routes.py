@@ -11,5 +11,6 @@ def sync_status():
     sync_process_running = True if sync_process_status and sync_process_status.get(ProcessesConsts.IS_RUNNING) else False
 
     return {
-        "is_running": sync_process_running
+        "is_running": sync_process_running,
+        "progress": sync_process_status.get(ProcessesConsts.PROGRESS) if sync_process_status else 0,
     }

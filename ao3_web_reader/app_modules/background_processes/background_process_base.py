@@ -25,7 +25,7 @@ class BackgroundProcessBase:
     def mainloop(self):
         pass
 
-    def set_process_data(self):
+    def update_process_data(self):
         self.app.processes_manager.set_process_data(self.get_process_name(), self.get_process_data())
 
     def get_process_data(self):

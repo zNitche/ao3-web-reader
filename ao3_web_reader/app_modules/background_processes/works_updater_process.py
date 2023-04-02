@@ -12,6 +12,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
         super().__init__(app)
 
         self.is_sync_running = False
+        self.progress = 0
 
     def start_process(self):
         self.process.start()
@@ -19,7 +20,8 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
     def get_process_data(self):
         process_data = {
-            ProcessesConsts.IS_RUNNING: self.is_sync_running
+            ProcessesConsts.IS_RUNNING: self.is_sync_running,
+            ProcessesConsts.PROGRESS: self.progress,
         }
 
         return process_data
@@ -89,11 +91,15 @@ class WorksUpdaterProcess(BackgroundProcessBase):
     def mainloop(self):
         while True:
             try:
+                processed_works = 0
+
                 self.is_sync_running = True
-                self.set_process_data()
+                self.update_process_data()
 
                 with db_utils.db_session_scope(self.db_session) as session:
                     users = session.query(models.User).all()
+
+                    works_count = sum([len(user.works) for user in users])
 
                     for user in users:
                         works = user.works
@@ -119,11 +125,18 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                                 self.check_chapters_for_removed_ones(chapters_struct, work, session)
                                 self.update_chapters_order_ids(work.chapters)
 
+                            processed_works += 1
+                            self.progress = int(processed_works * 100 / works_count)
+
+                            self.update_process_data()
+
             except Exception as e:
                 self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")
 
             finally:
                 self.is_sync_running = False
-                self.set_process_data()
+                self.update_process_data()
+
+                self.progress = 0
 
             time.sleep(Config.WORKS_UPDATER_INTERVAL)

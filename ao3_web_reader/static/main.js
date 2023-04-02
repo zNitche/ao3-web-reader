@@ -21,10 +21,11 @@ function showRemoveModal(modalID, itemName, actionURL) {
 function updateCloudSyncIcon() {
     getData("/api/sync_status").then((data) => {
       if (data.is_running) {
-        document.getElementById("sync-icon").classList.remove("d-none");
+        document.getElementById("sync-container").classList.remove("d-none");
+        document.getElementById("sync-progress").innerHTML = data.progress + "%";
       }
       else {
-        document.getElementById("sync-icon").classList.add("d-none");
+        document.getElementById("sync-container").classList.add("d-none");
       }
     });
 }
