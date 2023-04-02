@@ -25,7 +25,7 @@ class AddWorkForm(FormBase):
 
     def validate_work_id(self, work_id):
         if not works_utils.check_if_work_is_accessible(work_id.data):
-            raise ValidationError(MessagesConsts.WORK_DOESNT_EXIST)
+            raise ValidationError(MessagesConsts.CANT_ACCESS_WORK)
 
         work = models.Work.query.filter_by(work_id=work_id.data, owner_id=current_user.id).first()
 

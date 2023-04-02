@@ -11,7 +11,7 @@ class MessagesConsts:
     LOGIN_ERROR = "Wrong username or password"
     SCRAPING_PROCESS_STARTED = "Started work scraping"
     SCRAPING_PROCESS_FOR_WORK_ID_RUNNING = "Scraper process for {work_id} is running"
-    WORK_DOESNT_EXIST = "Work doesn't exist"
+    CANT_ACCESS_WORK = "Can't access work"
     WORK_ALREADY_ADDED = "Work already added"
     WORK_REMOVED = "Work removed successfully"
     TAG_ALREADY_ADDED = "Tag already added"

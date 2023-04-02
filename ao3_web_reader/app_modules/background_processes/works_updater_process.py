@@ -62,7 +62,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
     def update_works(self, works):
         for work in works:
-            if not works_utils.check_if_work_is_accessible(work.work_id):
+            if not works_utils.check_if_work_exists(work.work_id):
                 work.was_removed = True
 
             time.sleep(Config.WORKS_EXIST_CHECK_JOBS_DELAY)
