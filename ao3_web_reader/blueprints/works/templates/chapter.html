@@ -31,7 +31,7 @@
                 </button>
             </form>
         </div>
-        {% if chapter.get_next_chapter() or chapter.get_prev_chapter() %}
+        {% if chapter.get_next_chapter() or chapter.get_prev_chapter() and not chapter.was_removed %}
             <div class="chapter-controls-wrapper">
                 {% if chapter.get_prev_chapter() %}
                     <a class="btn btn-secondary" href="{{ url_for('works.chapter', work_id=chapter.work.work_id, chapter_id=chapter.get_prev_chapter().chapter_id) }}">

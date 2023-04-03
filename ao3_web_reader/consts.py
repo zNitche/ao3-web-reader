@@ -28,9 +28,9 @@ class PaginationConsts:
 
 
 class AO3Consts:
-    AO3_URL = "https://archiveofourown.org/"
-    AO3_WORKS_URL = AO3_URL + "works/{work_id}"
-    AO3_WORKS_NAVIGATION_URL = AO3_URL + "works/{work_id}/navigate"
+    AO3_URL = "https://archiveofourown.org"
+    AO3_WORKS_URL = AO3_URL + "/works/{work_id}"
+    AO3_WORKS_NAVIGATION_URL = AO3_URL + "/works/{work_id}/navigate"
 
 
 class ProcessesConsts:
