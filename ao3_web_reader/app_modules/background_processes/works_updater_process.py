@@ -45,13 +45,14 @@ class WorksUpdaterProcess(BackgroundProcessBase):
         work_chapters_ids = [chapter.chapter_id for chapter in work.get_not_removed_chapters()]
         source_chapters_ids = [chapter.get(ChaptersConsts.ID) for chapter in chapters_struct]
 
-        removed_chapters_ids = list(set(work_chapters_ids).difference(source_chapters_ids))
+        if all(work_chapters_ids) and all(source_chapters_ids):
+            removed_chapters_ids = list(set(work_chapters_ids).difference(source_chapters_ids))
 
-        for chapter_id in removed_chapters_ids:
-            chapter = self.get_chapter_by_id(work.chapters, chapter_id)
+            for chapter_id in removed_chapters_ids:
+                chapter = self.get_chapter_by_id(work.chapters, chapter_id)
 
-            if chapter:
-                self.mark_chapter_as_removed(work, chapter, session)
+                if chapter:
+                    self.mark_chapter_as_removed(work, chapter, session)
 
     def update_chapters_order_ids(self, chapters):
         not_removed_chapters = [chapter for chapter in chapters if not chapter.was_removed]
