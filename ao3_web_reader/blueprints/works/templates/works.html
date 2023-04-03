@@ -6,7 +6,7 @@
         {% if works|length > 0 %}
             {% for work in works %}
                <div class="content-item">
-                   <div class="delete-icon-wrapper">
+                   <div class="content-item-side-icon-wrapper">
                        <button type="button" class="btn" onclick="showRemoveModal('removeWorkModal',
                        '{{ work.name }}',
                        '{{ url_for('works.remove_work', work_id=work.work_id) }}',);">
@@ -28,6 +28,14 @@
                             <span class="content-item-name">Chapters:</span> {{ work.chapters|length }}
                         </div>
                         <div>
+                            <span class="content-item-name">Completed chapters:</span> {{ work.get_completed_chapters()|length }}/{{ work.chapters|length }}
+                        </div>
+                        {% if work.get_removed_chapters()|length > 0 %}
+                            <div>
+                                <span class="content-item-name">Removed chapters:</span> {{ work.get_removed_chapters()|length }}
+                            </div>
+                        {% endif %}
+                        <div>
                             <span class="content-item-name">Added:</span> {{ work.date.isoformat(' ', 'seconds') }}
                         </div>
                         <div>
@@ -38,6 +46,20 @@
                         <a href="{{ url_for('works.download_work', work_id=work.work_id) }}">
                             <img src="{{ url_for('static', filename='icons/download_icon.svg') }}" alt="download work">
                         </a>
+                        {% if not work.all_chapters_completed() %}
+                            <button type="button" class="btn" onclick="showChaptersCompletionModal('chaptersCompletionModal',
+                               'Do you want to mark all chapters as completed ?',
+                               '{{ url_for('works.mark_chapters_as_completed', work_id=work.work_id) }}',);">
+                                    <img src="{{ url_for('static', filename='icons/done_all_icon.svg') }}" alt="toggle all chapters completion">
+                            </button>
+                        {% endif %}
+                        {% if work.all_chapters_completed() %}
+                            <button type="button" class="btn" onclick="showChaptersCompletionModal('chaptersCompletionModal',
+                               'Do you want to mark all chapters as incomplete ?',
+                               '{{ url_for('works.mark_chapters_as_incomplete', work_id=work.work_id) }}',);">
+                                    <img src="{{ url_for('static', filename='icons/remove_done_icon.svg') }}" alt="remove all chapters completion">
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -79,6 +101,26 @@
                         <button type="submit" class="btn btn-danger">
                             Remove
                         </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- chaptersCompletionModal -->
+    <div class="modal fade" id="chaptersCompletionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                        <h5 class="modal-title">Toggle chapters completion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="chapter-completion-modal-text"></span>
+                </div>
+                <div class="modal-footer">
+                    <form action="" id="chapters-completion-form" method="POST">
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </form>
                 </div>
             </div>

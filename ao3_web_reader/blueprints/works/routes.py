@@ -102,6 +102,40 @@ def remove_work(work_id):
         abort(404)
 
 
+@works.route("/<work_id>/mark_chapters_as_completed", methods=["POST"])
+@flask_login.login_required
+def mark_chapters_as_completed(work_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        for chapter in user_work.chapters:
+            chapter.completed = True
+            db_utils.commit_session()
+
+        flash(MessagesConsts.CHAPTERS_MARKED_AS_COMPLETED.format(work_name=user_work.name), FlashConsts.SUCCESS)
+        return redirect(url_for("works.all_works", tag_name=user_work.tag.name))
+
+    else:
+        abort(404)
+
+
+@works.route("/<work_id>/mark_chapters_as_incomplete", methods=["POST"])
+@flask_login.login_required
+def mark_chapters_as_incomplete(work_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        for chapter in user_work.chapters:
+            chapter.completed = False
+            db_utils.commit_session()
+
+        flash(MessagesConsts.CHAPTERS_MARKED_AS_INCOMPLETE.format(work_name=user_work.name), FlashConsts.SUCCESS)
+        return redirect(url_for("works.all_works", tag_name=user_work.tag.name))
+
+    else:
+        abort(404)
+
+
 @works.route("/<work_id>/download", methods=["GET"])
 @flask_login.login_required
 def download_work(work_id):
@@ -129,8 +163,8 @@ def chapters(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
-        available_chapters = [chapter for chapter in user_work.chapters if not chapter.was_removed]
-        removed_chapters = [chapter for chapter in user_work.chapters if chapter.was_removed]
+        available_chapters = user_work.get_not_removed_chapters()
+        removed_chapters = user_work.get_removed_chapters()
 
         return render_template("chapters.html", work=user_work, available_chapters=available_chapters,
                                removed_chapters=removed_chapters)
@@ -149,5 +183,22 @@ def chapter(work_id, chapter_id):
 
         if work_chapter:
             return render_template("chapter.html", chapter=work_chapter)
+
+    abort(404)
+
+
+@works.route("/<work_id>/chapters/<chapter_id>/toggle_completed_state", methods=["POST"])
+@flask_login.login_required
+def chapter_toggle_completed_state(work_id, chapter_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        work_chapter = models.Chapter.query.filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
+
+        if work_chapter:
+            work_chapter.completed = False if work_chapter.completed else True
+            db_utils.commit_session()
+
+            return redirect(url_for("works.chapter", chapter_id=chapter_id, work_id=work_id))
 
     abort(404)

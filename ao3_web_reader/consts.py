@@ -18,6 +18,8 @@ class MessagesConsts:
     ADDED_TAG = "New tag has been added: {tag_name}"
     TAG_DOESNT_EXIST = "Tag doesn't exist"
     TAG_REMOVED = "Tag removed"
+    CHAPTERS_MARKED_AS_COMPLETED = "All chapters of '{work_name}' marked as completed"
+    CHAPTERS_MARKED_AS_INCOMPLETE = "All chapters of '{work_name}' marked as incomplete"
 
 
 class PaginationConsts:

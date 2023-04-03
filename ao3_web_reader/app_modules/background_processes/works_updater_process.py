@@ -42,7 +42,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
         return result_chapter
 
     def check_chapters_for_removed_ones(self, chapters_struct, work, session):
-        work_chapters_ids = [chapter.chapter_id for chapter in work.chapters if not chapter.was_removed]
+        work_chapters_ids = [chapter.chapter_id for chapter in work.get_not_removed_chapters()]
         source_chapters_ids = [chapter.get(ChaptersConsts.ID) for chapter in chapters_struct]
 
         removed_chapters_ids = list(set(work_chapters_ids).difference(source_chapters_ids))

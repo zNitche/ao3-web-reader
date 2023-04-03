@@ -18,6 +18,16 @@ function showRemoveModal(modalID, itemName, actionURL) {
 }
 
 
+function showChaptersCompletionModal(modalID, text, actionURL) {
+    let modal = new bootstrap.Modal(document.getElementById(modalID));
+
+    document.getElementById("chapter-completion-modal-text").innerHTML = text;
+    document.getElementById("chapters-completion-form").action = actionURL;
+
+    modal.show();
+}
+
+
 function updateCloudSyncIcon() {
     getData("/api/sync_status").then((data) => {
       if (data.is_running) {

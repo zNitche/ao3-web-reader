@@ -45,6 +45,20 @@ class Work(db.Model):
     chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
     update_messages = db.relationship("UpdateMessage", backref="work", cascade="all, delete-orphan", lazy=True)
 
+    def get_not_removed_chapters(self):
+        return [chapter for chapter in self.chapters if not chapter.was_removed]
+
+    def get_removed_chapters(self):
+        return [chapter for chapter in self.chapters if chapter.was_removed]
+
+    def get_completed_chapters(self):
+        return [chapter for chapter in self.chapters if chapter.completed]
+
+    def all_chapters_completed(self):
+        chapters_completion = [chapter.completed for chapter in self.chapters]
+
+        return all(chapters_completion)
+
 
 class Chapter(db.Model):
     __tablename__ = "chapters"
@@ -59,6 +73,7 @@ class Chapter(db.Model):
     text = db.Column(db.String, unique=False, nullable=False)
 
     was_removed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
+    completed = db.Column(db.Boolean, unique=False, nullable=True, default=False)
 
     work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
 

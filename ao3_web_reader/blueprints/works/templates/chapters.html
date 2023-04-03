@@ -20,6 +20,13 @@
                         {% for chapter in available_chapters|sort(attribute="order_id") %}
                             <a class="chapter-nav-bar" href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
                                 <div class="content-item">
+                                    <div class="content-item-side-icon-wrapper">
+                                        {% if chapter.completed %}
+                                            <img src="{{ url_for('static', filename='icons/done_icon.svg') }}" alt="completed">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='icons/not_done_icon.svg') }}" alt="incomplete">
+                                        {% endif %}
+                                    </div>
                                     <div class="item-title">
                                         {{ chapter.title }}
                                     </div>

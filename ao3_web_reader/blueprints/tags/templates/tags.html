@@ -6,7 +6,7 @@
         {% if tags|length > 0 %}
             {% for tag in tags %}
                <div class="content-item">
-                   <div class="delete-icon-wrapper">
+                   <div class="content-item-side-icon-wrapper">
                        <button type="button" class="btn" onclick="showRemoveModal('removeTagModal',
                        '{{ tag.name }}',
                        '{{ url_for('tags.remove_tag', tag_id=tag.id) }}',);">
