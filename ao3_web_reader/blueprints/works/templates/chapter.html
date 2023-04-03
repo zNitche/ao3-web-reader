@@ -3,6 +3,13 @@
 
 <div class="main-content-wrapper">
     <div class="main-content-container">
+        <div class="chapter-work-name-wrapper">
+            <a href="{{ url_for('works.chapters', work_id=chapter.work.work_id) }}">
+                <h2>
+                    {{ chapter.work.name }}
+                </h2>
+            </a>
+        </div>
         <div class="chapter-title-wrapper">
             <h3>{{ chapter.title }}</h3>
         </div>

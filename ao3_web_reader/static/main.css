@@ -270,6 +270,14 @@ body {
 
 }
 
+.chapter-work-name-wrapper {
+    margin-bottom: 10px;
+}
+
+.chapter-work-name-wrapper a {
+    color: #fff
+}
+
 @media (max-width: 576px) {
     .login-container {
         width: 95%;
