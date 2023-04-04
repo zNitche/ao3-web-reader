@@ -113,18 +113,19 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                                 chapters_struct = works_utils.get_chapters_struct(work.work_id)
 
-                                for chapter_struct in chapters_struct:
-                                    if self.check_if_new_chapter(chapter_struct.get(ChaptersConsts.ID),
-                                                                 work.chapters):
+                                if len(chapters_struct) > 0:
+                                    for chapter_struct in chapters_struct:
+                                        if self.check_if_new_chapter(chapter_struct.get(ChaptersConsts.ID),
+                                                                     work.chapters):
 
-                                        chapter_struct_data = works_utils.get_chapter_data_struct(chapter_struct)
-                                        new_chapter = models_utils.create_chapter_model(chapter_struct_data)
+                                            chapter_struct_data = works_utils.get_chapter_data_struct(chapter_struct)
+                                            new_chapter = models_utils.create_chapter_model(chapter_struct_data)
 
 
-                                        self.add_chapter(work, new_chapter, session)
+                                            self.add_chapter(work, new_chapter, session)
 
-                                self.check_chapters_for_removed_ones(chapters_struct, work, session)
-                                self.update_chapters_order_ids(work.chapters)
+                                    self.check_chapters_for_removed_ones(chapters_struct, work, session)
+                                    self.update_chapters_order_ids(work.chapters)
 
                             processed_works += 1
                             self.progress = int(processed_works * 100 / works_count)

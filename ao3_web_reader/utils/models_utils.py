@@ -19,7 +19,7 @@ def create_chapter_model(chapter_data):
     chapter_date = chapter_data[ChaptersConsts.DATE]
 
     chapter = models.Chapter(title=title, chapter_id=chapter_id, text="\n".join(content),
-                             order_id=order_id, date=chapter_date)
+                             order_id=order_id, date=chapter_date, completed=False)
 
     return chapter
 
