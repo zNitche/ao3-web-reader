@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app, send_file
+from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app, send_file, make_response
 import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, ProcessesConsts, PaginationConsts
@@ -199,6 +199,6 @@ def chapter_toggle_completed_state(work_id, chapter_id):
             work_chapter.completed = False if work_chapter.completed else True
             db_utils.commit_session()
 
-            return redirect(url_for("works.chapter", chapter_id=chapter_id, work_id=work_id))
+            return make_response({}, 200)
 
     abort(404)

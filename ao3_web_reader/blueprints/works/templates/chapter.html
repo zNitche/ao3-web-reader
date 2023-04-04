@@ -21,15 +21,12 @@
             {% endfor %}
         </div>
         <div class="chapter-completion-wrapper">
-            <form action="{{ url_for('works.chapter_toggle_completed_state', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id) }}" method="POST">
-                <button type="submit" class="btn btn-primary chapter-completion-button">
-                    {% if chapter.completed %}
-                        Mark as incomplete
-                    {% else %}
-                        Mark as completed
-                    {% endif %}
-                </button>
-            </form>
+            <button id="toggle-chapter-completion-button" type="button"
+                    onclick="toggleChapterCompletion('Mark as completed', 'Mark as incomplete', '{{ url_for('works.chapter_toggle_completed_state', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id) }}');"
+                    class="btn btn-primary chapter-completion-button">
+
+                {{ "Mark as incomplete" if chapter.completed else "Mark as completed" }}
+            </button>
         </div>
         {% if chapter.get_next_chapter() or chapter.get_prev_chapter() and not chapter.was_removed %}
             <div class="chapter-controls-wrapper">
