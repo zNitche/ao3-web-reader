@@ -48,15 +48,15 @@
                         </a>
                         {% if not work.all_chapters_completed() %}
                             <button type="button" class="btn" onclick="showChaptersCompletionModal('chaptersCompletionModal',
-                               'Do you want to mark all chapters as completed ?',
-                               '{{ url_for('works.mark_chapters_as_completed', work_id=work.work_id) }}',);">
+                               'Do you want to mark all chapters of {{ work.name }} as completed ?',
+                               '{{ url_for('works.mark_chapters_as_completed', work_id=work.work_id, page_id=works_pagination.page) }}',);">
                                     <img src="{{ url_for('static', filename='icons/done_all_icon.svg') }}" alt="toggle all chapters completion">
                             </button>
                         {% endif %}
                         {% if work.all_chapters_completed() %}
                             <button type="button" class="btn" onclick="showChaptersCompletionModal('chaptersCompletionModal',
-                               'Do you want to mark all chapters as incomplete ?',
-                               '{{ url_for('works.mark_chapters_as_incomplete', work_id=work.work_id) }}',);">
+                               'Do you want to mark all chapters of {{ work.name }} as incomplete ?',
+                               '{{ url_for('works.mark_chapters_as_incomplete', work_id=work.work_id, page_id=works_pagination.page) }}',);">
                                     <img src="{{ url_for('static', filename='icons/remove_done_icon.svg') }}" alt="remove all chapters completion">
                             </button>
                         {% endif %}

@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, flash, abort, redirect, url_for, current_app, send_file, make_response
+from flask import Blueprint, render_template, flash, abort, redirect,\
+    url_for, current_app, send_file, make_response, request
 import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, ProcessesConsts, PaginationConsts
@@ -112,8 +113,10 @@ def mark_chapters_as_completed(work_id):
             chapter.completed = True
             db_utils.commit_session()
 
+        page_id = request.args.get("page_id")
+
         flash(MessagesConsts.CHAPTERS_MARKED_AS_COMPLETED.format(work_name=user_work.name), FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=user_work.tag.name))
+        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
     else:
         abort(404)
@@ -129,8 +132,10 @@ def mark_chapters_as_incomplete(work_id):
             chapter.completed = False
             db_utils.commit_session()
 
+        page_id = request.args.get("page_id")
+
         flash(MessagesConsts.CHAPTERS_MARKED_AS_INCOMPLETE.format(work_name=user_work.name), FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=user_work.tag.name))
+        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
     else:
         abort(404)
