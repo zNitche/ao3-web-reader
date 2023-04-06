@@ -21,8 +21,13 @@ def all_works(tag_name, page_id):
     tag = models.Tag.query.filter_by(owner_id=user_id, name=tag_name).first()
 
     if tag:
-        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user_id, was_removed=False).order_by(
-            models.Work.last_updated.desc())
+        search_string = request.args.get("search") if request.args.get("search") is not None else ""
+
+        works_query = models.Work.query.filter(models.Work.name.contains(search_string),
+                   models.Work.tag_id == tag.id,
+                   models.Work.owner_id == user_id,
+                   models.Work.was_removed == False).\
+            order_by(models.Work.last_updated.desc())
 
         works_pagination = works_query.paginate(page=page_id, per_page=PaginationConsts.WORKS_PER_PAGE)
 

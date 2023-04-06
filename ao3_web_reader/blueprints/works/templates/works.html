@@ -4,6 +4,18 @@
 <div class="main-content-wrapper">
     <div class="main-content-container">
         {% if works|length > 0 %}
+            <div class="search-bar-wrapper mb-2">
+                <form action="{{ url_for('works.all_works', tag_name=tag.name) }}" method="GET">
+                    <div class="input-group">
+                      <input type="text" class="form-control" name="search" placeholder="work name">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <img src="{{ url_for('static', filename='icons/search_icon.svg') }}" alt="search">
+                        </button>
+                      </div>
+                    </div>
+                </form>
+            </div>
             {% for work in works %}
                <div class="content-item">
                    <div class="content-item-side-icon-wrapper">
