@@ -89,7 +89,8 @@ def get_work_name(work_id, work_soup=None):
 def get_work_description(work_id, work_soup=None):
     work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
-    description_wrapper = work_soup.find("blockquote", class_="userstuff")
+    description_wrapper_container = work_soup.find("div", class_="summary module")
+    description_wrapper = description_wrapper_container.find("blockquote", class_="userstuff")
     raw_description = description_wrapper.text
 
     return raw_description
