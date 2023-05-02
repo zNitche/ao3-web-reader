@@ -17,26 +17,12 @@
     </div>
 
     <div class="main-content-container">
-        {% if running_processes|length > 0 %}
-            <div class="running-processes-wrapper">
-                <div class="running-processes-title">
-                    Running Processes
-                </div>
-                <div class="running-processes-container">
-                    {% for process_data in running_processes %}
-                        <div class="running-process-container">
-                            <div class="running-process-name">
-                                {{ process_data['work_title'] }}
-                            </div>
-                            <div class="running-process-progress">
-                                {{ process_data['progress'] }}%
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
+        <div id="scraper-processes-container" class="scraper-processes-container"></div>
     </div>
 </div>
+<script src="{{ url_for('static', filename='js/scraper_processes.js') }}"></script>
+<script>
+    setInterval(renderRunningScraperProcesses, 1000);
+</script>
 
 {% endblock %}

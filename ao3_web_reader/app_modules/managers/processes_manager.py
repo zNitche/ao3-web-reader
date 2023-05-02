@@ -32,6 +32,12 @@ class ProcessesManager(AppManagerBase):
 
         return processes_data
 
+    def get_processes_data_for_user(self, process_type, user_id):
+        all_processes_data = self.get_processes_data(process_type)
+        processes_data = [data for data in all_processes_data if data.get(ProcessesConsts.OWNER_ID) == user_id]
+
+        return processes_data
+
     def set_process_data(self, timestamp, data):
         self.redis_manager.set_value(timestamp, data)
 

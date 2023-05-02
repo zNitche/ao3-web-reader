@@ -287,6 +287,10 @@ body {
     width: 100%;
 }
 
+.scraper-processes-container {
+    width: 100%;
+}
+
 @media (max-width: 576px) {
     .login-container {
         width: 95%;

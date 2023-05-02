@@ -68,14 +68,15 @@ def add_work():
     tags = models.Tag.query.filter_by(owner_id=flask_login.current_user.id).all()
     add_work_form.tag_name.choices = [tag.name for tag in tags]
 
-    running_processes = current_app.processes_manager.get_processes_data("ScraperProcess")
-
     if add_work_form.validate_on_submit():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
 
+        running_processes = \
+            current_app.processes_manager.get_processes_data_for_user("ScraperProcess", flask_login.current_user.id)
+
         running_processes_with_same_work_id = \
-            [process for process in running_processes if process[ProcessesConsts.WORK_ID] == work_id]
+            [process for process in running_processes if process.get(ProcessesConsts.WORK_ID) == work_id]
 
         if len(running_processes_with_same_work_id) == 0:
             ScraperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
@@ -87,9 +88,7 @@ def add_work():
 
         return redirect(url_for("works.add_work"))
 
-    return render_template("add_work.html",
-                           add_work_form=add_work_form,
-                           running_processes=running_processes)
+    return render_template("add_work.html", add_work_form=add_work_form)
 
 
 @works.route("/<work_id>/management/remove", methods=["POST"])
