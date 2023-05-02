@@ -73,12 +73,11 @@ def add_work():
         tag_name = add_work_form.tag_name.data
 
         running_processes = \
-            current_app.processes_manager.get_processes_data_for_user("ScraperProcess", flask_login.current_user.id)
+            current_app.processes_manager.get_processes_data_for_user_and_work("ScraperProcess",
+                                                                               flask_login.current_user.id,
+                                                                               work_id)
 
-        running_processes_with_same_work_id = \
-            [process for process in running_processes if process.get(ProcessesConsts.WORK_ID) == work_id]
-
-        if len(running_processes_with_same_work_id) == 0:
+        if len(running_processes) == 0:
             ScraperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
 
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
