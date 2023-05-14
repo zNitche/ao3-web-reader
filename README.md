@@ -9,6 +9,10 @@ AO3 web reader / scraper app created using Flask, SQLite, Redis and Bootstrap, s
 
 ---
 
+Django reimplementation [here](https://github.com/zNitche/ao3-web-reader-django)
+
+---
+
 ### Production Setup
 1. Clone this repo.
 2. Generate `.env` config file and change config values (`DB_PATH` and `LOGS_PATH`).
