@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from ao3_web_reader.models import Work
 from ao3_web_reader.utils import works_utils
-from migrations_stripts import common_utils
+from migration_scripts import common_utils
 
 
 def main():

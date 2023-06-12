@@ -6,7 +6,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 import argparse
-from migrations_stripts import common_utils
+from migration_scripts import common_utils
 
 
 def main(args):
