@@ -72,6 +72,19 @@
                                     <img src="{{ url_for('static', filename='icons/remove_done_icon.svg') }}" alt="remove all chapters completion">
                             </button>
                         {% endif %}
+                        {% if not work.favorite %}
+                            <button type="button" class="btn" onclick="showWorkFavoriteToggleModal('worksFavoriteToggleModal',
+                               'Do you want to add {{ work.name }} to favorites ?',
+                               '{{ url_for('works.toggle_work_favorite', work_id=work.work_id, page_id=works_pagination.page) }}',);">
+                                    <img src="{{ url_for('static', filename='icons/favorite.svg') }}">
+                            </button>
+                        {% else %}
+                             <button type="button" class="btn" onclick="showWorkFavoriteToggleModal('worksFavoriteToggleModal',
+                                  'Do you want to remove {{ work.name }} from favorites ?',
+                                  '{{ url_for('works.toggle_work_favorite', work_id=work.work_id, page_id=works_pagination.page) }}',);">
+                                 <img src="{{ url_for('static', filename='icons/favorite_filled.svg') }}">
+                             </button>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -132,6 +145,26 @@
                 </div>
                 <div class="modal-footer">
                     <form action="" id="chapters-completion-form" method="POST">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WorkFavoriteToggleModal -->
+    <div class="modal fade" id="worksFavoriteToggleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                        <h5 class="modal-title">Add/Remove work from favorites</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="work-favorite-modal-text"></span>
+                </div>
+                <div class="modal-footer">
+                    <form action="" id="work-favorite-form" method="POST">
                         <button type="submit" class="btn btn-primary">Save</button>
                     </form>
                 </div>

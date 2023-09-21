@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, flash, abort, redirect,\
     url_for, current_app, send_file, make_response, request
 import flask_login
 from ao3_web_reader.app_modules import forms
-from ao3_web_reader.consts import FlashConsts, MessagesConsts, ProcessesConsts, PaginationConsts
+from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader.utils import db_utils, files_utils
 from ao3_web_reader import models
 from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
@@ -22,12 +22,16 @@ def all_works(tag_name, page_id):
 
     if tag:
         search_string = request.args.get("search") if request.args.get("search") is not None else ""
+        only_favorites = int(request.args.get("only_favorites")) if request.args.get("only_favorites") is not None else False
 
         works_query = models.Work.query.filter(models.Work.name.contains(search_string),
                    models.Work.tag_id == tag.id,
                    models.Work.owner_id == user_id,
                    models.Work.was_removed == False).\
             order_by(models.Work.last_updated.desc())
+
+        if only_favorites:
+            works_query = works_query.filter(models.Work.favorite == True)
 
         works_pagination = works_query.paginate(page=page_id, per_page=PaginationConsts.WORKS_PER_PAGE)
 
@@ -119,6 +123,27 @@ def mark_chapters_as_completed(work_id):
         page_id = request.args.get("page_id")
 
         flash(MessagesConsts.CHAPTERS_MARKED_AS_COMPLETED.format(work_name=user_work.name), FlashConsts.SUCCESS)
+        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
+
+    else:
+        abort(404)
+
+
+@works.route("/<work_id>/toggle_favorite", methods=["POST"])
+@flask_login.login_required
+def toggle_work_favorite(work_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        user_work.favorite = not user_work.favorite
+        db_utils.commit_session()
+
+        page_id = request.args.get("page_id")
+
+        update_message = MessagesConsts.WORK_ADDED_TO_FAVORITES if user_work.favorite \
+            else MessagesConsts.WORK_REMOVED_FROM_FAVORITES
+
+        flash(update_message.format(work_name=user_work.name), FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
     else:

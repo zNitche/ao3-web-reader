@@ -28,6 +28,16 @@ function showChaptersCompletionModal(modalID, text, actionURL) {
 }
 
 
+function showWorkFavoriteToggleModal(modalID, text, actionURL) {
+    let modal = new bootstrap.Modal(document.getElementById(modalID));
+
+    document.getElementById("work-favorite-modal-text").innerHTML = text;
+    document.getElementById("work-favorite-form").action = actionURL;
+
+    modal.show();
+}
+
+
 function updateCloudSyncIcon() {
     getData("/api/sync_status").then((data) => {
       if (data.is_running) {

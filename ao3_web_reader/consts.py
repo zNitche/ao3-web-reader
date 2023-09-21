@@ -20,6 +20,8 @@ class MessagesConsts:
     TAG_REMOVED = "Tag removed"
     CHAPTERS_MARKED_AS_COMPLETED = "All chapters of '{work_name}' marked as completed"
     CHAPTERS_MARKED_AS_INCOMPLETE = "All chapters of '{work_name}' marked as incomplete"
+    WORK_ADDED_TO_FAVORITES = "{work_name} added to favorites"
+    WORK_REMOVED_FROM_FAVORITES = "{work_name} removed from favorites"
 
 
 class PaginationConsts:

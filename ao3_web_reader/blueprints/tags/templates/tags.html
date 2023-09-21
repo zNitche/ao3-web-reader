@@ -32,6 +32,9 @@
                         <a href="{{ url_for('tags.download_tag', tag_id=tag.id) }}">
                             <img src="{{ url_for('static', filename='icons/download_icon.svg') }}" alt="download works">
                         </a>
+                        <a href="{{ url_for('works.all_works', tag_name=tag.name, only_favorites=1) }}">
+                            <img src="{{ url_for('static', filename='icons/favorite.svg') }}" alt="favorites">
+                        </a>
                     </div>
                 </div>
             {% endfor %}

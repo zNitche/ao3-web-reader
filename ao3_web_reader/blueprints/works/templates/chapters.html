@@ -4,9 +4,13 @@
 <div class="main-content-wrapper">
     <div class="main-content-container">
         <div class="work-header">
-            <h2>
-                {{ work.name }}
-            </h2>
+            <div class="work-header-title">
+                <h2>{{ work.name }}</h2>
+                {% if work.favorite %}
+                    <img class="work-header-title-favorite-img"
+                         src="{{ url_for('static', filename='icons/favorite_filled.svg') }}" alt="favorite">
+                {% endif %}
+            </div>
             {% if work.description %}
                 <div class="work-description">
                     {{ work.description }}

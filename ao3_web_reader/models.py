@@ -14,6 +14,9 @@ class User(db.Model, UserMixin):
     tags = db.relationship("Tag", backref="owner", cascade="all, delete-orphan", lazy=True)
     works = db.relationship("Work", backref="owner", cascade="all, delete-orphan", lazy=True)
 
+    def get_favorite_works(self):
+        return [work for work in self.works if work.favorite]
+
 
 class Tag(db.Model):
     __tablename__ = "tags"
@@ -40,6 +43,7 @@ class Work(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
+    favorite = db.Column(db.Boolean, nullable=True, default=False)
     was_removed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
 
     chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
