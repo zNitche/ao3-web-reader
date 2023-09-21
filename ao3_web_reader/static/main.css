@@ -56,6 +56,16 @@ body {
     gap: 10px 0;
 }
 
+.work-header-title {
+    width: 100%;
+    gap: 10px;
+    display: flex;
+}
+
+.work-header-title-favorite-img {
+    margin-left: auto;
+}
+
 .work-header {
     display: flex;
     flex-direction: column;
@@ -77,6 +87,10 @@ body {
     gap: 0 10px;
     width: 100%;
     justify-content: center;
+}
+
+.chapter-controls-button {
+    width: 100%;
 }
 
 .content-item {
@@ -263,11 +277,13 @@ body {
 }
 
 .chapter-completion-wrapper {
-
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .chapter-completion-button {
-
+    width: 100%;
 }
 
 .chapter-work-name-wrapper {
@@ -302,11 +318,6 @@ body {
 
     .nav-item {
         margin: 10px 0;
-    }
-
-    .chapter-controls-wrapper {
-        flex-direction: column !important;
-        gap: 20px 0 !important;
     }
 
     .chapter-completion-button {
