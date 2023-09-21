@@ -6,7 +6,8 @@
         <div class="search-bar-wrapper mb-2">
             <form action="{{ url_for('works.all_works', tag_name=tag.name) }}" method="GET">
                 <div class="input-group">
-                  <input type="text" class="form-control" name="search" placeholder="work name">
+                  <input class="d-none" type="text" name="only_favorites" value="{{ only_favorites }}" />
+                  <input type="text" class="form-control" name="search" placeholder="work name" />
                   <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="submit">
                         <img src="{{ url_for('static', filename='icons/search_icon.svg') }}" alt="search">
@@ -92,14 +93,14 @@
                 <div class="pagination-controls">
                     {% if works_pagination.has_prev %}
                         <a class="pagination-controls-item" href="{{ url_for('works.all_works',
-                         page_id=works_pagination.prev_num, tag_name=tag.name) }}">
+                         page_id=works_pagination.prev_num, tag_name=tag.name, only_favorites=only_favorites) }}">
                             Prev
                         </a>
                     {% endif %}
                     {% if works_pagination.has_next %}
                         <a class="pagination-controls-item {{ 'left-p-controls-item' if not works_pagination.has_prev else '' }}"
                            href="{{ url_for('works.all_works',
-                                 page_id=works_pagination.next_num, tag_name=tag.name) }}">
+                                 page_id=works_pagination.next_num, tag_name=tag.name, only_favorites=only_favorites) }}">
                             Next
                         </a>
                     {% endif %}

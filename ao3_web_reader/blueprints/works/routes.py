@@ -38,7 +38,8 @@ def all_works(tag_name, page_id):
         return render_template("works.html",
                                tag=tag,
                                works_pagination=works_pagination,
-                               works=works_pagination.items)
+                               works=works_pagination.items,
+                               only_favorites=int(only_favorites))
 
     abort(404)
 
