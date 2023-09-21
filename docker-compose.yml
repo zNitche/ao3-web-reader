@@ -10,12 +10,13 @@ services:
     depends_on:
       - redis
     container_name: ao3_web_reader
+    command: /bin/sh -c "/ao3_web_reader/scripts/entrypoint.sh"
     build: .
     restart: unless-stopped
     ports:
       - "8000:8080"
     volumes:
-      - ${DB_PATH}:/AO3WebReader/database
-      - ${LOGS_PATH}:/AO3WebReader/logs
+      - ${DB_PATH}:/ao3_web_reader/database
+      - ${LOGS_PATH}:/ao3_web_reader/logs
     env_file:
       - .env

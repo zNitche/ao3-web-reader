@@ -36,6 +36,11 @@ python3 generate_dotenv.py
 sudo docker compose -f docker-compose-dev.yml up
 ```
 
+### Database Migrations
+```
+python3 migrate.py
+```
+
 ### Accounts Management
 1. Bash into container.
 ```

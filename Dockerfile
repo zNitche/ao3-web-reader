@@ -1,9 +1,9 @@
 FROM python:3.10-slim
 #FROM python:3.10-slim-bullseye for RaspberryPi
 
-COPY . /AO3WebReader
+COPY . /ao3_web_reader
 
-WORKDIR /AO3WebReader
+WORKDIR /ao3_web_reader
 
 RUN apt update && apt -y install nano curl
 
@@ -12,4 +12,4 @@ RUN curl -o ao3_web_reader/static/libs/bootstrap.bundle.min.js  https://cdn.jsde
 
 RUN pip3 install -r requirements.txt
 
-CMD gunicorn -c gunicorn.conf.py app:app --preload
+RUN chmod +x scripts/entrypoint.sh
