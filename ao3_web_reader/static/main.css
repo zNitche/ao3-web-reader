@@ -286,6 +286,11 @@ body {
     width: 100%;
 }
 
+.chapter-update-button {
+    color: #fff !important;
+    width: 100%;
+}
+
 .chapter-work-name-wrapper {
     margin-bottom: 10px;
 }

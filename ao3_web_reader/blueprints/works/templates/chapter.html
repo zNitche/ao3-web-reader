@@ -44,6 +44,16 @@
                 </div>
             {% endif %}
         {% endif %}
+        {% if not chapter.was_removed %}
+            <form action="{{ url_for('works.force_chapter_update', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id) }}"
+                  method="POST" class="w-100">
+                {% if updating_chapter %}
+                    <button class="btn btn-warning chapter-update-button" disabled type="submit">Update Chapter</button>
+                {% else %}
+                    <button class="btn btn-warning chapter-update-button" type="submit">Update Chapter</button>
+                {% endif %}
+            </form>
+        {% endif %}
     </div>
 </div>
 

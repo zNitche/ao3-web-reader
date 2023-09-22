@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, flash, abort, redirect,\
     url_for, current_app, send_file, make_response, request
 import flask_login
 from ao3_web_reader.app_modules import forms
+from ao3_web_reader.app_modules.processes.chapter_updater_process import ChapterUpdaterProcess
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader.utils import db_utils, files_utils
 from ao3_web_reader import models
@@ -93,6 +94,32 @@ def add_work():
         return redirect(url_for("works.add_work"))
 
     return render_template("add_work.html", add_work_form=add_work_form)
+
+
+@works.route("/<work_id>/chapters/<chapter_id>/force_update", methods=["POST"])
+@flask_login.login_required
+def force_chapter_update(work_id, chapter_id):
+    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+
+    if user_work:
+        work_chapter = models.Chapter.query.filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
+
+        running_processes = \
+            current_app.processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
+                                                                               flask_login.current_user.id,
+                                                                               chapter_id)
+
+        if len(running_processes) == 0:
+            ChapterUpdaterProcess(current_app, flask_login.current_user.id, work_id, chapter_id).start_process()
+
+            flash(MessagesConsts.CHAPTER_SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
+
+        if work_chapter:
+            return redirect(url_for("works.chapter",
+                                    work_id=work_id,
+                                    chapter_id=chapter_id))
+
+    abort(404)
 
 
 @works.route("/<work_id>/management/remove", methods=["POST"])
@@ -216,7 +243,13 @@ def chapter(work_id, chapter_id):
         work_chapter = models.Chapter.query.filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
 
         if work_chapter:
-            return render_template("chapter.html", chapter=work_chapter)
+            running_processes = \
+                current_app.processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
+                                                                                      flask_login.current_user.id,
+                                                                                      chapter_id)
+            return render_template("chapter.html",
+                                   chapter=work_chapter,
+                                   updating_chapter=True if len(running_processes) > 0 else False)
 
     abort(404)
 

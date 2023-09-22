@@ -119,3 +119,9 @@ def get_work(work_id, chapters_struct=None, progress_callback=None, delay_betwee
         time.sleep(delay_between_chapters)
 
     return work_data_struct
+
+def get_chapter(work_id, chapter_id):
+    chapter_url = AO3Consts.AO3_CHAPTER_URL.format(chapter_id=chapter_id, work_id=work_id)
+    chapter_content = get_chapter_content(chapter_url)
+
+    return chapter_content
