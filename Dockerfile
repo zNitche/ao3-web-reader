@@ -1,5 +1,6 @@
 FROM python:3.10-slim
-#FROM python:3.10-slim-bullseye for RaspberryPi
+#for RaspberryPi
+#FROM python:3.10-slim-bullseye
 
 COPY . /ao3_web_reader
 
