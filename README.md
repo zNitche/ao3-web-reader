@@ -2,10 +2,12 @@
 
 AO3 web reader / scraper app created using Flask, SQLite, Redis and Bootstrap, supporting:
 - Accounts authentication.
-- Getting works from ao3.
+- Getting works from AO3.
 - Grouping works using tags.
+- Adding works to favorites.
 - Auto-update of added works.
 - Downloading works.
+- Force updating chapters.
 
 ---
 
