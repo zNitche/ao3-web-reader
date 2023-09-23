@@ -22,8 +22,13 @@
                     </div>
                     <div class="item-content-wrapper">
                         <div>
-                            <span class="content-item-name">Works count:</span> {{ tag.works|length }}
+                            <span class="content-item-name">Works:</span> {{ tag.works|length }}
                         </div>
+                        {% if tag.get_favorite_works()|length > 0 %}
+                        <div>
+                            <span class="content-item-name">Favorites:</span> {{ tag.get_favorite_works()|length }}
+                        </div>
+                        {% endif %}
                     </div>
                     <div class="work-management-wrapper">
                         <a href="{{ url_for('works.removed_works', tag_name=tag.name) }}">

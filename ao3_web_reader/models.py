@@ -27,6 +27,9 @@ class Tag(db.Model):
     works = db.relationship("Work", backref="tag", cascade="all, delete-orphan", lazy=True)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
+    def get_favorite_works(self):
+        return [work for work in self.works if work.favorite]
+
 
 class Work(db.Model):
     __tablename__ = "works"
