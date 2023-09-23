@@ -58,7 +58,7 @@ pytest -v tests/
 ```
 
 
-### Migrations Scripts
+### Migrations Scripts (Skip if setting new app)
 Scripts used to keep database data compatible with app new releases
 
 - Fill empty work descriptions:
