@@ -1,10 +1,15 @@
 import flask_login
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, Response
 from ao3_web_reader.consts import ProcessesConsts
 from flask_login import login_required
 
 
 api = Blueprint("api", __name__, template_folder="templates", static_folder="static", url_prefix="/api")
+
+
+@api.route("/healthcheck", methods=["GET"])
+def healthcheck():
+    return Response(status=200)
 
 
 @login_required
