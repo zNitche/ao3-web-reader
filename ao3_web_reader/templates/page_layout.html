@@ -21,35 +21,9 @@
 ] %}
 
 <div class="main-container">
-    <div class="navbar main-navbar navbar-dark sticky-top navbar-expand-sm">
-        <div class="container-fluid">
-            <div class="navbar-title-wrapper">
-                <a class="navbar-brand navbar-logo" href="{{ url_for('main.home') }}">
-                    AO3 Reader
-                </a>
-                <div id="sync-container" class="d-none">
-                    <img id="sync-icon" src="{{ url_for('static', filename='icons/cloud_sync_icon.svg') }}"
-                     alt="sync in progress">
-                    <span id="sync-progress" class="sync-progress"></span>
-                </div>
-            </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                    aria-controls="mainNavbar" aria-expanded="false">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav ms-auto">
-                    {% for menuItem in menuItems %}
-                      <li class="nav-item">
-                          <a href="{{ menuItem['url'] }}">
-                            {{ menuItem['title'] }}
-                          </a>
-                      </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
+    {% with nav_links=menuItems %}
+        {% include "components/navbar.html" %}
+    {% endwith %}
     {% block page_content %}
     {% endblock %}
 </div>
