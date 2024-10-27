@@ -30,7 +30,7 @@ sudo docker compose up -d
 1. Clone this repo.
 2. Generate `.env` config file.
 ```
-python3 generate_dotenv.py
+cp .env.template .env
 ```
 3. Change `REDIS_SERVER_ADDRESS` in `.env` to `127.0.0.1`
 4. Run DEV docker-compose.
