@@ -35,6 +35,7 @@ def register_blueprints(app):
     from ao3_web_reader.blueprints.works.routes import works
     from ao3_web_reader.blueprints.tags.routes import tags
     from ao3_web_reader.blueprints.api.routes import api
+    from ao3_web_reader.blueprints.files.routes import files
 
     app.register_blueprint(main)
     app.register_blueprint(errors)
@@ -42,6 +43,7 @@ def register_blueprints(app):
     app.register_blueprint(works)
     app.register_blueprint(tags)
     app.register_blueprint(api)
+    app.register_blueprint(files)
 
 
 def create_app(config_class=Config, detached=False):
