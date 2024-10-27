@@ -39,7 +39,7 @@ function showWorkFavoriteToggleModal(modalID, text, actionURL) {
 
 
 function updateCloudSyncIcon() {
-    getData("/api/sync_status").then((data) => {
+    getData("/api/sync-status").then((data) => {
       if (data.is_running) {
         document.getElementById("sync-container").classList.remove("d-none");
         document.getElementById("sync-progress").innerHTML = data.progress + "%";
@@ -51,19 +51,11 @@ function updateCloudSyncIcon() {
 }
 
 
-function toggleChapterCompletion(completedMessage, incompleteMessage, toggleULR) {
-    postData(toggleULR);
-
-    let message = "";
+async function toggleChapterCompletion(completedMessage, incompleteMessage, toggleURL) {
+    const res = await postData(toggleURL);
     const completionButton = document.getElementById("toggle-chapter-completion-button");
 
-    if (completionButton.innerHTML.trim() == completedMessage) {
-        message = incompleteMessage;
-    } else {
-        message = completedMessage;
-    }
-
-    completionButton.innerHTML = message;
+    completionButton.innerHTML = res.body.status === true ? completedMessage : incompleteMessage;
 }
 
 
@@ -91,6 +83,7 @@ async function postData(url, data={}) {
         }
 
     const response = await fetch(url, options);
+    const body = await response.json()
 
-    return response.json();
+    return {status: response.status, body};
 }

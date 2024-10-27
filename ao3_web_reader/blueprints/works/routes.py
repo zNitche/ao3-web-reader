@@ -214,8 +214,7 @@ def download_work(work_id):
 
             return send_file(archive_path, as_attachment=True, max_age=0, download_name=archive_name)
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @works.route("/<work_id>/chapters")
@@ -254,7 +253,7 @@ def chapter(work_id, chapter_id):
     abort(404)
 
 
-@works.route("/<work_id>/chapters/<chapter_id>/toggle_completed_state", methods=["POST"])
+@works.route("/<work_id>/chapters/<chapter_id>/toggle-completed-state", methods=["POST"])
 @flask_login.login_required
 def chapter_toggle_completed_state(work_id, chapter_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
@@ -266,6 +265,8 @@ def chapter_toggle_completed_state(work_id, chapter_id):
             work_chapter.completed = False if work_chapter.completed else True
             db_utils.commit_session()
 
-            return make_response({}, 200)
+            return make_response({
+                "status": not work_chapter.completed
+            }, 200)
 
     abort(404)
