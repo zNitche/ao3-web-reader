@@ -1,4 +1,3 @@
-version: "3"
 services:
   redis:
     command: --port 6000
