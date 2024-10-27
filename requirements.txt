@@ -1,11 +1,10 @@
 Flask==3.0.3
 Flask-Login==0.6.3
-Flask-WTF==1.2.1
+Flask-WTF==1.2.2
 Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.0.7
-gunicorn==22.0.0
-requests==2.31.0
+gunicorn==23.0.0
+requests==2.32.3
 beautifulsoup4==4.12.3
 python-dotenv==1.0.1
-redis==5.0.3
-pytest==8.1.1
+redis==5.2.0
