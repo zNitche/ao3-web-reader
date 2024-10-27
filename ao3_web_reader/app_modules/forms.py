@@ -15,8 +15,8 @@ class FormBase(FlaskForm):
 
 
 class LoginForm(FormBase):
-    username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
+    username = StringField("username", validators=[DataRequired()])
+    password = PasswordField("password", validators=[DataRequired()])
 
 
 class AddWorkForm(FormBase):

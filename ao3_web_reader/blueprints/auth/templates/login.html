@@ -2,16 +2,14 @@
 {% block content %}
 
 <div class="main-container">
-    <div>
-        AO3 Reader
-    </div>
+    {% include "components/navbar.html" %}
     <div class="login-container">
         <form action="{{ url_for('auth.login') }}" method="POST">
             {% with form=login_form %}
                 {% include "components/form.html" %}
             {% endwith %}
 
-            <button class="login-btn btn btn-primary" type="submit">
+            <button class="login-btn btn btn-success" type="submit">
                 Login
             </button>
         </form>
