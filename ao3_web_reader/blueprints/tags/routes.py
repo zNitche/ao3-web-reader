@@ -1,11 +1,11 @@
+import tempfile
+import os
 from flask import Blueprint, render_template, flash, redirect, url_for, abort, send_file
 import flask_login
 from ao3_web_reader import models
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.utils import db_utils, files_utils
-import tempfile
-import os
 
 
 tags = Blueprint("tags", __name__, template_folder="templates", static_folder="static", url_prefix="/tags")
@@ -46,8 +46,7 @@ def remove_tag(tag_id):
         flash(MessagesConsts.TAG_REMOVED, FlashConsts.SUCCESS)
         return redirect(url_for("tags.all_tags"))
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @tags.route("/<tag_id>/download", methods=["GET"])
@@ -75,5 +74,4 @@ def download_tag(tag_id):
 
             return send_file(archive_path, as_attachment=True, max_age=0, download_name=archive_name)
 
-    else:
-        abort(404)
+    abort(404)

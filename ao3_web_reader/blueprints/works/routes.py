@@ -1,3 +1,5 @@
+import tempfile
+import os
 from flask import Blueprint, render_template, flash, abort, redirect,\
     url_for, current_app, send_file, make_response, request
 import flask_login
@@ -7,8 +9,6 @@ from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader.utils import db_utils, files_utils
 from ao3_web_reader import models
 from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
-import tempfile
-import os
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -85,7 +85,6 @@ def add_work():
 
         if len(running_processes) == 0:
             ScraperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
-
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         else:
@@ -134,8 +133,7 @@ def remove_work(work_id):
         flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works", tag_name=tag_name))
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @works.route("/<work_id>/mark_chapters_as_completed", methods=["POST"])
@@ -153,8 +151,7 @@ def mark_chapters_as_completed(work_id):
         flash(MessagesConsts.CHAPTERS_MARKED_AS_COMPLETED.format(work_name=user_work.name), FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @works.route("/<work_id>/toggle_favorite", methods=["POST"])
@@ -174,8 +171,7 @@ def toggle_work_favorite(work_id):
         flash(update_message.format(work_name=user_work.name), FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @works.route("/<work_id>/mark_chapters_as_incomplete", methods=["POST"])
@@ -193,8 +189,7 @@ def mark_chapters_as_incomplete(work_id):
         flash(MessagesConsts.CHAPTERS_MARKED_AS_INCOMPLETE.format(work_name=user_work.name), FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @works.route("/<work_id>/download", methods=["GET"])
@@ -229,8 +224,7 @@ def chapters(work_id):
         return render_template("chapters.html", work=user_work, available_chapters=available_chapters,
                                removed_chapters=removed_chapters)
 
-    else:
-        abort(404)
+    abort(404)
 
 
 @works.route("/<work_id>/chapters/<chapter_id>")
