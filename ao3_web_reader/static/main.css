@@ -276,6 +276,12 @@ body {
 
 }
 
+.sync-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 .chapter-completion-wrapper {
     width: 100%;
     display: flex;
