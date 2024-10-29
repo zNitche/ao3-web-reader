@@ -5,11 +5,11 @@ from ao3_web_reader.db import Pagination
 from ao3_web_reader.consts import PaginationConsts
 
 
-main = Blueprint("main", __name__, template_folder="templates", static_folder="static", url_prefix="/")
+core = Blueprint("core", __name__, template_folder="templates", static_folder="static", url_prefix="/")
 
 
-@main.route("/", defaults={"page_id": 1})
-@main.route("/page/<int:page_id>")
+@core.route("/", defaults={"page_id": 1})
+@core.route("/page/<int:page_id>")
 @flask_login.login_required
 def home(page_id):
     user_works_ids = [work.id for work in flask_login.current_user.works]

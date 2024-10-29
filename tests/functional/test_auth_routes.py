@@ -25,7 +25,7 @@ def test_success_login(test_client):
     response = test_client.post(url_for("auth.login"), data=form.data, follow_redirects=True)
 
     assert response.status_code == 200
-    assert response.request.path == url_for("main.home")
+    assert response.request.path == url_for("core.home")
 
 
 def test_logout(test_client, logged_test_user):
@@ -34,7 +34,7 @@ def test_logout(test_client, logged_test_user):
     assert response.status_code == 200
     assert response.request.path == url_for("auth.login")
 
-    response = test_client.get(url_for("main.home"), follow_redirects=True)
+    response = test_client.get(url_for("core.home"), follow_redirects=True)
 
     assert response.status_code == 200
     assert response.request.path == url_for("auth.login")

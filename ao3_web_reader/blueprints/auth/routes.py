@@ -12,7 +12,7 @@ auth = Blueprint("auth", __name__, template_folder="templates", static_folder="s
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if flask_login.current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("core.home"))
 
     login_form = forms.LoginForm()
 
@@ -22,7 +22,7 @@ def login():
         if user and check_password_hash(user.password, login_form.password.data):
             flask_login.login_user(user)
 
-            return redirect(url_for("main.home"))
+            return redirect(url_for("core.home"))
 
         else:
             flash(MessagesConsts.LOGIN_ERROR, FlashConsts.DANGER)
@@ -35,4 +35,4 @@ def login():
 def logout():
     flask_login.logout_user()
 
-    return redirect(url_for("main.home"))
+    return redirect(url_for("core.home"))

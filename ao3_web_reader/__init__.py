@@ -27,21 +27,15 @@ def setup_background_processes(app):
 
 
 def register_blueprints(app):
-    from ao3_web_reader.blueprints.main.routes import main
-    from ao3_web_reader.blueprints.errors.routes import errors
-    from ao3_web_reader.blueprints.auth.routes import auth
-    from ao3_web_reader.blueprints.works.routes import works
-    from ao3_web_reader.blueprints.tags.routes import tags
-    from ao3_web_reader.blueprints.api.routes import api
-    from ao3_web_reader.blueprints.files.routes import files
+    from ao3_web_reader import blueprints
 
-    app.register_blueprint(main)
-    app.register_blueprint(errors)
-    app.register_blueprint(auth)
-    app.register_blueprint(works)
-    app.register_blueprint(tags)
-    app.register_blueprint(api)
-    app.register_blueprint(files)
+    app.register_blueprint(blueprints.core)
+    app.register_blueprint(blueprints.errors)
+    app.register_blueprint(blueprints.auth)
+    app.register_blueprint(blueprints.works)
+    app.register_blueprint(blueprints.tags)
+    app.register_blueprint(blueprints.api)
+    app.register_blueprint(blueprints.files)
 
 
 def create_app(config_class=Config, detached=False):
