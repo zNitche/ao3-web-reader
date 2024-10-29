@@ -111,67 +111,9 @@
         {% endif %}
     </div>
 
-    <!-- removeWorkModal -->
-    <div class="modal fade" id="removeWorkModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                        <h5 class="modal-title">Remove work</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Do you want to remove: <span id="remove-modal-item-name"></span>
-                </div>
-                <div class="modal-footer">
-                    <form action="" id="remove-modal-form" method="POST">
-                        <button type="submit" class="btn btn-danger">
-                            Remove
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- chaptersCompletionModal -->
-    <div class="modal fade" id="chaptersCompletionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                        <h5 class="modal-title">Toggle chapters completion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <span id="chapter-completion-modal-text"></span>
-                </div>
-                <div class="modal-footer">
-                    <form action="" id="chapters-completion-form" method="POST">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- WorkFavoriteToggleModal -->
-    <div class="modal fade" id="worksFavoriteToggleModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                        <h5 class="modal-title">Add/Remove work from favorites</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <span id="work-favorite-modal-text"></span>
-                </div>
-                <div class="modal-footer">
-                    <form action="" id="work-favorite-form" method="POST">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "components/modals/remove_work_modal.html" %}
+    {% include "components/modals/chapters_completion_modal.html" %}
+    {% include "components/modals/works_favorite_toggle_modal.html" %}
 </div>
 
 {% endblock %}
