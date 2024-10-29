@@ -136,14 +136,14 @@ def remove_work(work_id):
     abort(404)
 
 
-@works.route("/<work_id>/mark-chapters-as-completed", methods=["POST"])
+@works.route("/<work_id>/toggle-chapters-completion", methods=["POST"])
 @flask_login.login_required
-def mark_chapters_as_completed(work_id):
+def toggle_chapters_completion(work_id):
     user_work = db.session.query(models.Work).filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
         for chapter in user_work.chapters:
-            chapter.completed = True
+            chapter.completed = not chapter.completed
             db.commit()
 
         page_id = request.args.get("page_id")
@@ -169,24 +169,6 @@ def toggle_work_favorite(work_id):
             else MessagesConsts.WORK_REMOVED_FROM_FAVORITES
 
         flash(update_message.format(work_name=user_work.name), FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
-
-    abort(404)
-
-
-@works.route("/<work_id>/mark-chapters-as-incomplete", methods=["POST"])
-@flask_login.login_required
-def mark_chapters_as_incomplete(work_id):
-    user_work = db.session.query(models.Work).filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
-
-    if user_work:
-        for chapter in user_work.chapters:
-            chapter.completed = False
-            db.commit()
-
-        page_id = request.args.get("page_id")
-
-        flash(MessagesConsts.CHAPTERS_MARKED_AS_INCOMPLETE.format(work_name=user_work.name), FlashConsts.SUCCESS)
         return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
     abort(404)
