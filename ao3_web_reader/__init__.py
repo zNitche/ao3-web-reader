@@ -1,13 +1,11 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-import flask_login
-from flask_migrate import Migrate
 import os
+from flask import Flask
+import flask_login
 from config import Config
+from ao3_web_reader.db import Database
 
 
-db = SQLAlchemy()
-migrate = Migrate(compare_type=True, render_as_batch=True)
+db = Database()
 
 
 def setup_app_managers(app):
@@ -52,7 +50,8 @@ def create_app(config_class=Config, detached=False):
     app.secret_key = os.urandom(25)
     app.config.from_object(config_class)
 
-    db.init_app(app)
+    db.setup(app.config["DATABASE_URI"])
+    db.create_all()
 
     login_manager = flask_login.LoginManager()
     login_manager.init_app(app)
@@ -61,11 +60,9 @@ def create_app(config_class=Config, detached=False):
 
     @login_manager.user_loader
     def user_loader(user_id):
-        return models.User.query.get(int(user_id))
+        return db.session.query(models.User).filter_by(id=user_id).first()
 
     with app.app_context():
-        db.create_all()
-
         setup_app_managers(app)
 
         if not app.config["TESTING"] and not detached:

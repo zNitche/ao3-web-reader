@@ -22,7 +22,7 @@ class ProcessBase:
         return type(self).__name__
 
     def init_db_session(self):
-        db_engine = sqlalchemy.create_engine(self.app.config["SQLALCHEMY_DATABASE_URI"], poolclass=NullPool)
+        db_engine = sqlalchemy.create_engine(self.app.config["DATABASE_URI"], poolclass=NullPool)
         session = sessionmaker(bind=db_engine, expire_on_commit=False)
 
         return session()

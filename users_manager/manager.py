@@ -41,7 +41,7 @@ class UsersManager:
         return password
 
     def init_db_session(self):
-        engine = sqlalchemy.create_engine(Config.SQLALCHEMY_DATABASE_URI)
+        engine = sqlalchemy.create_engine(Config.DATABASE_URI)
 
         self.db_session = sqlalchemy.orm.sessionmaker(engine)
 

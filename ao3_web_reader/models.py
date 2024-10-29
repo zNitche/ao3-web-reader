@@ -1,56 +1,59 @@
-from ao3_web_reader import db
 from flask_login import UserMixin
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DATETIME
+from sqlalchemy.orm import relationship, mapped_column
+from ao3_web_reader.db import Base
+from ao3_web_reader import db
 from ao3_web_reader.consts import UpdateMessagesConsts
 
 
-class User(db.Model, UserMixin):
+class User(Base, UserMixin):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(128), unique=False, nullable=False)
+    id = mapped_column(Integer, primary_key=True)
+    username = Column(String(20), unique=True, nullable=False)
+    password = Column(String(128), unique=False, nullable=False)
 
-    tags = db.relationship("Tag", backref="owner", cascade="all, delete-orphan", lazy=True)
-    works = db.relationship("Work", backref="owner", cascade="all, delete-orphan", lazy=True)
+    tags = relationship("Tag", backref="owner", cascade="all, delete-orphan", lazy=True)
+    works = relationship("Work", backref="owner", cascade="all, delete-orphan", lazy=True)
 
     def get_favorite_works(self):
         return [work for work in self.works if work.favorite]
 
 
-class Tag(db.Model):
+class Tag(Base):
     __tablename__ = "tags"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=False, nullable=False)
+    id = mapped_column(Integer, primary_key=True)
+    name = Column(String, unique=False, nullable=False)
 
-    works = db.relationship("Work", backref="tag", cascade="all, delete-orphan", lazy=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    works = relationship("Work", backref="tag", cascade="all, delete-orphan", lazy=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     def get_favorite_works(self):
         return [work for work in self.works if work.favorite]
 
 
-class Work(db.Model):
+class Work(Base):
     __tablename__ = "works"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = mapped_column(Integer, primary_key=True)
 
-    work_id = db.Column(db.String, unique=False, nullable=False)
-    name = db.Column(db.String(200), unique=False, nullable=False)
-    description = db.Column(db.String, unique=False, nullable=True)
+    work_id = Column(String, unique=False, nullable=False)
+    name = Column(String(200), unique=False, nullable=False)
+    description = Column(String, unique=False, nullable=True)
 
-    date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
-    last_updated = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.utcnow)
+    date = Column(DATETIME, unique=False, nullable=False, default=datetime.utcnow)
+    last_updated = Column(DATETIME, unique=False, nullable=True, default=datetime.utcnow)
 
-    tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    tag_id = Column(Integer, ForeignKey("tags.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    favorite = db.Column(db.Boolean, nullable=True, default=False)
-    was_removed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
+    favorite = Column(Boolean, nullable=True, default=False)
+    was_removed = Column(Boolean, unique=False, nullable=False, default=False)
 
-    chapters = db.relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
-    update_messages = db.relationship("UpdateMessage", backref="work", cascade="all, delete-orphan", lazy=True)
+    chapters = relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
+    update_messages = relationship("UpdateMessage", backref="work", cascade="all, delete-orphan", lazy=True)
 
     def get_not_removed_chapters(self):
         return [chapter for chapter in self.chapters if not chapter.was_removed]
@@ -67,46 +70,46 @@ class Work(db.Model):
         return all(chapters_completion)
 
 
-class Chapter(db.Model):
+class Chapter(Base):
     __tablename__ = "chapters"
 
-    id = db.Column(db.Integer, primary_key=True)
-    chapter_id = db.Column(db.String, unique=False, nullable=False)
-    order_id = db.Column(db.Integer, unique=False, nullable=True)
+    id = mapped_column(Integer, primary_key=True)
+    chapter_id = Column(String, unique=False, nullable=False)
+    order_id = Column(Integer, unique=False, nullable=True)
 
-    title = db.Column(db.String(200), unique=False, nullable=False)
-    date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
+    title = Column(String(200), unique=False, nullable=False)
+    date = Column(DATETIME, unique=False, nullable=False, default=datetime.utcnow)
 
-    text = db.Column(db.String, unique=False, nullable=False)
+    text = Column(String, unique=False, nullable=False)
 
-    was_removed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
-    completed = db.Column(db.Boolean, unique=False, nullable=True, default=False)
+    was_removed = Column(Boolean, unique=False, nullable=False, default=False)
+    completed = Column(Boolean, unique=False, nullable=True, default=False)
 
-    work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
+    work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
 
     def get_formatted_text(self):
         return self.text.split("\n")
 
     def get_next_chapter(self):
-        prev_chapter = Chapter.query.filter_by(work_id=self.work_id, order_id=self.order_id + 1).first()
-
-        return prev_chapter
-
-    def get_prev_chapter(self):
-        next_chapter = Chapter.query.filter_by(work_id=self.work_id, order_id=self.order_id - 1).first()
+        next_chapter = db.session.query(Chapter).filter_by(work_id=self.work_id, order_id=self.order_id + 1).first()
 
         return next_chapter
 
+    def get_prev_chapter(self):
+        prev_chapter = db.session.query(Chapter).filter_by(work_id=self.work_id, order_id=self.order_id - 1).first()
 
-class UpdateMessage(db.Model):
+        return prev_chapter
+
+
+class UpdateMessage(Base):
     __tablename__ = "update_messages"
 
-    id = db.Column(db.Integer, primary_key=True)
-    chapter_name = db.Column(db.String, unique=False, nullable=True)
-    type = db.Column(db.String, unique=False, nullable=False, default=UpdateMessagesConsts.MESSAGE_ADDED_TYPE)
-    date = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
+    id = mapped_column(Integer, primary_key=True)
+    chapter_name = Column(String, unique=False, nullable=True)
+    type = Column(String, unique=False, nullable=False, default=UpdateMessagesConsts.MESSAGE_ADDED_TYPE)
+    date = Column(DATETIME, unique=False, nullable=False, default=datetime.utcnow)
 
-    work_id = db.Column(db.Integer, db.ForeignKey("works.id"), nullable=False)
+    work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
 
     def get_message_by_type(self):
         message = None
