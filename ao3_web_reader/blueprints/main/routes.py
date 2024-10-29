@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 import flask_login
-from ao3_web_reader import models
+from ao3_web_reader import models, db
+from ao3_web_reader.db import Pagination
 from ao3_web_reader.consts import PaginationConsts
 
 
@@ -13,10 +14,12 @@ main = Blueprint("main", __name__, template_folder="templates", static_folder="s
 def home(page_id):
     user_works_ids = [work.id for work in flask_login.current_user.works]
 
-    messages_query = models.UpdateMessage.query.filter(models.UpdateMessage.work_id.in_(user_works_ids)).order_by(
+    messages_query = db.session.query(models.UpdateMessage).filter(models.UpdateMessage.work_id.in_(user_works_ids)).order_by(
         models.UpdateMessage.date.desc())
 
-    messages_pagination = messages_query.paginate(page=page_id, per_page=PaginationConsts.UPDATE_MESSAGES_PER_PAGE)
+    messages_pagination = Pagination(query=messages_query,
+                                     page_id=page_id,
+                                     items_per_page=PaginationConsts.UPDATE_MESSAGES_PER_PAGE)
 
     return render_template("index.html",
                            messages_pagination=messages_pagination,
