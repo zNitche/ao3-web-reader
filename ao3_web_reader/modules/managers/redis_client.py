@@ -25,12 +25,14 @@ class RedisClient:
         finally:
             connection.close()
 
-    def setup(self, address, port):
+    def setup(self, address, port, flush=True):
         self.server_address = address
         self.server_port = port
 
         self.create_connection_pool()
-        self.flush_db()
+
+        if flush:
+            self.flush_db()
 
     def create_connection_pool(self):
         self.connection_pool = redis.ConnectionPool(host=self.server_address, port=self.server_port, db=self.db_id,

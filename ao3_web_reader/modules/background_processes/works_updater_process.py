@@ -1,6 +1,6 @@
 from ao3_web_reader.utils import works_utils, models_utils
 from ao3_web_reader.modules.background_processes.background_process_base import BackgroundProcessBase
-from ao3_web_reader import models, db
+from ao3_web_reader import models
 from ao3_web_reader.consts import UpdateMessagesConsts, ProcessesConsts, ChaptersConsts
 from config import Config
 from datetime import datetime
@@ -8,8 +8,8 @@ import time
 
 
 class WorksUpdaterProcess(BackgroundProcessBase):
-    def __init__(self, app):
-        super().__init__(app)
+    def __init__(self):
+        super().__init__(startup_delay=5)
 
         self.is_sync_running = False
         self.progress = 0
@@ -72,7 +72,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                                                                   chapter.title,
                                                                   UpdateMessagesConsts.MESSAGE_ADDED_TYPE)
 
-        db.add(update_message)
+        self.db.add(update_message)
 
     def mark_chapter_as_removed(self, work, chapter):
         chapter.was_removed = True
@@ -83,12 +83,9 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                                                                   chapter.title,
                                                                   UpdateMessagesConsts.MESSAGE_REMOVED_TYPE)
 
-        db.add(update_message)
+        self.db.add(update_message)
 
     def mainloop(self):
-        # some delay at start
-        time.sleep(60)
-
         while True:
             try:
                 processed_works = 0
@@ -96,7 +93,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 self.is_sync_running = True
                 self.update_process_data()
 
-                users = db.session.query(models.User).all()
+                users = self.db.session.query(models.User).all()
                 works_count = sum([len(user.works) for user in users])
 
                 for user in users:
@@ -130,7 +127,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                         self.update_process_data()
 
             except Exception as e:
-                self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")
+                print(f"[{self.get_process_name()}] - {str(e)}")
 
             finally:
                 self.is_sync_running = False
