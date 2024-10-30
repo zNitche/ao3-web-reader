@@ -1,22 +1,16 @@
 import redis
 import json
 from contextlib import contextmanager
-from ao3_web_reader.app_modules.managers.app_manager_base import AppManagerBase
 
 
-class RedisManager(AppManagerBase):
-    def __init__(self, app, db_id):
-        super().__init__(app)
+class RedisManager:
+    def __init__(self, db_id):
 
-        self.server_address = self.app.config["REDIS_SERVER_ADDRESS"]
-        self.server_port = int(self.app.config["REDIS_SERVER_PORT"])
+        self.server_address = None
+        self.server_port = None
         self.db_id = db_id
 
         self.connection_pool = None
-
-    @staticmethod
-    def get_name():
-        return "redis_manager"
 
     @contextmanager
     def db_connection(self, raise_exception=False):
@@ -28,7 +22,10 @@ class RedisManager(AppManagerBase):
             if raise_exception:
                 raise
 
-    def setup(self):
+    def setup(self, address, port):
+        self.server_address = address
+        self.server_port = port
+
         self.create_connection_pool()
         self.flush_db()
 

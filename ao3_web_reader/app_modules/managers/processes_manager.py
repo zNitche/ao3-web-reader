@@ -1,22 +1,12 @@
-from ao3_web_reader.app_modules.managers.app_manager_base import AppManagerBase
 from ao3_web_reader.consts import ProcessesConsts
 
 
-class ProcessesManager(AppManagerBase):
-    def __init__(self, app):
-        super().__init__(app)
-
-        self.redis_manager = None
-
-    @staticmethod
-    def get_name():
-        return "processes_manager"
-
-    def setup(self):
-        self.redis_manager = self.app.redis_manager
+class ProcessesManager:
+    def __init__(self, cache_db):
+        self.cache_manager = cache_db
 
     def get_processes_timestamps(self):
-        timestamps = self.redis_manager.get_keys()
+        timestamps = self.cache_manager.get_keys()
 
         return timestamps
 
@@ -55,10 +45,10 @@ class ProcessesManager(AppManagerBase):
         return processes_data
 
     def set_process_data(self, timestamp, data):
-        self.redis_manager.set_value(timestamp, data)
+        self.cache_manager.set_value(timestamp, data)
 
     def get_process_data(self, timestamp, process_type=None):
-        process_data = self.redis_manager.get_value(timestamp)
+        process_data = self.cache_manager.get_value(timestamp)
 
         if process_type is not None and process_data.get(ProcessesConsts.PROCESS_NAME) != process_type:
             process_data = None
@@ -66,10 +56,10 @@ class ProcessesManager(AppManagerBase):
         return process_data
 
     def set_background_process_data(self, process_name, data):
-        self.redis_manager.set_value(process_name, data)
+        self.cache_manager.set_value(process_name, data)
 
     def get_background_process_data(self, process_name):
-        process_data = self.redis_manager.get_value(process_name)
+        process_data = self.cache_manager.get_value(process_name)
 
         return process_data
 
@@ -77,4 +67,4 @@ class ProcessesManager(AppManagerBase):
         processes_timestamps = self.get_processes_timestamps()
 
         if timestamp in processes_timestamps:
-            self.redis_manager.delete_key(timestamp)
+            self.cache_manager.delete_key(timestamp)

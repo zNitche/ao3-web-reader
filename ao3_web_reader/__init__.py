@@ -1,23 +1,20 @@
 import os
 from flask import Flask
 import flask_login
+from ao3_web_reader.app_modules.managers import ProcessesManager
+from ao3_web_reader.app_modules.managers.redis_manager import RedisManager
 from config import Config
 from ao3_web_reader.db import Database
 
 
 db = Database()
 
+processes_cache = RedisManager(0)
+processes_manager = ProcessesManager(cache_db=processes_cache)
+
 
 def setup_app_managers(app):
-    from ao3_web_reader.app_modules.managers.redis_manager import RedisManager
-    from ao3_web_reader.app_modules.managers.processes_manager import ProcessesManager
-
-    managers = [RedisManager(app, 0), ProcessesManager(app)]
-
-    for manager in managers:
-        manager.setup()
-
-        setattr(app, manager.get_name(), manager)
+    processes_cache.setup(address=app.config["REDIS_SERVER_ADDRESS"], port=int(app.config["REDIS_SERVER_PORT"]))
 
 
 def setup_background_processes(app):
