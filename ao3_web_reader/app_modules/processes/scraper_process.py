@@ -1,7 +1,7 @@
-from ao3_web_reader.utils import works_utils, db_utils, models_utils
+from ao3_web_reader.utils import works_utils, models_utils
 from ao3_web_reader.app_modules.processes.process_base import ProcessBase
 from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import models
+from ao3_web_reader import models, db
 
 
 class ScraperProcess(ProcessBase):
@@ -34,13 +34,12 @@ class ScraperProcess(ProcessBase):
 
             work_description = works_utils.get_work_description(self.work_id)
 
-            with db_utils.db_session_scope(self.db_session) as session:
-                tag = session.query(models.Tag).filter_by(owner_id=self.owner_id, name=self.tag_name).first()
+            tag = db.session.query(models.Tag).filter_by(owner_id=self.owner_id, name=self.tag_name).first()
 
-                work = models_utils.create_work_model(work_data, self.owner_id, tag.id, work_description)
-                work.chapters = models_utils.create_chapters_models(work_data)
+            work = models_utils.create_work_model(work_data, self.owner_id, tag.id, work_description)
+            work.chapters = models_utils.create_chapters_models(work_data)
 
-                session.add(work)
+            db.add(work)
 
         except Exception as e:
             self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")

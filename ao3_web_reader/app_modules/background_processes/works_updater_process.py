@@ -1,6 +1,6 @@
-from ao3_web_reader.utils import works_utils, db_utils, models_utils
+from ao3_web_reader.utils import works_utils, models_utils
 from ao3_web_reader.app_modules.background_processes.background_process_base import BackgroundProcessBase
-from ao3_web_reader import models
+from ao3_web_reader import models, db
 from ao3_web_reader.consts import UpdateMessagesConsts, ProcessesConsts, ChaptersConsts
 from config import Config
 from datetime import datetime
@@ -41,7 +41,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
         return result_chapter
 
-    def check_chapters_for_removed_ones(self, chapters_struct, work, session):
+    def check_chapters_for_removed_ones(self, chapters_struct, work):
         work_chapters_ids = [chapter.chapter_id for chapter in work.get_not_removed_chapters()]
         source_chapters_ids = [chapter.get(ChaptersConsts.ID) for chapter in chapters_struct]
 
@@ -52,7 +52,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 chapter = self.get_chapter_by_id(work.chapters, chapter_id)
 
                 if chapter:
-                    self.mark_chapter_as_removed(work, chapter, session)
+                    self.mark_chapter_as_removed(work, chapter)
 
     def update_chapters_order_ids(self, chapters):
         not_removed_chapters = [chapter for chapter in chapters if not chapter.was_removed]
@@ -68,7 +68,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
             time.sleep(Config.WORKS_EXIST_CHECK_JOBS_DELAY)
 
-    def add_chapter(self, work, chapter, session):
+    def add_chapter(self, work, chapter):
         work.chapters.append(chapter)
         work.last_updated = datetime.now()
 
@@ -76,9 +76,9 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                                                                   chapter.title,
                                                                   UpdateMessagesConsts.MESSAGE_ADDED_TYPE)
 
-        session.add(update_message)
+        db.add(update_message)
 
-    def mark_chapter_as_removed(self, work, chapter, session):
+    def mark_chapter_as_removed(self, work, chapter):
         chapter.was_removed = True
         chapter.order_id = None
         work.last_updated = datetime.now()
@@ -87,7 +87,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                                                                   chapter.title,
                                                                   UpdateMessagesConsts.MESSAGE_REMOVED_TYPE)
 
-        session.add(update_message)
+        db.add(update_message)
 
     def mainloop(self):
         while True:
@@ -97,40 +97,38 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 self.is_sync_running = True
                 self.update_process_data()
 
-                with db_utils.db_session_scope(self.db_session) as session:
-                    users = session.query(models.User).all()
+                users = db.session.query(models.User).all()
+                works_count = sum([len(user.works) for user in users])
 
-                    works_count = sum([len(user.works) for user in users])
+                for user in users:
+                    works = user.works
+                    self.update_works(works)
 
-                    for user in users:
-                        works = user.works
-                        self.update_works(works)
+                    for id, work in enumerate(works):
+                        if not work.was_removed:
+                            if id > 0:
+                                time.sleep(Config.WORKS_UPDATER_JOBS_DELAY)
 
-                        for id, work in enumerate(works):
-                            if not work.was_removed:
-                                if id > 0:
-                                    time.sleep(Config.WORKS_UPDATER_JOBS_DELAY)
+                            chapters_struct = works_utils.get_chapters_struct(work.work_id)
 
-                                chapters_struct = works_utils.get_chapters_struct(work.work_id)
+                            if len(chapters_struct) > 0:
+                                for chapter_struct in chapters_struct:
+                                    if self.check_if_new_chapter(chapter_struct.get(ChaptersConsts.ID),
+                                                                 work.chapters):
 
-                                if len(chapters_struct) > 0:
-                                    for chapter_struct in chapters_struct:
-                                        if self.check_if_new_chapter(chapter_struct.get(ChaptersConsts.ID),
-                                                                     work.chapters):
-
-                                            chapter_struct_data = works_utils.get_chapter_data_struct(chapter_struct)
-                                            new_chapter = models_utils.create_chapter_model(chapter_struct_data)
+                                        chapter_struct_data = works_utils.get_chapter_data_struct(chapter_struct)
+                                        new_chapter = models_utils.create_chapter_model(chapter_struct_data)
 
 
-                                            self.add_chapter(work, new_chapter, session)
+                                        self.add_chapter(work, new_chapter)
 
-                                    self.check_chapters_for_removed_ones(chapters_struct, work, session)
-                                    self.update_chapters_order_ids(work.chapters)
+                                self.check_chapters_for_removed_ones(chapters_struct, work)
+                                self.update_chapters_order_ids(work.chapters)
 
-                            processed_works += 1
-                            self.progress = int(processed_works * 100 / works_count)
+                        processed_works += 1
+                        self.progress = int(processed_works * 100 / works_count)
 
-                            self.update_process_data()
+                        self.update_process_data()
 
             except Exception as e:
                 self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")

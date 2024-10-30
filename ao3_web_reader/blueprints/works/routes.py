@@ -4,12 +4,11 @@ from flask import Blueprint, render_template, flash, abort, redirect,\
     url_for, current_app, send_file, make_response, request
 import flask_login
 from ao3_web_reader.app_modules import forms
-from ao3_web_reader.app_modules.processes.chapter_updater_process import ChapterUpdaterProcess
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader.utils import files_utils
 from ao3_web_reader import models, db
 from ao3_web_reader.db import Pagination
-from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
+from ao3_web_reader.app_modules.processes import ScraperProcess, ChapterUpdaterProcess
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")

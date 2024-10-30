@@ -1,7 +1,7 @@
-from ao3_web_reader.utils import works_utils, db_utils
+from ao3_web_reader.utils import works_utils
 from ao3_web_reader.app_modules.processes.process_base import ProcessBase
 from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import models
+from ao3_web_reader import models, db
 
 
 class ChapterUpdaterProcess(ProcessBase):
@@ -30,9 +30,8 @@ class ChapterUpdaterProcess(ProcessBase):
         try:
             chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
 
-            with db_utils.db_session_scope(self.db_session) as session:
-                chapter = session.query(models.Chapter).filter_by(chapter_id=self.chapter_id).first()
-                chapter.text = "\n".join(chapter_data)
+            chapter = db.session.query(models.Chapter).filter_by(chapter_id=self.chapter_id).first()
+            chapter.text = "\n".join(chapter_data)
 
         except Exception as e:
             self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")

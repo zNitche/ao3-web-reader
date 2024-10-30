@@ -18,9 +18,9 @@ def setup_app_managers(app):
 
 
 def setup_background_processes(app):
-    from ao3_web_reader.utils import processes_utils
+    from ao3_web_reader.app_modules.background_processes import WorksUpdaterProcess
 
-    processes_utils.start_work_updater_processes(app)
+    WorksUpdaterProcess(app).start_process()
 
 
 def register_blueprints(app):

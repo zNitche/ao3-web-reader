@@ -1,8 +1,5 @@
 import multiprocessing
 from datetime import datetime
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import NullPool
 from ao3_web_reader.consts import ProcessesConsts
 
 
@@ -16,16 +13,8 @@ class ProcessBase:
         self.timestamp = str(datetime.timestamp(datetime.now()))
         self.process_pid = None
 
-        self.db_session = self.init_db_session()
-
     def get_process_name(self):
         return type(self).__name__
-
-    def init_db_session(self):
-        db_engine = sqlalchemy.create_engine(self.app.config["DATABASE_URI"], poolclass=NullPool)
-        session = sessionmaker(bind=db_engine, expire_on_commit=False)
-
-        return session()
 
     def mainloop(self):
         pass
