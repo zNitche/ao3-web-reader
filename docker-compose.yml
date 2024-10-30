@@ -19,3 +19,16 @@ services:
       - ${LOGS_PATH}:/ao3_web_reader/logs
     env_file:
       - .env
+
+  tasks:
+    depends_on:
+      - redis
+    container_name: ao3_web_reader_tasks
+    command: /bin/sh -c "/ao3_web_reader/scripts/run_background_task.sh"
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ${DB_PATH}:/ao3_web_reader/database
+      - ${LOGS_PATH}:/ao3_web_reader/logs
+    env_file:
+      - .env

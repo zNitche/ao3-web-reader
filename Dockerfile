@@ -14,3 +14,4 @@ RUN curl -o ao3_web_reader/static/libs/bootstrap.bundle.min.js  https://cdn.jsde
 RUN pip3 install -r requirements.txt
 
 RUN chmod +x scripts/entrypoint.sh
+RUN chmod +x scripts/run_background_task.sh
