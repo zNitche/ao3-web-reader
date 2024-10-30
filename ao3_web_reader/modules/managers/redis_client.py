@@ -3,9 +3,8 @@ import json
 from contextlib import contextmanager
 
 
-class RedisManager:
+class RedisClient:
     def __init__(self, db_id):
-
         self.server_address = None
         self.server_port = None
         self.db_id = db_id
@@ -13,14 +12,18 @@ class RedisManager:
         self.connection_pool = None
 
     @contextmanager
-    def db_connection(self, raise_exception=False):
+    def db_session(self, raise_exception=False):
+        connection = redis.Redis(connection_pool=self.connection_pool)
+
         try:
-            connection = redis.Redis(connection_pool=self.connection_pool)
             yield connection
 
         except Exception as e:
             if raise_exception:
                 raise
+
+        finally:
+            connection.close()
 
     def setup(self, address, port):
         self.server_address = address
@@ -34,30 +37,25 @@ class RedisManager:
                                                     decode_responses=True)
 
     def flush_db(self):
-        with self.db_connection(raise_exception=True) as connection:
-            connection.flushdb()
+        with self.db_session(raise_exception=True) as session:
+            session.flushdb()
 
-    def set_value(self, key, value):
-        with self.db_connection() as connection:
-            connection.set(key, json.dumps(value))
+    def set_value(self, key, value, ttl=30):
+        with self.db_session() as session:
+            session.set(key, json.dumps(value), ex=ttl)
 
     def get_value(self, key):
-        value = None
+        with self.db_session() as session:
+            data = session.get(key)
 
-        with self.db_connection() as connection:
-            data = connection.get(key)
-
-        if data:
-            value = json.loads(data)
-
-        return value
+        return json.loads(data) if data else None
 
     def get_keys(self):
-        with self.db_connection() as connection:
-            keys = connection.scan_iter("*")
+        with self.db_session() as session:
+            keys = session.scan_iter("*")
 
         return keys
 
     def delete_key(self, key):
-        with self.db_connection() as connection:
-            connection.delete(key)
+        with self.db_session() as session:
+            session.delete(key)

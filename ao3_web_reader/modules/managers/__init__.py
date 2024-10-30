@@ -1,2 +1,2 @@
 from ao3_web_reader.modules.managers.processes_manager import ProcessesManager
-from ao3_web_reader.modules.managers.redis_manager import RedisManager
+from ao3_web_reader.modules.managers.redis_client import RedisClient

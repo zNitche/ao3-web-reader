@@ -2,14 +2,14 @@ import os
 from flask import Flask
 import flask_login
 from ao3_web_reader.modules.managers import ProcessesManager
-from ao3_web_reader.modules.managers.redis_manager import RedisManager
+from ao3_web_reader.modules.managers.redis_client import RedisClient
 from config import Config
 from ao3_web_reader.db import Database
 
 
 db = Database()
 
-processes_cache = RedisManager(0)
+processes_cache = RedisClient(0)
 processes_manager = ProcessesManager(cache_db=processes_cache)
 
 
