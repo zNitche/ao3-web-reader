@@ -1,5 +1,6 @@
 class TestConfig:
     TESTING = True
+    DEBUG_MODE = False
     DATABASE_URI = "sqlite:///:memory:"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
