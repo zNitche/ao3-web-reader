@@ -1,6 +1,7 @@
 import threading
 from datetime import datetime
 from ao3_web_reader.consts import ProcessesConsts
+from ao3_web_reader import processes_manager
 
 
 class ProcessBase:
@@ -28,7 +29,7 @@ class ProcessBase:
             ProcessesConsts.PROCESS_NAME: self.get_process_name(),
         }
 
-        self.app.processes_manager.set_process_data(self.timestamp, process_data)
+        processes_manager.set_process_data(self.timestamp, process_data)
 
     def finish_process(self):
-        self.app.processes_manager.remove_process_data(self.timestamp)
+        processes_manager.remove_process_data(self.timestamp)

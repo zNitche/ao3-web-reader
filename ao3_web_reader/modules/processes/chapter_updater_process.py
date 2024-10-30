@@ -1,7 +1,7 @@
 from ao3_web_reader.utils import works_utils
 from ao3_web_reader.modules.processes.process_base import ProcessBase
 from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import models, db
+from ao3_web_reader import models, db, processes_manager
 
 
 class ChapterUpdaterProcess(ProcessBase):
@@ -44,4 +44,4 @@ class ChapterUpdaterProcess(ProcessBase):
             ProcessesConsts.PROGRESS: self.progress,
         }
 
-        self.app.processes_manager.set_process_data(self.timestamp, process_data)
+        processes_manager.set_process_data(self.timestamp, process_data)

@@ -6,7 +6,7 @@ import flask_login
 from ao3_web_reader.modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader.utils import files_utils
-from ao3_web_reader import models, db
+from ao3_web_reader import models, db, processes_manager
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.processes import ScraperProcess, ChapterUpdaterProcess
 
@@ -79,8 +79,7 @@ def add_work():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
 
-        running_processes = \
-            current_app.processes_manager.get_processes_data_for_user_and_work("ScraperProcess",
+        running_processes = processes_manager.get_processes_data_for_user_and_work("ScraperProcess",
                                                                                flask_login.current_user.id,
                                                                                work_id)
 
@@ -104,8 +103,7 @@ def force_chapter_update(work_id, chapter_id):
     if user_work:
         work_chapter = db.session.query(models.Chapter).filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
 
-        running_processes = \
-            current_app.processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
+        running_processes = processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
                                                                                flask_login.current_user.id,
                                                                                chapter_id)
 
@@ -218,8 +216,7 @@ def chapter(work_id, chapter_id):
         work_chapter = db.session.query(models.Chapter).filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
 
         if work_chapter:
-            running_processes = \
-                current_app.processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
+            running_processes = processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
                                                                                       flask_login.current_user.id,
                                                                                       chapter_id)
             return render_template("chapter.html",
