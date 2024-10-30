@@ -9,18 +9,15 @@ from ao3_web_reader.db import Database
 
 db = Database()
 
-processes_cache = RedisClient(0)
+processes_cache = RedisClient(db_id=0)
 processes_manager = ProcessesManager(cache_db=processes_cache)
 
 
 def setup_app_managers(app):
-    processes_cache.setup(address=app.config["REDIS_SERVER_ADDRESS"], port=int(app.config["REDIS_SERVER_PORT"]))
+    redis_address = app.config["REDIS_SERVER_ADDRESS"]
+    redis_port = int(app.config["REDIS_SERVER_PORT"])
 
-
-def setup_background_processes(app):
-    from ao3_web_reader.modules.background_processes import WorksUpdaterProcess
-
-    WorksUpdaterProcess(app).start_process()
+    processes_cache.setup(address=redis_address, port=redis_port)
 
 
 def register_blueprints(app):
@@ -35,10 +32,10 @@ def register_blueprints(app):
     app.register_blueprint(blueprints.files)
 
 
-def create_app(config_class=Config, detached=False):
+def create_app(config_class=Config):
     app = Flask(__name__, instance_relative_config=False)
 
-    app.secret_key = os.urandom(25)
+    app.secret_key = os.urandom(25) if not config_class.DEBUG_MODE else "debug_secret"
     app.config.from_object(config_class)
 
     db.setup(app.config["DATABASE_URI"])
@@ -55,9 +52,6 @@ def create_app(config_class=Config, detached=False):
 
     with app.app_context():
         setup_app_managers(app)
-
-        if not app.config["TESTING"] and not detached:
-            setup_background_processes(app)
 
         register_blueprints(app)
 
