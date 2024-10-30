@@ -3,7 +3,7 @@ from tests.consts import UsersConsts
 
 
 def test_fail_login(test_client):
-    from ao3_web_reader.app_modules import forms
+    from ao3_web_reader.modules import forms
 
     form = forms.LoginForm()
     form.username.data = UsersConsts.TEST_USER_NAME
@@ -16,7 +16,7 @@ def test_fail_login(test_client):
 
 
 def test_success_login(test_client):
-    from ao3_web_reader.app_modules import forms
+    from ao3_web_reader.modules import forms
 
     form = forms.LoginForm()
     form.username.data = UsersConsts.TEST_USER_NAME

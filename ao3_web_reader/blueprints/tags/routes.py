@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, flash, redirect, url_for, abort, s
 import flask_login
 from ao3_web_reader import models, db
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
-from ao3_web_reader.app_modules import forms
+from ao3_web_reader.modules import forms
 from ao3_web_reader.utils import files_utils
 
 

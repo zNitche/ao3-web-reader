@@ -1,5 +1,5 @@
 from ao3_web_reader.utils import works_utils, models_utils
-from ao3_web_reader.app_modules.background_processes.background_process_base import BackgroundProcessBase
+from ao3_web_reader.modules.background_processes.background_process_base import BackgroundProcessBase
 from ao3_web_reader import models, db
 from ao3_web_reader.consts import UpdateMessagesConsts, ProcessesConsts, ChaptersConsts
 from config import Config
@@ -13,10 +13,6 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
         self.is_sync_running = False
         self.progress = 0
-
-    def start_process(self):
-        self.process.start()
-        self.process_pid = self.process.pid
 
     def get_process_data(self):
         process_data = {

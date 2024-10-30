@@ -8,6 +8,17 @@ class BackgroundProcessBase:
         self.process = multiprocessing.Process(target=self.mainloop)
         self.process_pid = None
 
+    def start_process(self):
+        self.app.logger.info(f"starting {self.get_process_name()}")
+
+        self.process_handler()
+
+        self.process.start()
+        self.process_pid = self.process.pid
+
+    def process_handler(self):
+        pass
+
     def get_process_name(self):
         return type(self).__name__
 

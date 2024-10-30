@@ -1,8 +1,8 @@
 import os
 from flask import Flask
 import flask_login
-from ao3_web_reader.app_modules.managers import ProcessesManager
-from ao3_web_reader.app_modules.managers.redis_manager import RedisManager
+from ao3_web_reader.modules.managers import ProcessesManager
+from ao3_web_reader.modules.managers.redis_manager import RedisManager
 from config import Config
 from ao3_web_reader.db import Database
 
@@ -18,7 +18,7 @@ def setup_app_managers(app):
 
 
 def setup_background_processes(app):
-    from ao3_web_reader.app_modules.background_processes import WorksUpdaterProcess
+    from ao3_web_reader.modules.background_processes import WorksUpdaterProcess
 
     WorksUpdaterProcess(app).start_process()
 

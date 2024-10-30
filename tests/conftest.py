@@ -26,7 +26,7 @@ def test_client():
 
 @pytest.fixture(scope="function")
 def logged_test_user(test_client):
-    from ao3_web_reader.app_modules import forms
+    from ao3_web_reader.modules import forms
 
     form = forms.LoginForm()
     form.username.data = UsersConsts.TEST_USER_NAME

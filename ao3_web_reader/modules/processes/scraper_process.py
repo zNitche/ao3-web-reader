@@ -1,5 +1,5 @@
 from ao3_web_reader.utils import works_utils, models_utils
-from ao3_web_reader.app_modules.processes.process_base import ProcessBase
+from ao3_web_reader.modules.processes.process_base import ProcessBase
 from ao3_web_reader.consts import ProcessesConsts
 from ao3_web_reader import models, db
 
@@ -13,10 +13,6 @@ class ScraperProcess(ProcessBase):
         self.work_title = ""
 
         self.progress = 0
-
-    def start_process(self):
-        self.process.start()
-        self.process_pid = self.process.pid
 
     def calc_progres(self, current_step, max_steps):
         self.progress = int(current_step * 100 / max_steps)
