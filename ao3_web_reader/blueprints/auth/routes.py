@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 import flask_login
 from werkzeug.security import check_password_hash
 from ao3_web_reader.app_modules import forms
-from ao3_web_reader import models, db
+from ao3_web_reader import models
 from ao3_web_reader.consts import MessagesConsts, FlashConsts
 
 
@@ -17,7 +17,7 @@ def login():
     login_form = forms.LoginForm()
 
     if login_form.validate_on_submit():
-        user = db.session.query(models.User).filter_by(username=login_form.username.data).first()
+        user = models.User.query.filter_by(username=login_form.username.data).first()
 
         if user and check_password_hash(user.password, login_form.password.data):
             flask_login.login_user(user)

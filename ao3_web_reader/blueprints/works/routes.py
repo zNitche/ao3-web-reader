@@ -6,7 +6,7 @@ import flask_login
 from ao3_web_reader.app_modules import forms
 from ao3_web_reader.app_modules.processes.chapter_updater_process import ChapterUpdaterProcess
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
-from ao3_web_reader.utils import db_utils, files_utils
+from ao3_web_reader.utils import files_utils
 from ao3_web_reader import models, db
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.app_modules.processes.scraper_process import ScraperProcess
@@ -128,10 +128,11 @@ def remove_work(work_id):
     user_work = db.session.query(models.Work).filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
+        tag_name = user_work.tag.name
         db.remove(user_work)
 
         flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=user_work.tag_name))
+        return redirect(url_for("works.all_works", tag_name=tag_name))
 
     abort(404)
 
@@ -239,7 +240,7 @@ def chapter_toggle_completed_state(work_id, chapter_id):
 
         if work_chapter:
             work_chapter.completed = not work_chapter.completed
-            db_utils.commit_session()
+            db.commit()
 
             return make_response({
                 "status": not work_chapter.completed

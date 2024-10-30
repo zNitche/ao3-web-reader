@@ -5,7 +5,7 @@ import flask_login
 from ao3_web_reader import models, db
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.app_modules import forms
-from ao3_web_reader.utils import db_utils, files_utils
+from ao3_web_reader.utils import files_utils
 
 
 tags = Blueprint("tags", __name__, template_folder="templates", static_folder="static", url_prefix="/tags")
