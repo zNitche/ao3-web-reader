@@ -2,7 +2,8 @@
 {% block content %}
 
 <div class="main-container">
-    {{ error }}
+    {% include "components/navbar.html" %}
+    <div>{{ error }}</div>
 </div>
 
 {% endblock %}
