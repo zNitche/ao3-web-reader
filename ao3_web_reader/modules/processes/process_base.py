@@ -1,4 +1,4 @@
-import multiprocessing
+import threading
 from datetime import datetime
 from ao3_web_reader.consts import ProcessesConsts
 
@@ -8,10 +8,13 @@ class ProcessBase:
         self.app = app
         self.owner_id = owner_id
 
-        self.process = multiprocessing.Process(target=self.mainloop)
+        self.process = threading.Thread(target=self.mainloop)
 
         self.timestamp = str(datetime.timestamp(datetime.now()))
-        self.process_pid = None
+
+    def start_process(self):
+        self.app.logger.info(f"starting {self.get_process_name()}")
+        self.process.start()
 
     def get_process_name(self):
         return type(self).__name__
@@ -21,7 +24,6 @@ class ProcessBase:
 
     def update_process_data(self):
         process_data = {
-            ProcessesConsts.PID: self.process_pid,
             ProcessesConsts.OWNER_ID: self.owner_id,
             ProcessesConsts.PROCESS_NAME: self.get_process_name(),
         }

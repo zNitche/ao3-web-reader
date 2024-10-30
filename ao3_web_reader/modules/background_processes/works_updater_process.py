@@ -86,6 +86,9 @@ class WorksUpdaterProcess(BackgroundProcessBase):
         db.add(update_message)
 
     def mainloop(self):
+        # some delay at start
+        time.sleep(60)
+
         while True:
             try:
                 processed_works = 0

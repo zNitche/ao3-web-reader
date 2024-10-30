@@ -45,7 +45,6 @@ class ScraperProcess(ProcessBase):
 
     def update_process_data(self):
         process_data = {
-            ProcessesConsts.PID: self.process_pid,
             ProcessesConsts.OWNER_ID: self.owner_id,
             ProcessesConsts.WORK_ID: self.work_id,
             ProcessesConsts.WORK_TITLE: self.work_title,
