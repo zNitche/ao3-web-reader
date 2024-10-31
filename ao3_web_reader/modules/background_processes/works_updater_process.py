@@ -9,7 +9,7 @@ import time, random
 
 class WorksUpdaterProcess(BackgroundProcessBase):
     def __init__(self):
-        super().__init__(startup_delay=5)
+        super().__init__(startup_delay=60)
 
         self.is_sync_running = False
         self.progress = 0
