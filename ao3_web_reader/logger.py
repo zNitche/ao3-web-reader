@@ -5,8 +5,8 @@ from logging.handlers import TimedRotatingFileHandler
 
 class Logger:
     def __init__(self,
-                 logs_filename: str,
-                 logs_path: str,
+                 logs_filename: str | None = None,
+                 logs_path: str | None = None,
                  backup_log_files_count: int = 7,
                  debug: bool = False,
                  logger_name: str | None = None):
@@ -20,7 +20,10 @@ class Logger:
 
         self.__setup()
 
-    def __set_logs_path(self, filename: str, path: str) -> str:
+    def __set_logs_path(self, filename: str, path: str) -> str | None:
+        if filename is None or path is None:
+            return None
+
         if not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
 
