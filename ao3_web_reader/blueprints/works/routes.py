@@ -1,10 +1,7 @@
-import tempfile
-import os
 from flask import Blueprint, render_template, flash, abort, redirect,\
-    url_for, send_file, make_response, request
+    url_for, make_response, request
 import flask_login
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
-from ao3_web_reader.utils import files_utils
 from ao3_web_reader import models, db, processes_manager, forms
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.processes import ScraperProcess, ChapterUpdaterProcess
@@ -177,16 +174,7 @@ def download_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
 
     if user_work:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp_dir_path = os.path.join(tempfile.gettempdir(), tmpdir)
-            files_utils.write_work_to_files(user_work, tmp_dir_path)
-
-            archive_name = f"{user_work.name.replace(' ', '_')}.zip"
-            archive_path = os.path.join(tmp_dir_path, archive_name)
-
-            files_utils.zip_files(archive_path, tmp_dir_path, (".zip",))
-
-            return send_file(archive_path, as_attachment=True, max_age=0, download_name=archive_name)
+        pass
 
     abort(404)
 
