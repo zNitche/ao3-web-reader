@@ -5,8 +5,8 @@ from ao3_web_reader import models, db, processes_manager
 
 
 class ScraperProcess(ProcessBase):
-    def __init__(self, app, owner_id, tag_name, work_id):
-        super().__init__(app, owner_id)
+    def __init__(self, owner_id, tag_name, work_id):
+        super().__init__(owner_id)
 
         self.tag_name = tag_name
         self.work_id = work_id
@@ -22,13 +22,14 @@ class ScraperProcess(ProcessBase):
         self.update_process_data()
 
     def mainloop(self):
-        self.work_title = works_utils.get_work_name(self.work_id)
-        self.update_process_data()
-
         try:
-            work_data = works_utils.get_work(self.work_id, progress_callback=self.get_work_update_callback)
+            self.work_title = works_utils.get_work_name(self.work_id)
+            self.update_process_data()
 
+            work_data = works_utils.get_work(self.work_id, progress_callback=self.get_work_update_callback)
             work_description = works_utils.get_work_description(self.work_id)
+
+            self.logger.info(f"got {self.work_title} data")
 
             tag = db.session.query(models.Tag).filter_by(owner_id=self.owner_id, name=self.tag_name).first()
 
@@ -38,7 +39,7 @@ class ScraperProcess(ProcessBase):
             db.add(work)
 
         except Exception as e:
-            self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")
+            self.logger.exception("mainloop error")
 
         finally:
             self.finish_process()

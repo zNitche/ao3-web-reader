@@ -5,8 +5,8 @@ from ao3_web_reader import models, db, processes_manager
 
 
 class ChapterUpdaterProcess(ProcessBase):
-    def __init__(self, app, owner_id, work_id, chapter_id):
-        super().__init__(app, owner_id)
+    def __init__(self, owner_id, work_id, chapter_id):
+        super().__init__(owner_id)
 
         self.work_id = work_id
         self.chapter_id = chapter_id
@@ -24,13 +24,17 @@ class ChapterUpdaterProcess(ProcessBase):
         self.update_process_data()
 
         try:
-            chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
-
             chapter = db.session.query(models.Chapter).filter_by(chapter_id=self.chapter_id).first()
+
+            self.logger.info(f"{chapter.title} force update")
+
+            chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
             chapter.text = "\n".join(chapter_data)
 
+            self.logger.info(f"got data for {chapter.title}")
+
         except Exception as e:
-            self.app.logger.error(f"[{self.get_process_name()}] - {str(e)}")
+            self.logger.exception("mainloop error")
 
         finally:
             self.finish_process()

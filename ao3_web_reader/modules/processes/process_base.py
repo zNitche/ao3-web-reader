@@ -1,20 +1,26 @@
-import threading
+import threading, os
 from datetime import datetime
 from ao3_web_reader.consts import ProcessesConsts
 from ao3_web_reader import processes_manager
+from ao3_web_reader.logger import Logger
+from config import Config
 
 
 class ProcessBase:
-    def __init__(self, app, owner_id):
-        self.app = app
+    def __init__(self, owner_id):
         self.owner_id = owner_id
 
         self.process = threading.Thread(target=self.mainloop)
 
         self.timestamp = str(datetime.timestamp(datetime.now()))
 
+        self.logger = Logger(logger_name=f"{self.__class__.__name__}_{self.timestamp}",
+                             logs_filename=f"{self.__class__.__name__}.log",
+                             logs_path=os.path.join(Config.LOGS_DIR_PATH, "tasks"),
+                             backup_log_files_count=1)
+
     def start_process(self):
-        self.app.logger.info(f"starting {self.get_process_name()}")
+        self.logger.info(f"starting")
         self.process.start()
 
     def get_process_name(self):
@@ -33,3 +39,4 @@ class ProcessBase:
 
     def finish_process(self):
         processes_manager.remove_process_data(self.timestamp)
+        self.logger.info("task completed")

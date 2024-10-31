@@ -1,7 +1,7 @@
 import tempfile
 import os
 from flask import Blueprint, render_template, flash, abort, redirect,\
-    url_for, current_app, send_file, make_response, request
+    url_for, send_file, make_response, request
 import flask_login
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader.utils import files_utils
@@ -83,7 +83,7 @@ def add_work():
                                                                                work_id)
 
         if len(running_processes) == 0:
-            ScraperProcess(current_app, flask_login.current_user.id, tag_name, work_id).start_process()
+            ScraperProcess(flask_login.current_user.id, tag_name, work_id).start_process()
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         else:
@@ -107,7 +107,7 @@ def force_chapter_update(work_id, chapter_id):
                                                                                chapter_id)
 
         if len(running_processes) == 0:
-            ChapterUpdaterProcess(current_app, flask_login.current_user.id, work_id, chapter_id).start_process()
+            ChapterUpdaterProcess(flask_login.current_user.id, work_id, chapter_id).start_process()
             flash(MessagesConsts.CHAPTER_SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         if work_chapter:
