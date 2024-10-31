@@ -3,7 +3,6 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DATETIME
 from sqlalchemy.orm import relationship, mapped_column
 from ao3_web_reader.db import Base
-from ao3_web_reader import db
 from ao3_web_reader.consts import UpdateMessagesConsts
 
 
@@ -91,12 +90,12 @@ class Chapter(Base):
         return self.text.split("\n")
 
     def get_next_chapter(self):
-        next_chapter = db.session.query(Chapter).filter_by(work_id=self.work_id, order_id=self.order_id + 1).first()
+        next_chapter = Chapter.query.filter_by(work_id=self.work_id, order_id=self.order_id + 1).first()
 
         return next_chapter
 
     def get_prev_chapter(self):
-        prev_chapter = db.session.query(Chapter).filter_by(work_id=self.work_id, order_id=self.order_id - 1).first()
+        prev_chapter = Chapter.query.filter_by(work_id=self.work_id, order_id=self.order_id - 1).first()
 
         return prev_chapter
 

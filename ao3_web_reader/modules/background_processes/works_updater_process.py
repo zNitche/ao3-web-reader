@@ -95,7 +95,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 self.is_sync_running = True
                 self.update_process_data()
 
-                users = self.db.session.query(models.User).all()
+                users = models.User.query.all()
                 works_count = sum([len(user.works) for user in users])
 
                 for user in users:

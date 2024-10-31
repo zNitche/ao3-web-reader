@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import exc
@@ -19,6 +18,7 @@ class Database:
     def create_all(self):
         from ao3_web_reader import models
 
+        Base.query = self.session.query_property()
         Base.metadata.create_all(bind=self.engine)
 
     def __create_session_maker(self):
@@ -52,20 +52,6 @@ class Database:
         try:
             self.session.commit()
 
-        except Exception as e:
+        except Exception as exception:
             self.session.rollback()
-            raise
-
-    @contextmanager
-    def session_context(self):
-        session = self.get_session()
-
-        try:
-            yield session
-
-        except Exception as e:
-            session.rollback()
-            raise
-
-        finally:
-            session.remove()
+            raise exception

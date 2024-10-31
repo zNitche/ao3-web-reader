@@ -48,7 +48,7 @@ def create_app(config_class=Config):
 
     @login_manager.user_loader
     def user_loader(user_id):
-        return db.session.query(models.User).filter_by(id=user_id).first()
+        return models.User.query.filter_by(id=user_id).first()
 
     with app.app_context():
         setup_app_managers(app)

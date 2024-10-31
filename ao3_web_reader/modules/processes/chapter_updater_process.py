@@ -1,7 +1,7 @@
 from ao3_web_reader.utils import works_utils
 from ao3_web_reader.modules.processes.process_base import ProcessBase
 from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import models, db, processes_manager
+from ao3_web_reader import models, processes_manager
 
 
 class ChapterUpdaterProcess(ProcessBase):
@@ -24,7 +24,7 @@ class ChapterUpdaterProcess(ProcessBase):
         self.update_process_data()
 
         try:
-            chapter = db.session.query(models.Chapter).filter_by(chapter_id=self.chapter_id).first()
+            chapter = models.Chapter.query.filter_by(chapter_id=self.chapter_id).first()
 
             self.logger.info(f"{chapter.title} force update")
 

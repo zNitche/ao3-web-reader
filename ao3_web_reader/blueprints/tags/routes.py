@@ -13,7 +13,7 @@ tags = Blueprint("tags", __name__, template_folder="templates", static_folder="s
 @tags.route("/")
 @flask_login.login_required
 def all_tags():
-    tags = db.session.query(models.Tag).filter_by(owner_id=flask_login.current_user.id).all()
+    tags = models.Tag.query.filter_by(owner_id=flask_login.current_user.id).all()
 
     return render_template("tags.html", tags=tags)
 
@@ -36,7 +36,7 @@ def add_tag():
 @tags.route("/<tag_id>/management/remove", methods=["POST"])
 @flask_login.login_required
 def remove_tag(tag_id):
-    user_tag = db.session.query(models.Tag).filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
+    user_tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
 
     if user_tag:
         db.remove(user_tag)
@@ -50,7 +50,7 @@ def remove_tag(tag_id):
 @tags.route("/<tag_id>/download", methods=["GET"])
 @flask_login.login_required
 def download_tag(tag_id):
-    tag = db.session.query(models.Tag).filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
+    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
 
     if tag:
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -31,7 +31,7 @@ class ScraperProcess(ProcessBase):
 
             self.logger.info(f"got {self.work_title} data")
 
-            tag = db.session.query(models.Tag).filter_by(owner_id=self.owner_id, name=self.tag_name).first()
+            tag = models.Tag.query.filter_by(owner_id=self.owner_id, name=self.tag_name).first()
 
             work = models_utils.create_work_model(work_data, self.owner_id, tag.id, work_description)
             work.chapters = models_utils.create_chapters_models(work_data)
