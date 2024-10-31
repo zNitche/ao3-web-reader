@@ -4,7 +4,7 @@ from ao3_web_reader import models
 from ao3_web_reader.consts import UpdateMessagesConsts, ProcessesConsts, ChaptersConsts
 from config import Config
 from datetime import datetime
-import time
+import time, random
 
 
 class WorksUpdaterProcess(BackgroundProcessBase):
@@ -57,12 +57,12 @@ class WorksUpdaterProcess(BackgroundProcessBase):
         for order_id, chapter in enumerate(not_removed_chapters):
             chapter.order_id = order_id
 
-    def update_works(self, works):
+    def update_works_states(self, works):
         for work in works:
             if not works_utils.check_if_work_exists(work.work_id):
                 work.was_removed = True
 
-            time.sleep(Config.WORKS_EXIST_CHECK_JOBS_DELAY)
+            time.sleep(random.randrange(1, Config.WORKS_EXIST_CHECK_JOBS_DELAY))
 
     def add_chapter(self, work, chapter):
         work.chapters.append(chapter)
@@ -86,6 +86,8 @@ class WorksUpdaterProcess(BackgroundProcessBase):
         self.db.add(update_message)
 
     def mainloop(self):
+        self.logger.info("starting mainloop")
+
         while True:
             try:
                 processed_works = 0
@@ -98,12 +100,17 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                 for user in users:
                     works = user.works
-                    self.update_works(works)
+                    self.logger.info(f"updating {len(works)} works of {user.username}")
+
+                    self.logger.info(f"updating works states")
+                    self.update_works_states(works)
 
                     for id, work in enumerate(works):
                         if not work.was_removed:
+                            self.logger.info(f"updating {work.name} chapters")
+
                             if id > 0:
-                                time.sleep(Config.WORKS_UPDATER_JOBS_DELAY)
+                                time.sleep(random.randrange(2, Config.WORKS_UPDATER_JOBS_DELAY))
 
                             chapters_struct = works_utils.get_chapters_struct(work.work_id)
 
@@ -127,12 +134,14 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                         self.update_process_data()
 
             except Exception as e:
-                print(f"[{self.get_process_name()}] - {str(e)}")
+                self.logger.exception("mainloop exception")
 
             finally:
                 self.is_sync_running = False
                 self.update_process_data()
 
                 self.progress = 0
+
+            self.logger.info(f"update completed, waiting {Config.WORKS_UPDATER_INTERVAL} for next iteration...")
 
             time.sleep(Config.WORKS_UPDATER_INTERVAL)

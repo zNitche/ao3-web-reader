@@ -1,6 +1,8 @@
 import multiprocessing
 import time
+import os
 from config import Config
+from ao3_web_reader.logger import Logger
 from ao3_web_reader.db import Database
 from ao3_web_reader.modules.managers import RedisClient, ProcessesManager
 
@@ -11,6 +13,8 @@ class BackgroundProcessBase:
 
         self.db = Database()
 
+        self.logger = None
+
         self.processes_cache = RedisClient(db_id=0)
         self.processes_manager = ProcessesManager(cache_db=self.processes_cache)
 
@@ -18,6 +22,15 @@ class BackgroundProcessBase:
         self.process_pid = None
 
     def _setup(self):
+        self_name = self.__class__.__name__
+
+        self.logger = Logger(logger_name=self_name,
+                             logs_filename=f"{self_name}.log",
+                             logs_path=os.path.join(Config.LOGS_DIR_PATH, "background_tasks"),
+                             backup_log_files_count=2)
+
+        self.logger.info("setup has been started...")
+
         cache_db_url = Config.REDIS_SERVER_ADDRESS
         cache_db_port = int(Config.REDIS_SERVER_PORT)
 
@@ -26,14 +39,11 @@ class BackgroundProcessBase:
         self.db.setup(Config.DATABASE_URI)
         self.db.create_all()
 
-    def start_process(self):
-        self.process_handler()
+        self.logger.info("setup done...")
 
+    def start_process(self):
         self.process.start()
         self.process_pid = self.process.pid
-
-    def process_handler(self):
-        pass
 
     def get_process_name(self):
         return type(self).__name__

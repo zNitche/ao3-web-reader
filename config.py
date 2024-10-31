@@ -13,6 +13,8 @@ class Config:
     APP_DIR_PATH = os.path.join(CURRENT_DIR, "ao3_web_reader")
     MIGRATIONS_DIR_PATH = os.path.join(CURRENT_DIR, "database", "migrations")
 
+    LOGS_DIR_PATH = os.path.join(CURRENT_DIR, "logs")
+
     APP_PORT = 8080
     APP_HOST = "0.0.0.0"
     DEBUG_MODE = os.getenv("DEBUG", 0)
