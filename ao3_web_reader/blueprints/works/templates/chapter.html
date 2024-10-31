@@ -11,7 +11,15 @@
             </a>
         </div>
         <div class="chapter-title-wrapper">
-            <h3>{{ chapter.title }}</h3>
+            <h3 class="chapter-title">{{ chapter.title }}</h3>
+            {% if not chapter.was_removed %}
+                <form action="{{ url_for('works.force_chapter_update', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id) }}"
+                      method="POST">
+                    <button class="btn" {% if updating_chapter %}disabled{% endif %} type="submit">
+                        <img src="{{ url_for('static', filename='icons/refresh.svg') }}">
+                    </button>
+                </form>
+            {% endif %}
         </div>
         <div class="chapter-content-wrapper">
             {% for row in chapter.get_formatted_text() %}
@@ -43,14 +51,6 @@
                     {% endif %}
                 </div>
             {% endif %}
-        {% endif %}
-        {% if not chapter.was_removed %}
-            <form action="{{ url_for('works.force_chapter_update', work_id=chapter.work.work_id, chapter_id=chapter.chapter_id) }}"
-                  method="POST" class="w-100">
-                <button class="btn btn-warning chapter-update-button" {% if updating_chapter %}disabled{% endif %} type="submit">
-                    Update Chapter
-                </button>
-            </form>
         {% endif %}
     </div>
 </div>

@@ -292,11 +292,6 @@ body {
     width: 100%;
 }
 
-.chapter-update-button {
-    color: #fff !important;
-    width: 100%;
-}
-
 .chapter-work-name-wrapper {
     margin-bottom: 10px;
 }
@@ -316,6 +311,20 @@ body {
 
 .scraper-processes-container {
     width: 100%;
+}
+
+.chapter-title-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.chapter-title {
+    margin: 0;
+    width: 90%;
+    display: flex;
+    align-items: center;
 }
 
 @media (max-width: 576px) {
