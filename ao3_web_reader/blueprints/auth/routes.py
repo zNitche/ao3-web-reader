@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 import flask_login
 from werkzeug.security import check_password_hash
-from ao3_web_reader.modules import forms
-from ao3_web_reader import models
+from ao3_web_reader import models, forms
 from ao3_web_reader.consts import MessagesConsts, FlashConsts
 
 

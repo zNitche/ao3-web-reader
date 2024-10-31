@@ -3,10 +3,9 @@ import os
 from flask import Blueprint, render_template, flash, abort, redirect,\
     url_for, current_app, send_file, make_response, request
 import flask_login
-from ao3_web_reader.modules import forms
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader.utils import files_utils
-from ao3_web_reader import models, db, processes_manager
+from ao3_web_reader import models, db, processes_manager, forms
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.processes import ScraperProcess, ChapterUpdaterProcess
 

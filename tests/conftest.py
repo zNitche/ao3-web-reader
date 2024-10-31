@@ -1,7 +1,7 @@
 import pytest
 from flask import url_for
 from werkzeug.security import generate_password_hash
-from ao3_web_reader import models, db
+from ao3_web_reader import models, db, forms
 from ao3_web_reader import create_app
 from tests.test_config import TestConfig
 from tests.consts import UsersConsts
@@ -26,8 +26,6 @@ def test_client():
 
 @pytest.fixture(scope="function")
 def logged_test_user(test_client):
-    from ao3_web_reader.modules import forms
-
     form = forms.LoginForm()
     form.username.data = UsersConsts.TEST_USER_NAME
     form.password.data = UsersConsts.TEST_USER_PASSWORD
