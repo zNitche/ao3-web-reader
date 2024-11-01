@@ -6,7 +6,7 @@ from ao3_web_reader.logger import Logger
 from config import Config
 
 
-class ProcessBase:
+class ProcessTask:
     def __init__(self, owner_id):
         self.owner_id = owner_id
 
