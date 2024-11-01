@@ -42,7 +42,11 @@ class RedisClient:
         with self.db_session(raise_exception=True) as session:
             session.flushdb()
 
-    def set_value(self, key, value, ttl=30):
+    def update_ttl(self, name: str, ttl: int):
+        with self.db_session() as session:
+            session.getex(name, ex=ttl)
+
+    def set_value(self, key, value, ttl=60):
         with self.db_session() as session:
             session.set(key, json.dumps(value), ex=ttl)
 

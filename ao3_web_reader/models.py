@@ -1,4 +1,3 @@
-from flask_login import UserMixin
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DATETIME
 from sqlalchemy.orm import relationship, mapped_column
@@ -6,7 +5,7 @@ from ao3_web_reader.db import Base
 from ao3_web_reader.consts import UpdateMessagesConsts
 
 
-class User(Base, UserMixin):
+class User(Base):
     __tablename__ = "users"
 
     id = mapped_column(Integer, primary_key=True)

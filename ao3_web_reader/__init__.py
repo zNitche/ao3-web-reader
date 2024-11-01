@@ -1,10 +1,10 @@
 import os
 from flask import Flask
-import flask_login
 from ao3_web_reader.modules.managers import ProcessesManager
 from ao3_web_reader.modules.managers.redis_client import RedisClient
 from config import Config
 from ao3_web_reader.db import Database
+from ao3_web_reader.authentication import AuthManager
 
 
 db = Database()
@@ -12,12 +12,16 @@ db = Database()
 processes_cache = RedisClient(db_id=0)
 processes_manager = ProcessesManager(cache_db=processes_cache)
 
+auth_db = RedisClient(db_id=1)
+auth_manager = AuthManager(auth_db=auth_db)
+
 
 def setup_app_managers(app):
     redis_address = app.config["REDIS_SERVER_ADDRESS"]
     redis_port = int(app.config["REDIS_SERVER_PORT"])
 
     processes_cache.setup(address=redis_address, port=redis_port)
+    auth_db.setup(address=redis_address, port=redis_port, flush=False)
 
 
 def register_blueprints(app):
@@ -40,15 +44,6 @@ def create_app(config_class=Config):
 
     db.setup(app.config["DATABASE_URI"])
     db.create_all()
-
-    login_manager = flask_login.LoginManager()
-    login_manager.init_app(app)
-
-    from ao3_web_reader import models
-
-    @login_manager.user_loader
-    def user_loader(user_id):
-        return models.User.query.filter_by(id=user_id).first()
 
     with app.app_context():
         setup_app_managers(app)
