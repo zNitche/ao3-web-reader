@@ -44,7 +44,7 @@ class ChapterUpdaterTask(ProcessTask):
             ProcessesConsts.OWNER_ID: self.owner_id,
             ProcessesConsts.WORK_ID: self.work_id,
             ProcessesConsts.CHAPTER_ID: self.chapter_id,
-            ProcessesConsts.PROCESS_NAME: self.get_process_name(),
+            ProcessesConsts.PROCESS_NAME: self.process_name,
             ProcessesConsts.PROGRESS: self.progress,
         }
 
