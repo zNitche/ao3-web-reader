@@ -14,8 +14,10 @@ class ProcessTask:
 
         self.timestamp = str(datetime.timestamp(datetime.now()))
 
-        self.process_name = f"{self.__class__.__name__}_{self.timestamp}"
-        self.logger = Logger(logger_name=self.process_name,
+        self.process_name = self.__class__.__name__
+        self.unique_process_name = f"{self.process_name}_{self.timestamp}"
+
+        self.logger = Logger(logger_name=self.unique_process_name,
                              logs_filename=f"{self.__class__.__name__}.log",
                              logs_path=os.path.join(Config.LOGS_DIR_PATH, "tasks"),
                              backup_log_files_count=1)
@@ -33,8 +35,8 @@ class ProcessTask:
             ProcessesConsts.PROCESS_NAME: self.process_name,
         }
 
-        processes_manager.set_process_data(f"{self.process_name}_{self.timestamp}", process_data)
+        processes_manager.set_process_data(self.unique_process_name, process_data)
 
     def finish_process(self):
-        processes_manager.remove_process_data(self.timestamp)
+        processes_manager.remove_process_data(self.unique_process_name)
         self.logger.info("task completed")

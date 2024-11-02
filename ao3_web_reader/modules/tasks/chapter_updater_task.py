@@ -48,4 +48,4 @@ class ChapterUpdaterTask(ProcessTask):
             ProcessesConsts.PROGRESS: self.progress,
         }
 
-        processes_manager.set_process_data(self.timestamp, process_data)
+        processes_manager.set_process_data(self.unique_process_name, process_data)
