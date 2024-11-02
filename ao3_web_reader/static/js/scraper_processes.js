@@ -1,5 +1,5 @@
 async function renderRunningScraperProcesses() {
-    const apiData = await getData("/api/running-scraping-processes");
+    const apiData = await getData("/api/running-scraping-tasks");
     const processesData = apiData.processes_data;
 
     const mainContentContainer = document.getElementById("scraper-processes-container");
