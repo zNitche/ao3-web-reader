@@ -1,6 +1,5 @@
 from flask import url_for
-from flask_login import current_user
-from ao3_web_reader import models, db
+from ao3_web_reader import models, db, auth_manager
 
 
 def test_tags_preview(test_client, logged_test_user):
@@ -11,7 +10,8 @@ def test_tags_preview(test_client, logged_test_user):
 
 
 def test_remove_tag(test_client, logged_test_user):
-    tag = models.Tag(name="test_tag", owner_id=current_user.id)
+    user = auth_manager.current_user()
+    tag = models.Tag(name="test_tag", owner_id=user.id)
     db.session.add(tag)
     db.session.commit()
 
