@@ -2,7 +2,6 @@ Flask==3.0.3
 Flask-WTF==1.2.2
 SQLAlchemy==2.0.36
 alembic==1.13.3
-gunicorn==23.0.0
 requests==2.32.3
 beautifulsoup4==4.12.3
 python-dotenv==1.0.1
