@@ -1,15 +1,16 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, ValidationError, SelectField
 from wtforms.validators import DataRequired
-from flask_login import current_user
 from ao3_web_reader.utils import works_utils
 from ao3_web_reader.consts import MessagesConsts
 from ao3_web_reader import models
 
 
 class FormBase(FlaskForm):
-    def __init__(self):
+    def __init__(self, user: models.User | None = None):
         super().__init__()
+
+        self._user = user
 
         self.html_ignored_fields = ["CSRFTokenField"]
 
@@ -27,13 +28,13 @@ class AddWorkForm(FormBase):
         if not works_utils.check_if_work_is_accessible(work_id.data):
             raise ValidationError(MessagesConsts.CANT_ACCESS_WORK)
 
-        work = models.Work.query.filter_by(work_id=work_id.data, owner_id=current_user.id).first()
+        work = models.Work.query.filter_by(work_id=work_id.data, owner_id=self._user.id).first()
 
         if work:
             raise ValidationError(MessagesConsts.WORK_ALREADY_ADDED)
 
     def validate_tag_name(self, tag_name):
-        tag = models.Tag.query.filter_by(name=tag_name.data, owner_id=current_user.id).first()
+        tag = models.Tag.query.filter_by(name=tag_name.data, owner_id=self._user.id).first()
 
         if not tag:
             raise ValidationError(MessagesConsts.TAG_DOESNT_EXIST)
@@ -45,5 +46,5 @@ class AddTagForm(FormBase):
     def validate_tag_name(self, tag_name):
         tag = models.Tag.query.filter_by(name=tag_name.data).first()
 
-        if tag and tag.owner_id == current_user.id:
+        if tag and tag.owner_id == self._user.id:
             raise ValidationError(MessagesConsts.TAG_ALREADY_ADDED)
