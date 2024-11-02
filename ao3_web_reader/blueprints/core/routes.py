@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template
 from ao3_web_reader import models, auth_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
@@ -12,7 +12,7 @@ core = Blueprint("core", __name__, template_folder="templates", static_folder="s
 @core.route("/page/<int:page_id>")
 @login_required
 def home(page_id):
-    user = auth_manager.current_user(request)
+    user = auth_manager.current_user()
     user_works_ids = [work.id for work in user.works]
 
     messages_query = models.UpdateMessage.query.filter(models.UpdateMessage.work_id.in_(user_works_ids)).order_by(

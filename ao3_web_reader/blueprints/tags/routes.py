@@ -1,29 +1,31 @@
 import tempfile
 import os
 from flask import Blueprint, render_template, flash, redirect, url_for, abort, send_file
-import flask_login
-from ao3_web_reader import models, db, forms
+from ao3_web_reader import models, db, forms, auth_manager
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
+from ao3_web_reader.authentication.decorators import login_required
 
 
 tags = Blueprint("tags", __name__, template_folder="templates", static_folder="static", url_prefix="/tags")
 
 
 @tags.route("/")
-@flask_login.login_required
+@login_required
 def all_tags():
-    tags = models.Tag.query.filter_by(owner_id=flask_login.current_user.id).all()
+    user = auth_manager.current_user()
+    tags = models.Tag.query.filter_by(owner_id=user.id).all()
 
     return render_template("tags.html", tags=tags)
 
 
 @tags.route("/add", methods=["GET", "POST"])
-@flask_login.login_required
+@login_required
 def add_tag():
-    add_tag_form = forms.AddTagForm()
+    user = auth_manager.current_user()
+    add_tag_form = forms.AddTagForm(user=user)
 
     if add_tag_form.validate_on_submit():
-        tag = models.Tag(name=add_tag_form.tag_name.data, owner_id=flask_login.current_user.id)
+        tag = models.Tag(name=add_tag_form.tag_name.data, owner_id=user.id)
         db.add(tag)
 
         flash(MessagesConsts.ADDED_TAG.format(tag_name=tag.name), FlashConsts.SUCCESS)
@@ -33,9 +35,10 @@ def add_tag():
 
 
 @tags.route("/<tag_id>/management/remove", methods=["POST"])
-@flask_login.login_required
+@login_required
 def remove_tag(tag_id):
-    user_tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
+    user = auth_manager.current_user()
+    user_tag = models.Tag.query.filter_by(owner_id=user.id, id=tag_id).first()
 
     if user_tag:
         db.remove(user_tag)
@@ -47,9 +50,10 @@ def remove_tag(tag_id):
 
 
 @tags.route("/<tag_id>/download", methods=["GET"])
-@flask_login.login_required
+@login_required
 def download_tag(tag_id):
-    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, id=tag_id).first()
+    user = auth_manager.current_user()
+    tag = models.Tag.query.filter_by(owner_id=user.id, id=tag_id).first()
 
     if tag:
         with tempfile.NamedTemporaryFile() as tmpfile:

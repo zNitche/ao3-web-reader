@@ -1,6 +1,6 @@
-import flask_login
 from flask import Blueprint, Response
-from ao3_web_reader import processes_manager
+from ao3_web_reader import processes_manager, auth_manager
+from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.consts import ProcessesConsts
 
 
@@ -13,7 +13,7 @@ def healthcheck():
 
 
 @api.route("/sync-status", methods=["GET"])
-@flask_login.login_required
+@login_required
 def sync_status():
     sync_process_status = processes_manager.get_background_process_data("WorksUpdaterProcess")
     sync_process_running = True if sync_process_status and sync_process_status.get(ProcessesConsts.IS_RUNNING) else False
@@ -24,11 +24,11 @@ def sync_status():
     }
 
 
-@api.route("/running-scraping-processes", methods=["GET"])
-@flask_login.login_required
+@api.route("/running-scraping-tasks", methods=["GET"])
+@login_required
 def running_scraping_processes():
-    user_id = flask_login.current_user.id
-    running_processes = processes_manager.get_processes_data_for_user("ScraperProcess", user_id)
+    user = auth_manager.current_user()
+    running_processes = processes_manager.get_processes_data_for_user("ScraperTask", user.id)
 
     response = {
         "processes_data": running_processes

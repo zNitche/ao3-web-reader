@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, flash, abort, redirect,\
     url_for, make_response, request
-import flask_login
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
-from ao3_web_reader import models, db, processes_manager, forms
+from ao3_web_reader import models, db, processes_manager, forms, auth_manager
+from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
-from ao3_web_reader.modules.processes import ScraperProcess, ChapterUpdaterProcess
+from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -12,10 +12,10 @@ works = Blueprint("works", __name__, template_folder="templates", static_folder=
 
 @works.route("/<tag_name>", defaults={"page_id": 1})
 @works.route("/<tag_name>/<int:page_id>")
-@flask_login.login_required
+@login_required
 def all_works(tag_name, page_id):
-    user_id = flask_login.current_user.id
-    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, name=tag_name).first()
+    user = auth_manager.current_user()
+    tag = models.Tag.query.filter_by(owner_id=user.id, name=tag_name).first()
 
     if tag:
         search_string = request.args.get("search") if request.args.get("search") is not None else ""
@@ -23,7 +23,7 @@ def all_works(tag_name, page_id):
 
         works_query = models.Work.query.filter(models.Work.name.icontains(search_string),
                    models.Work.tag_id == tag.id,
-                   models.Work.owner_id == user_id,
+                   models.Work.owner_id == user.id,
                    models.Work.was_removed == False).\
             order_by(models.Work.last_updated.desc())
 
@@ -44,13 +44,13 @@ def all_works(tag_name, page_id):
 
 @works.route("/<tag_name>/removed-works", defaults={"page_id": 1})
 @works.route("/<tag_name>/removed_works/<int:page_id>")
-@flask_login.login_required
+@login_required
 def removed_works(tag_name, page_id):
-    user_id = flask_login.current_user.id
-    tag = models.Tag.query.filter_by(owner_id=flask_login.current_user.id, name=tag_name).first()
+    user = auth_manager.current_user()
+    tag = models.Tag.query.filter_by(owner_id=user.id, name=tag_name).first()
 
     if tag:
-        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user_id, was_removed=True).order_by(
+        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user.id, was_removed=True).order_by(
             models.Work.last_updated.desc())
 
         works_pagination = Pagination(query=works_query, page_id=page_id, items_per_page=PaginationConsts.WORKS_PER_PAGE)
@@ -64,23 +64,22 @@ def removed_works(tag_name, page_id):
 
 
 @works.route("/add", methods=["GET", "POST"])
-@flask_login.login_required
+@login_required
 def add_work():
-    add_work_form = forms.AddWorkForm()
+    user = auth_manager.current_user()
+    add_work_form = forms.AddWorkForm(user=user)
 
-    tags = models.Tag.query.filter_by(owner_id=flask_login.current_user.id).all()
+    tags = models.Tag.query.filter_by(owner_id=user.id).all()
     add_work_form.tag_name.choices = [tag.name for tag in tags]
 
     if add_work_form.validate_on_submit():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
 
-        running_processes = processes_manager.get_processes_data_for_user_and_work("ScraperProcess",
-                                                                               flask_login.current_user.id,
-                                                                               work_id)
+        running_processes = processes_manager.get_processes_data_for_user_and_work("ScraperProcess", user.id, work_id)
 
         if len(running_processes) == 0:
-            ScraperProcess(flask_login.current_user.id, tag_name, work_id).start_process()
+            ScraperTask(user.id, tag_name, work_id).start_process()
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         else:
@@ -92,19 +91,20 @@ def add_work():
 
 
 @works.route("/<work_id>/chapters/<chapter_id>/force-update", methods=["POST"])
-@flask_login.login_required
+@login_required
 def force_chapter_update(work_id, chapter_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         work_chapter = models.Chapter.query.filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
 
         running_processes = processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
-                                                                               flask_login.current_user.id,
+                                                                               user.id,
                                                                                chapter_id)
 
         if len(running_processes) == 0:
-            ChapterUpdaterProcess(flask_login.current_user.id, work_id, chapter_id).start_process()
+            ChapterUpdaterTask(user.id, work_id, chapter_id).start_process()
             flash(MessagesConsts.CHAPTER_SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         if work_chapter:
@@ -116,9 +116,10 @@ def force_chapter_update(work_id, chapter_id):
 
 
 @works.route("/<work_id>/management/remove", methods=["POST"])
-@flask_login.login_required
+@login_required
 def remove_work(work_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         tag_name = user_work.tag.name
@@ -131,9 +132,10 @@ def remove_work(work_id):
 
 
 @works.route("/<work_id>/toggle-chapters-completion", methods=["POST"])
-@flask_login.login_required
+@login_required
 def toggle_chapters_completion(work_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         for chapter in user_work.chapters:
@@ -149,9 +151,10 @@ def toggle_chapters_completion(work_id):
 
 
 @works.route("/<work_id>/toggle-favorite", methods=["POST"])
-@flask_login.login_required
+@login_required
 def toggle_work_favorite(work_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         user_work.favorite = not user_work.favorite
@@ -169,9 +172,10 @@ def toggle_work_favorite(work_id):
 
 
 @works.route("/<work_id>/download", methods=["GET"])
-@flask_login.login_required
+@login_required
 def download_work(work_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         pass
@@ -180,9 +184,10 @@ def download_work(work_id):
 
 
 @works.route("/<work_id>/chapters")
-@flask_login.login_required
+@login_required
 def chapters(work_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         available_chapters = user_work.get_not_removed_chapters()
@@ -195,16 +200,17 @@ def chapters(work_id):
 
 
 @works.route("/<work_id>/chapters/<chapter_id>")
-@flask_login.login_required
+@login_required
 def chapter(work_id, chapter_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         work_chapter = models.Chapter.query.filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
 
         if work_chapter:
             running_processes = processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
-                                                                                      flask_login.current_user.id,
+                                                                                      user.id,
                                                                                       chapter_id)
             return render_template("chapter.html",
                                    chapter=work_chapter,
@@ -214,9 +220,10 @@ def chapter(work_id, chapter_id):
 
 
 @works.route("/<work_id>/chapters/<chapter_id>/toggle-completed-state", methods=["POST"])
-@flask_login.login_required
+@login_required
 def chapter_toggle_completed_state(work_id, chapter_id):
-    user_work = models.Work.query.filter_by(owner_id=flask_login.current_user.id, work_id=work_id).first()
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
         work_chapter = models.Chapter.query.filter_by(work_id=user_work.id, chapter_id=chapter_id).first()
