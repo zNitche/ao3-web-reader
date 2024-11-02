@@ -1,4 +1,5 @@
 import secrets
+from flask import g, session
 from ao3_web_reader.modules.managers import RedisClient
 from ao3_web_reader import models
 
@@ -11,27 +12,24 @@ class AuthManager:
         token = secrets.token_hex(128)
         self.__auth_db.set_value(token, user_id, ttl=600)
 
-        return token
+        session['auth_token'] = token
 
     def refresh(self, token: str):
         self.__auth_db.update_ttl(token, ttl=3600)
 
-    def logout(self, token: int):
+    def logout(self):
+        token = session.get("auth_token")
         self.__auth_db.delete_key(token)
+
+        session.pop("auth_token")
 
     def token_exists(self, token: str):
         user_id = self.__auth_db.get_value(token)
 
         return True if user_id is not None else False
 
-    def current_user(self, request):
-        try:
-            return request.current_user
-
-        except:
-            pass
-
-        return None
+    def current_user(self):
+        return g.current_user if hasattr(g, "current_user") else None
 
     def user_for_token(self, token: str):
         user_id = self.__auth_db.get_value(token)

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, flash
 from werkzeug.security import check_password_hash
 from ao3_web_reader import models, forms, auth_manager
 from ao3_web_reader.consts import MessagesConsts, FlashConsts
@@ -17,8 +17,7 @@ def login():
         user = models.User.query.filter_by(username=login_form.username.data).first()
 
         if user and check_password_hash(user.password, login_form.password.data):
-            token = auth_manager.login(user.id)
-            session['auth_token'] = token
+            auth_manager.login(user.id)
 
             return redirect(url_for("core.home"))
 
@@ -31,7 +30,6 @@ def login():
 @auth.route("/logout")
 @login_required
 def logout():
-    auth_manager.logout(session.get("auth_token"))
-    session.pop("auth_token")
+    auth_manager.logout()
 
     return redirect(url_for("auth.login"))

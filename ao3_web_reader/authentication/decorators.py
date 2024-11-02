@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, redirect, url_for, session, abort
+from flask import redirect, url_for, session, abort, g
 from ao3_web_reader import auth_manager
 
 
@@ -16,8 +16,7 @@ def login_required(f):
         if not current_user:
             abort(401)
 
-        request.__setattr__("current_user", current_user)
-
+        g.current_user = current_user
         auth_manager.refresh(auth_token)
 
         return f(*args, **kwargs)
