@@ -15,7 +15,7 @@ class Config:
 
     LOGS_DIR_PATH = os.path.join(CURRENT_DIR, "logs")
 
-    APP_PORT = 8080
+    APP_PORT = 8000
     APP_HOST = "0.0.0.0"
     DEBUG_MODE = os.getenv("DEBUG", 0)
 

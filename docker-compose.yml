@@ -13,7 +13,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - 8000:${APP_PORT}
+      - ${APP_PORT}:8000
     volumes:
       - ${DB_PATH}:/ao3_web_reader/database
       - ${LOGS_PATH}:/ao3_web_reader/logs
