@@ -17,11 +17,13 @@ auth_manager = AuthManager(auth_db=auth_db)
 
 
 def setup_app_managers(app):
+    is_debug = app.config.get("DEBUG_MODE")
+
     redis_address = app.config["REDIS_SERVER_ADDRESS"]
     redis_port = int(app.config["REDIS_SERVER_PORT"])
 
     processes_cache.setup(address=redis_address, port=redis_port)
-    auth_db.setup(address=redis_address, port=redis_port, flush=False)
+    auth_db.setup(address=redis_address, port=redis_port, flush=False if is_debug else True)
 
 
 def register_blueprints(app):
