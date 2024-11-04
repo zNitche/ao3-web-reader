@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <script src="{{ url_for('static', filename='main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/modals.js') }}"></script>
 
         <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/favicon.svg') }}" />
 
@@ -15,7 +16,7 @@
               integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
               crossorigin="anonymous">
 
-        <title>AO3 Reader</title>
+        <title>AO3reader</title>
     </head>
     <body>
         {% with messages = get_flashed_messages(with_categories=true) %}
