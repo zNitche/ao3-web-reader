@@ -57,8 +57,8 @@ class BackgroundProcessBase:
     def mainloop(self):
         raise NotImplementedError()
 
-    def update_process_data(self):
-        self.processes_manager.set_process_data(self.get_process_name(), self.get_process_data())
+    def update_process_data(self, ttl=60):
+        self.processes_manager.set_process_data(self.get_process_name(), self.get_process_data(), ttl=ttl)
 
     def get_process_data(self):
         return {}

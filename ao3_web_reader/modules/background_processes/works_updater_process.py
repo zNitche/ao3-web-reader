@@ -93,7 +93,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 processed_works = 0
 
                 self.is_sync_running = True
-                self.update_process_data()
+                self.update_process_data(ttl=600)
 
                 users = models.User.query.all()
                 works_count = sum([len(user.works) for user in users])

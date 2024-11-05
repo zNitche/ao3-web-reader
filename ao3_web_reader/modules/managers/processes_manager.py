@@ -44,8 +44,8 @@ class ProcessesManager:
 
         return processes_data
 
-    def set_process_data(self, timestamp, data):
-        self.cache_manager.set_value(timestamp, data)
+    def set_process_data(self, timestamp, data, ttl=60):
+        self.cache_manager.set_value(timestamp, data, ttl=ttl)
 
     def get_process_data(self, timestamp, process_type=None):
         process_data = self.cache_manager.get_value(timestamp)
