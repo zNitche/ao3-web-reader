@@ -23,8 +23,9 @@ services:
   tasks:
     depends_on:
       - redis
+      - app
     container_name: ao3_web_reader_tasks
-    command: /bin/sh -c "/ao3_web_reader/scripts/run_background_task.sh"
+    command: /bin/sh -c "/ao3_web_reader/scripts/run_background_tasks.sh"
     build: .
     restart: unless-stopped
     volumes:

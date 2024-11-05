@@ -1,1 +1,0 @@
-python3 background_tasks_runner.py
