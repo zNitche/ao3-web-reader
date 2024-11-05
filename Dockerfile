@@ -15,4 +15,4 @@ RUN pip3 install -r requirements/requirements.txt
 RUN pip3 install -r requirements/requirements-prod.txt
 
 RUN chmod +x scripts/entrypoint.sh
-RUN chmod +x scripts/run_background_task.sh
+RUN chmod +x scripts/run_background_tasks.sh
