@@ -10,6 +10,28 @@ AO3 web reader / scraper app created using Flask, SQLite, Redis and Bootstrap, s
 - Force updating chapters.
 
 
+Hello there, It's been almost 2 years since I started working on this project, a lot of time right?
+
+Anyway since then I became much better programmer, and despite that this project works pretty good 
+I decided that it is time for major refactoring which will ensure easier maintenance further down the road.
+
+And here we are, below you can find a list of things that have been done + planned features.
+
+1. Complete dependencies overhaul and proper fragmentation.
+2. Alembic based database migrations.
+3. Database reimplementation (replaced Flask-SQLAlchemy with sqlalchemy) + custom pagination
+(since sqlalchemy doesn't support page base pagination).
+4. New session based authentication system (removed Flask-Login).
+5. Background tasks refactoring (dev mode app auto reloading finally works).
+6. Proper logging implementation.
+7. Styling tweaks + UI bugfixes.
+8. Internal app data flow refactoring, to improve readability.
+9. Improved Docker services architecture.
+
+Planed features:
+- HTML / PDF works export for ebook readers.
+
+
 ### Production Setup
 1. Clone this repo.
 2. Create `.env` config file and change config values (`DB_PATH` and `LOGS_PATH`).
