@@ -9,17 +9,12 @@ AO3 web reader / scraper app created using Flask, SQLite, Redis and Bootstrap, s
 - Downloading works.
 - Force updating chapters.
 
----
-
-Django reimplementation [here](https://github.com/zNitche/ao3-web-reader-django)
-
----
 
 ### Production Setup
 1. Clone this repo.
-2. Generate `.env` config file and change config values (`DB_PATH` and `LOGS_PATH`).
+2. Create `.env` config file and change config values (`DB_PATH` and `LOGS_PATH`).
 ```
-python3 generate_dotenv.py
+cp .env.template .env
 ```
 3. Run docker container.
 ```
@@ -33,15 +28,21 @@ sudo docker compose up -d
 cp .env.template .env
 ```
 3. Change `REDIS_SERVER_ADDRESS` in `.env` to `127.0.0.1`
-4. Run DEV docker-compose.
+4. Install development dependencies 
+```
+pip3 install -r requirements/requirements-dev.txt
+```
+5. Run DEV docker-compose.
 ```
 sudo docker compose -f docker-compose-dev.yml up
 ```
+
 
 ### Database Migrations
 ```
 python3 migrate.py
 ```
+
 
 ### Accounts Management
 1. Bash into container.
@@ -52,7 +53,13 @@ sudo docker container exec -it ao3_web_reader bash
 
 
 ### Tests
-App contains some example tests for available blueprints. To run them:
+App contains some example tests for available routes. To run them:
 ```
 pytest -v tests/
 ```
+
+
+### Extras
+Back when I was learning Django I created this repo [reimplementation](https://github.com/zNitche/ao3-web-reader-django).
+
+Keep in mind that it hasn't been updated since it was finished and might not work anymore.
