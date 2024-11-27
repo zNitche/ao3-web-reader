@@ -29,7 +29,7 @@ And here we are, below you can find a list of things that have been done + plann
 9. Improved Docker services architecture.
 
 Planed features:
-- HTML / PDF works export for ebook readers.
+- works export for ebook readers (epub or plain html).
 
 
 ### Production Setup
