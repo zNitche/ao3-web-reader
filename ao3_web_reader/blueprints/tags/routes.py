@@ -61,7 +61,7 @@ def download_tag(tag_id):
 
             with open(file_path, "a") as file:
                 for work in tag.works:
-                    file.write(f"{work.work_id}: {work.name}\n")
+                    file.write(f"{work.work_id}-{work.name.replace("-", " ")}{'-F' if work.favorite else ''}\n")
 
             return send_file(file_path, as_attachment=True, max_age=0, download_name=f"{tag.name}.txt")
 
