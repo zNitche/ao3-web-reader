@@ -57,12 +57,16 @@ class WorksUpdaterProcess(BackgroundProcessBase):
         for order_id, chapter in enumerate(not_removed_chapters):
             chapter.order_id = order_id
 
+        self.db.commit()
+
     def update_works_states(self, works):
         for work in works:
             if not works_utils.check_if_work_exists(work.work_id):
                 work.was_removed = True
 
             time.sleep(random.randrange(1, Config.WORKS_EXIST_CHECK_JOBS_DELAY))
+
+        self.db.commit()
 
     def add_chapter(self, work, chapter):
         work.chapters.append(chapter)

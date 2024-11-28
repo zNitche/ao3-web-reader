@@ -1,7 +1,7 @@
 from ao3_web_reader.utils import works_utils
 from ao3_web_reader.modules.tasks.task_base import ProcessTask
 from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import models, processes_manager
+from ao3_web_reader import models, processes_manager, db
 
 
 class ChapterUpdaterTask(ProcessTask):
@@ -30,6 +30,8 @@ class ChapterUpdaterTask(ProcessTask):
 
             chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
             chapter.text = "\n".join(chapter_data)
+
+            db.commit()
 
             self.logger.info(f"got data for {chapter.title}")
 
