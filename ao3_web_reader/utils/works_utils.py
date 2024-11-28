@@ -47,12 +47,31 @@ def get_chapters_struct(work_id):
     return chapters_data
 
 
+def cleanup_chapter_html(soup):
+    # https://validator.w3.org/feed/docs/warning/SecurityRisk.html
+    dangerous_tags = ["comment", "embed", "link", "listing", "meta", "noscript", "object",
+                      "plaintext", "script", "xmp", "img", "video", "audio"]
+
+    chapter_text_landmark_tags = soup.find_all("h3", class_="landmark", recursive=True)
+
+    for tag in chapter_text_landmark_tags:
+        tag.decompose()
+
+    for tag in dangerous_tags:
+        target_tags = soup.find_all(tag, recursive=True)
+
+        for target_tag in target_tags:
+            target_tag.decompose()
+
+
 def get_chapter_content(chapter_url):
     html_content = requests.get(chapter_url).text
 
     soup = BeautifulSoup(html_content, "html.parser")
 
     content_children = soup.find("div", class_="userstuff module")
+    cleanup_chapter_html(content_children)
+
     parsed_content = [str(tag) for tag in content_children.contents]
 
     return parsed_content
