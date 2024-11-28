@@ -81,7 +81,7 @@ body {
     word-break: break-word;
 }
 
-.chapter-controls-wrapper {
+.chapter-navigation {
     display: flex;
     flex-direction: row;
     gap: 0 10px;
@@ -325,6 +325,13 @@ body {
     width: 90%;
     display: flex;
     align-items: center;
+}
+
+.chapter-controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
 }
 
 @media (max-width: 576px) {
