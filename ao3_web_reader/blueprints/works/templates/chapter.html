@@ -22,11 +22,7 @@
             {% endif %}
         </div>
         <div class="chapter-content-wrapper">
-            {% for row in chapter.get_formatted_text() %}
-                <p>
-                    {{ row }}
-                </p>
-            {% endfor %}
+            {{ chapter.text|safe }}
         </div>
         {% if not chapter.was_removed %}
             <div class="chapter-controls-wrapper">

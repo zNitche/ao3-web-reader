@@ -48,17 +48,14 @@ def get_chapters_struct(work_id):
 
 
 def get_chapter_content(chapter_url):
-    content_data = []
-
     html_content = requests.get(chapter_url).text
 
     soup = BeautifulSoup(html_content, "html.parser")
-    content_paragraphs = soup.find("div", class_="userstuff module").findChildren("p", recursive=True)
 
-    for line in content_paragraphs:
-        content_data.append(line.text)
+    content_children = soup.find("div", class_="userstuff module")
+    parsed_content = [str(tag) for tag in content_children.contents]
 
-    return content_data
+    return parsed_content
 
 
 def get_chapter_data_struct(chapter_struct):

@@ -85,9 +85,6 @@ class Chapter(Base):
 
     work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
 
-    def get_formatted_text(self):
-        return self.text.split("\n")
-
     def get_next_chapter(self):
         next_chapter = Chapter.query.filter_by(work_id=self.work_id, order_id=self.order_id + 1).first()
 
