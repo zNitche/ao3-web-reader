@@ -69,10 +69,10 @@ def get_chapter_content(chapter_url):
 
     soup = BeautifulSoup(html_content, "html.parser")
 
-    content_children = soup.find("div", class_="userstuff module")
-    cleanup_chapter_html(content_children)
+    chapter_content = soup.find("div", class_="userstuff module")
+    cleanup_chapter_html(chapter_content)
 
-    parsed_content = [str(tag) for tag in content_children.contents]
+    parsed_content = "".join([str(tag) for tag in chapter_content.contents])
 
     return parsed_content
 

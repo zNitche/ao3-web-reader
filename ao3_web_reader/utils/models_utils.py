@@ -18,7 +18,7 @@ def create_chapter_model(chapter_data):
     order_id = chapter_data[ChaptersConsts.ORDER_ID]
     chapter_date = chapter_data[ChaptersConsts.DATE]
 
-    chapter = models.Chapter(title=title, chapter_id=chapter_id, text="\n".join(content),
+    chapter = models.Chapter(title=title, chapter_id=chapter_id, text=content,
                              order_id=order_id, date=chapter_date, completed=False)
 
     return chapter

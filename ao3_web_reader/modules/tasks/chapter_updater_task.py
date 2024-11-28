@@ -29,9 +29,10 @@ class ChapterUpdaterTask(ProcessTask):
             self.logger.info(f"{chapter.title} force update")
 
             chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
-            chapter.text = "\n".join(chapter_data)
 
-            db.commit()
+            if chapter_data:
+                chapter.text = chapter_data
+                db.commit()
 
             self.logger.info(f"got data for {chapter.title}")
 
