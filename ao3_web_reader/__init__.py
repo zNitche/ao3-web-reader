@@ -35,7 +35,6 @@ def register_blueprints(app):
     app.register_blueprint(blueprints.works)
     app.register_blueprint(blueprints.tags)
     app.register_blueprint(blueprints.api)
-    app.register_blueprint(blueprints.files)
 
 
 def create_app(config_class=Config):
