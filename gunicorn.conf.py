@@ -10,7 +10,7 @@ workers = 2 * multiprocessing.cpu_count() + 1
 threads = multiprocessing.cpu_count()
 worker_class = "gthread"
 
-timeout = 10
+timeout = 20
 keepalive = 5
 
 loglevel = "error"
