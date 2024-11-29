@@ -4,7 +4,7 @@ from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader import models, db, processes_manager, forms, auth_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
-from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask
+from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -111,6 +111,27 @@ def force_chapter_update(work_id, chapter_id):
             return redirect(url_for("works.chapter",
                                     work_id=work_id,
                                     chapter_id=chapter_id))
+
+    abort(404)
+
+
+@works.route("/<work_id>/force-chapters-update", methods=["GET"])
+@login_required
+def force_chapters_update(work_id):
+    user = auth_manager.current_user()
+    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
+
+    if user_work:
+        running_processes = processes_manager.get_processes_data_for_user_and_work("ChaptersUpdaterProcess",
+                                                                                    user.id,
+                                                                                    work_id)
+
+        if len(running_processes) == 0:
+            WorkUpdaterTask(user.id, work_id).start_process()
+            flash(MessagesConsts.CHAPTERS_UPDATE_PROCESS_STARTED, FlashConsts.SUCCESS)
+
+        page_id = request.args.get("page_id")
+        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
     abort(404)
 

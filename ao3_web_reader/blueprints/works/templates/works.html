@@ -59,6 +59,9 @@
 <!--                        <a href="{{ url_for('works.download_work', work_id=work.work_id) }}">-->
 <!--                            <img src="{{ url_for('static', filename='icons/download_icon.svg') }}" alt="download work">-->
 <!--                        </a>-->
+                        <a href="{{ url_for('works.force_chapters_update', work_id=work.work_id) }}">
+                            <img src="{{ url_for('static', filename='icons/refresh.svg') }}">
+                        </a>
                         <button type="button" class="btn" onclick="showChaptersCompletionModal('chaptersCompletionModal',
                            {% if not work.all_chapters_completed() %}
                            'Do you want to mark all chapters of work as completed ?',
