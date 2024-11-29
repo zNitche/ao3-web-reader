@@ -24,17 +24,19 @@ class ChapterUpdaterTask(ProcessTask):
         self.update_process_data()
 
         try:
-            chapter = models.Chapter.query.filter_by(chapter_id=self.chapter_id).first()
+            work = models.Work.query.filter_by(owner_id=self.owner_id, work_id=self.work_id).first()
+            chapter = models.Chapter.query.filter_by(chapter_id=self.chapter_id, work_id=work.id).first()
 
-            self.logger.info(f"{chapter.title} force update")
+            if not chapter.was_removed:
+                self.logger.info(f"{chapter.title} force update...")
 
-            chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
+                chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
 
-            if chapter_data:
-                chapter.text = chapter_data
-                db.commit()
+                if chapter_data:
+                    chapter.text = chapter_data
+                    db.commit()
 
-            self.logger.info(f"got data for {chapter.title}")
+                    self.logger.info(f"got data for {chapter.title}")
 
         except Exception as e:
             self.logger.exception("mainloop error")
