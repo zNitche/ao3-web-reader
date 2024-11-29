@@ -47,21 +47,25 @@ def get_chapters_struct(work_id):
     return chapters_data
 
 
-def cleanup_chapter_html(soup):
+def sanitize_chapter_content(soup):
     # https://validator.w3.org/feed/docs/warning/SecurityRisk.html
     dangerous_tags = ["comment", "embed", "link", "listing", "meta", "noscript", "object",
-                      "plaintext", "script", "xmp", "img", "video", "audio"]
+                      "plaintext", "script", "xmp", "img", "video", "audio", "iframe"]
 
-    chapter_text_landmark_tags = soup.find_all("h3", class_="landmark", recursive=True)
-
-    for tag in chapter_text_landmark_tags:
+    # Clear landmarks
+    for tag in soup.find_all("h3", class_="landmark", recursive=True):
         tag.decompose()
 
+    # Remove potentially dangerous tags
     for tag in dangerous_tags:
         target_tags = soup.find_all(tag, recursive=True)
 
         for target_tag in target_tags:
             target_tag.decompose()
+
+    # Clear tags attributes
+    for tag in soup.find_all(recursive=True):
+        tag.attrs.clear()
 
 
 def get_chapter_content(chapter_url):
@@ -70,8 +74,11 @@ def get_chapter_content(chapter_url):
     soup = BeautifulSoup(html_content, "html.parser")
 
     chapter_content = soup.find("div", class_="userstuff module")
-    cleanup_chapter_html(chapter_content)
 
+    if chapter_content is None:
+        raise Exception("chapter content is empty")
+
+    sanitize_chapter_content(chapter_content)
     parsed_content = "".join([str(tag) for tag in chapter_content.contents])
 
     return parsed_content
