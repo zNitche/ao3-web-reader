@@ -31,6 +31,9 @@
                         {% endif %}
                     </div>
                     <div class="work-management-wrapper">
+                        <a href="{{ url_for('tags.force_update', tag_id=tag.id) }}">
+                            <img src="{{ url_for('static', filename='icons/refresh.svg') }}">
+                        </a>
                         <a href="{{ url_for('works.removed_works', tag_name=tag.name) }}">
                             <img src="{{ url_for('static', filename='icons/archive_icon.svg') }}" alt="removed works">
                         </a>

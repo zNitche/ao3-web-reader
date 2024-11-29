@@ -1,8 +1,9 @@
 import tempfile
 import os
 from flask import Blueprint, render_template, flash, redirect, url_for, abort, send_file
-from ao3_web_reader import models, db, forms, auth_manager
+from ao3_web_reader import models, db, forms, auth_manager, processes_manager
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
+from ao3_web_reader.modules.tasks import TagUpdaterTask
 from ao3_web_reader.authentication.decorators import login_required
 
 
@@ -64,5 +65,23 @@ def download_tag(tag_id):
                     file.write(f"{work.work_id}-{work.name.replace('-', ' ')}{'-F' if work.favorite else ''}\n")
 
             return send_file(file_path, as_attachment=True, max_age=0, download_name=f"{tag.name}.txt")
+
+    abort(404)
+
+
+@tags.route("/<tag_id>/force-update", methods=["GET"])
+@login_required
+def force_update(tag_id):
+    user = auth_manager.current_user()
+    tag = models.Tag.query.filter_by(owner_id=user.id, id=tag_id).first()
+
+    if tag:
+        running_processes = processes_manager.get_processes_data_for_user("TagUpdaterTask", user.id)
+
+        if len(running_processes) == 0:
+            TagUpdaterTask(user.id, tag_id).start_process()
+            flash(MessagesConsts.TAG_UPDATE_PROCESS_STARTED, FlashConsts.SUCCESS)
+
+        return redirect(url_for("tags.all_tags"))
 
     abort(404)
