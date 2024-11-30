@@ -1,10 +1,13 @@
+import tempfile
+import os
 from flask import Blueprint, render_template, flash, abort, redirect,\
-    url_for, make_response, request
+    url_for, make_response, request, send_file
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
 from ao3_web_reader import models, db, processes_manager, forms, auth_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
+from ao3_web_reader.ebook_exporter import HTMLExporter
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -199,7 +202,16 @@ def download_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
-        pass
+        with tempfile.NamedTemporaryFile() as tmpfile:
+            exporter = HTMLExporter(user.id, user_work)
+            file_path = os.path.join(tempfile.gettempdir(), tmpfile.name)
+
+            with open(file_path, "w") as file:
+                exporter.export(file)
+
+            work_name = user_work.name.replace("/", "-")
+
+            return send_file(file_path, as_attachment=True, max_age=0, download_name=f"{work_name}.{exporter.extension}")
 
     abort(404)
 
