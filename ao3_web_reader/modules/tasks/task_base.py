@@ -12,10 +12,10 @@ class ProcessTask:
 
         self.process = threading.Thread(target=self.mainloop)
 
-        self.timestamp = str(datetime.timestamp(datetime.now()))
+        self.timestamp = str(int(datetime.timestamp(datetime.now())))
 
         self.process_name = self.__class__.__name__
-        self.unique_process_name = f"{self.process_name}_{self.timestamp}"
+        self.unique_process_name = f"{self.process_name}_{self.owner_id}_{self.timestamp}"
 
         self.logger = Logger(logger_name=self.unique_process_name,
                              logs_filename=f"{self.__class__.__name__}.log",
