@@ -8,6 +8,7 @@ from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
 from ao3_web_reader.ebook_exporter import HTMLExporter
+from ao3_web_reader.utils import works_utils
 
 
 works = Blueprint("works", __name__, template_folder="templates", static_folder="static", url_prefix="/works")
@@ -207,9 +208,9 @@ def download_work(work_id):
             file_path = os.path.join(tempfile.gettempdir(), tmpfile.name)
 
             with open(file_path, "w") as file:
-                exporter.export(file)
+                exporter.export(file, prettify=False)
 
-            work_name = user_work.name.replace("/", "-")
+            work_name = works_utils.serialize_work_name(user_work.name)
 
             return send_file(file_path, as_attachment=True, max_age=0, download_name=f"{work_name}.{exporter.extension}")
 

@@ -148,3 +148,6 @@ def get_chapter(work_id, chapter_id):
     chapter_content = get_chapter_content(chapter_url)
 
     return chapter_content
+
+def serialize_work_name(name):
+    return name.replace("/", "-").replace(" ", "_").replace(".", "").replace("'s", "s")
