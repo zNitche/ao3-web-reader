@@ -2,6 +2,7 @@ import os
 import config
 import sys
 import copy
+from bs4 import BeautifulSoup
 from datetime import datetime
 from ao3_web_reader import models
 from ao3_web_reader.logger import Logger
@@ -47,7 +48,7 @@ class HTMLExporter:
 
         return template
 
-    def export(self, output_file: sys.stdout):
+    def export(self, output_file: sys.stdout, prettify=True):
         self.logger.info("stating export process...")
 
         try:
@@ -72,6 +73,10 @@ class HTMLExporter:
 
             core_template = self.__replace_template_value(core_template, "chapters", " ".join(chapters))
             self.logger.info(f"saving {self.work.name} exported content...")
+
+            if prettify:
+                soup = BeautifulSoup(core_template)
+                core_template = soup.prettify()
 
             output_file.write(core_template)
 
