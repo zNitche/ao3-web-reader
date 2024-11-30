@@ -15,9 +15,7 @@
                    </div>
                     <div class="item-title">
                         <a href="{{ url_for('works.all_works', tag_name=tag.name) }}">
-                            <h2>
-                                {{ tag.name }}
-                            </h2>
+                            <h2>{{ tag.name }}</h2>
                         </a>
                     </div>
                     <div class="item-content-wrapper">
@@ -31,9 +29,10 @@
                         {% endif %}
                     </div>
                     <div class="work-management-wrapper">
-                        <a href="{{ url_for('tags.force_update', tag_id=tag.id) }}">
+                        <button type="button" class="btn" onclick="showRunLongRunningTaskModal('runLongRunningTask',
+                            '{{ url_for('tags.force_update', tag_id=tag.id) }}')">
                             <img src="{{ url_for('static', filename='icons/refresh.svg') }}">
-                        </a>
+                        </button>
                         <a href="{{ url_for('works.removed_works', tag_name=tag.name) }}">
                             <img src="{{ url_for('static', filename='icons/archive_icon.svg') }}" alt="removed works">
                         </a>
@@ -51,6 +50,7 @@
         {% endif %}
     </div>
 
+    {% include "components/modals/start_long_running_task.html" %}
     {% include "components/modals/remove_tag_modal.html" %}
 </div>
 

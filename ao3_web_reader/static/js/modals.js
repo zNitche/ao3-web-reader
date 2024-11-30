@@ -1,3 +1,10 @@
+function showRunLongRunningTaskModal(modalId, actionUrl) {
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    document.getElementById("run-long-running-task-form").action = actionUrl;
+
+    modal.show();
+}
+
 function showRemoveModal(modalID, itemName, actionURL) {
     let modal = new bootstrap.Modal(document.getElementById(modalID));
 

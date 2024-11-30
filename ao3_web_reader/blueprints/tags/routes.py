@@ -69,7 +69,7 @@ def download_tag(tag_id):
     abort(404)
 
 
-@tags.route("/<tag_id>/force-update", methods=["GET"])
+@tags.route("/<tag_id>/force-update", methods=["POST"])
 @login_required
 def force_update(tag_id):
     user = auth_manager.current_user()
