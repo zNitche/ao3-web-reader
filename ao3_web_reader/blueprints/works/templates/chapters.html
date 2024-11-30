@@ -31,9 +31,7 @@
                                             <img src="{{ url_for('static', filename='icons/not_done_icon.svg') }}" alt="incomplete">
                                         {% endif %}
                                     </div>
-                                    <div class="item-title">
-                                        {{ chapter.title }}
-                                    </div>
+                                    <div class="item-title">{{ chapter.title }}</div>
                                 </div>
                             </a>
                         {% endfor %}
@@ -41,15 +39,11 @@
                 {% endif %}
                 {% if removed_chapters|length > 0 %}
                     <div class="chapters-wrapper">
-                        <p>
-                            Removed chapters:
-                        </p>
+                        <p>Removed chapters:</p>
                         {% for chapter in removed_chapters %}
                             <a class="chapter-nav-bar" href="{{ url_for('works.chapter', work_id=work.work_id, chapter_id=chapter.chapter_id) }}">
                                 <div class="content-item">
-                                    <div class="item-title">
-                                        {{ chapter.title }}
-                                    </div>
+                                    <div class="item-title">{{ chapter.title }}</div>
                                 </div>
                             </a>
                         {% endfor %}
