@@ -7,7 +7,8 @@ AO3 web reader / scraper app created using Flask, SQLite, Redis and Bootstrap, s
 - Adding works to favorites.
 - Auto-update of added works.
 - Downloading works.
-- Force updating chapters.
+- Force updating chapters, works and tags.
+- Exporting works for ebook readers (html format).
 
 
 Hello there, It's been almost 2 years since I started working on this project, a lot of time right?
@@ -15,7 +16,7 @@ Hello there, It's been almost 2 years since I started working on this project, a
 Anyway since then I became much better programmer, and despite that this project works pretty good 
 I decided that it is time for major refactoring which will ensure easier maintenance further down the road.
 
-And here we are, below you can find a list of things that have been done + planned features.
+And here we are, below you can find a list of things that have been done.
 
 1. Complete dependencies overhaul and proper fragmentation.
 2. Alembic based database migrations.
@@ -27,9 +28,6 @@ And here we are, below you can find a list of things that have been done + plann
 7. Styling tweaks + UI bugfixes.
 8. Internal app data flow refactoring, to improve readability.
 9. Improved Docker services architecture.
-
-Planed features:
-- works export for ebook readers (epub or plain html).
 
 
 ### Production Setup
