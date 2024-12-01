@@ -1,4 +1,4 @@
 from ao3_web_reader.modules.tasks.chapter_updater_task import ChapterUpdaterTask
-from ao3_web_reader.modules.tasks.work_updater_tasks import WorkUpdaterTask
 from ao3_web_reader.modules.tasks.scraper_task import ScraperTask
-from ao3_web_reader.modules.tasks.tag_updater_task import TagUpdaterTask
+from ao3_web_reader.modules.tasks.work_update.work_updater_task import WorkUpdaterTask
+from ao3_web_reader.modules.tasks.work_update.tag_updater_task import TagUpdaterTask

@@ -1,28 +1,15 @@
 import time
 import random
-from ao3_web_reader.utils import works_utils
-from ao3_web_reader.modules.tasks.task_base import ProcessTask
+from ao3_web_reader.modules.tasks.work_update.work_update_task_base import WorkUpdateTaskBase
 from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import models, processes_manager, db
+from ao3_web_reader import models, processes_manager
 
 
-class WorkUpdaterTask(ProcessTask):
+class WorkUpdaterTask(WorkUpdateTaskBase):
     def __init__(self, owner_id, work_id):
         super().__init__(owner_id)
 
         self.work_id = work_id
-
-    def __update_description(self, work):
-        try:
-            description = works_utils.get_work_description(work.work_id)
-
-            work.description = description
-            db.commit()
-
-            self.logger.info("work's description has been updated successfully")
-
-        except Exception as e:
-            self.logger.exception("error while updating work's description")
 
     def mainloop(self):
         self.update_process_data()
@@ -31,19 +18,13 @@ class WorkUpdaterTask(ProcessTask):
             work = models.Work.query.filter_by(work_id=self.work_id, owner_id=self.owner_id).first()
             self.logger.info(f"{work.name} force update, updating description...")
 
-            self.__update_description(work)
+            self._update_description(work)
             self.logger.info("starting chapters update...")
 
             for chapter in work.chapters:
                 if not chapter.was_removed:
                     try:
-                        chapter_data = works_utils.get_chapter(self.work_id, chapter.chapter_id)
-
-                        if chapter_data:
-                            chapter.text = chapter_data
-                            db.commit()
-
-                            self.logger.info(f"updated data for {chapter.title}")
+                        self._update_chapter(work, chapter)
 
                         time.sleep(random.randint(3, 5))
 

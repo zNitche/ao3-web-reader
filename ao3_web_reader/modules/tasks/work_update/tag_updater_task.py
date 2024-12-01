@@ -1,28 +1,14 @@
 import time
 import random
-from ao3_web_reader.utils import works_utils
-from ao3_web_reader.modules.tasks.task_base import ProcessTask
-from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import models, processes_manager, db
+from ao3_web_reader.modules.tasks.work_update.work_update_task_base import WorkUpdateTaskBase
+from ao3_web_reader import models
 
 
-class TagUpdaterTask(ProcessTask):
+class TagUpdaterTask(WorkUpdateTaskBase):
     def __init__(self, owner_id, tag_id):
         super().__init__(owner_id)
 
         self.tag_id = tag_id
-
-    def __update_description(self, work):
-        try:
-            description = works_utils.get_work_description(work.work_id)
-
-            work.description = description
-            db.commit()
-
-            self.logger.info("work's description has been updated successfully")
-
-        except Exception as e:
-            self.logger.exception("error while updating work's description")
 
     def mainloop(self):
         self.update_process_data()
@@ -43,21 +29,13 @@ class TagUpdaterTask(ProcessTask):
 
                         self.logger.info("starting description update...")
 
-                        self.__update_description(work)
+                        self._update_description(work)
                         self.logger.info("starting chapters update...")
 
                         for chapter in work.chapters:
                             if not chapter.was_removed:
-                                self.logger.info(f"updating {chapter.title}")
-
                                 try:
-                                    chapter_data = works_utils.get_chapter(work.work_id, chapter.chapter_id)
-
-                                    if chapter_data:
-                                        chapter.text = chapter_data
-                                        db.commit()
-
-                                        self.logger.info(f"updated data for {chapter.title}")
+                                    self._update_chapter(work, chapter)
 
                                     delay = random.randint(10, 20)
                                     self.logger.info(f"waiting for {delay} seconds...")
@@ -79,11 +57,3 @@ class TagUpdaterTask(ProcessTask):
 
         finally:
             self.finish_process()
-
-    def update_process_data(self):
-        process_data = {
-            ProcessesConsts.OWNER_ID: self.owner_id,
-            ProcessesConsts.PROCESS_NAME: self.process_name,
-        }
-
-        processes_manager.set_process_data(self.unique_process_name, process_data)
