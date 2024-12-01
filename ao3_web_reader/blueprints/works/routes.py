@@ -1,4 +1,5 @@
 import tempfile
+import zipfile
 import os
 from flask import Blueprint, render_template, flash, abort, redirect,\
     url_for, make_response, request, send_file
@@ -203,16 +204,21 @@ def download_work(work_id):
     user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
 
     if user_work:
-        with tempfile.NamedTemporaryFile() as tmpfile:
+        with tempfile.TemporaryDirectory() as tmp_dir_name:
             exporter = HTMLExporter(user.id, user_work)
-            file_path = os.path.join(tempfile.gettempdir(), tmpfile.name)
+            files_path = os.path.join(tempfile.gettempdir(), tmp_dir_name)
 
-            with open(file_path, "w") as file:
-                exporter.export(file, prettify=False)
-
+            exporter.export(files_path, prettify=True)
             work_name = works_utils.serialize_work_name(user_work.name)
 
-            return send_file(file_path, as_attachment=True, max_age=0, download_name=f"{work_name}.{exporter.extension}")
+            archive_path = os.path.join(tempfile.gettempdir(), f"{work_name}.zip")
+            with zipfile.ZipFile(archive_path, mode="w") as archive:
+                for file in os.listdir(files_path):
+                    path = os.path.join(files_path, file)
+
+                    archive.write(path, arcname=file)
+
+            return send_file(archive_path, as_attachment=True, max_age=0, download_name=f"{work_name}.zip")
 
     abort(404)
 
