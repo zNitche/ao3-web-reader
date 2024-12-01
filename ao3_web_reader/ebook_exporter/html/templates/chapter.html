@@ -1,10 +1,23 @@
-<div class="meta group">
-  <h2 class="heading">{{title}}</h2>
-  <p>Added: {{date}}</p>
-</div>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>{{title}}</title>
+  <style type="text/css">
+    .userstuff { font-family: "Nimbus Roman No9 L", "Times New Roman", serif; padding: 1em; }
+  </style>
+</head>
+<body>
+<div>
+  <div class="meta group">
+    <h2 class="chapter">{{title}}</h2>
+    <p>Added: {{date}}</p>
+  </div>
 
-<!--chapter content-->
-<div class="userstuff">
-{{content}}
+  <div class="userstuff">
+    {{content}}
+  </div>
 </div>
-<!--/chapter content-->
+</body>
+</html>

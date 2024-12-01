@@ -1,46 +1,40 @@
-<!-- Taken from AO3 HTML export file -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="x-ua-compatible" content="ie=edge" />
-  <title>{{work_name}}</title>
-  <style type="text/css">
-    p.message { text-align: center; }
-    .meta h1 { font-size: 1.5em; text-align: center; }
-    .meta h2 { font-size: 1.25em; text-align: center; }
-    .meta h2 { page-break-before: always; }
-    .meta .byline { text-align: center; }
-    .meta dl.tags { border: 1px solid; padding: 1em; }
-    .meta dd { margin: -1em 0 0 10em; }
-    #chapters { font-family: "Nimbus Roman No9 L", "Times New Roman", serif; padding: 1em; }
-    .userstuff { font-family: "Nimbus Roman No9 L", "Times New Roman", serif; padding: 1em; }
-    /* Invisible headings to help Calibre make a Table of Contents */
-    .toc-heading { display: none; }
-  </style>
-</head>
-<body>
-
-<div id="preface">
-  <h2 class="toc-heading">Preface</h2>
-
-  <p class="message">
-    <b>{{work_name}}</b><br/>
-  </p>
-
-  <div class="meta">
-    <dl class="tags">
-      <dt>Stats:</dt>
-      <dd>Added: {{work_added_date}}</dd>
-      <dd>Updated: {{work_last_update}}</dd>
-    </dl>
-    <h1>{{work_name}}</h1>
-    <p>Summary</p>
-    <blockquote class="userstuff"><p>{{work_description}}</p></blockquote>
-  </div>
-</div>
-
-<div id="chapters" class="userstuff">{{chapters}}</div>
-
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <title>{{work_name}}</title>
+        <style type="text/css">
+            p.title { text-align: center; }
+            .meta h1 { font-size: 1.5em; text-align: center; }
+            .meta h2 { font-size: 1.25em; text-align: center; }
+            .meta h2 { page-break-before: always; }
+            .meta .byline { text-align: center; }
+            .meta dl.stats { border: 1px solid; padding: 1em; }
+            .meta dd { margin: -1em 0 0 10em; }
+            .userstuff { font-family: "Nimbus Roman No9 L", "Times New Roman", serif; padding: 1em; }
+        </style>
+    </head>
+    <body>
+        <p class="title">
+            <h1 class="title">{{work_name}}</h1>
+        </p>
+        <div class="meta">
+            <dl class="stats">
+              <dt>Added:</dt>
+              <dd>{{work_added_date}}</dd>
+              <dt>Updated:</dt>
+              <dd>{{work_last_update}}</dd>
+            </dl>
+            <h1>{{work_name}}</h1>
+            <p>Summary</p>
+            <blockquote class="userstuff">
+                <p>{{work_description}}</p>
+            </blockquote>
+        </div>
+        <h1>Chapters</h1>
+        <p>
+            {{items}}
+        </p>
+    </body>
 </html>
