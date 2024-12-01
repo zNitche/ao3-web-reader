@@ -12,6 +12,18 @@ class TagUpdaterTask(ProcessTask):
 
         self.tag_id = tag_id
 
+    def __update_description(self, work):
+        try:
+            description = works_utils.get_work_description(work.work_id)
+
+            work.description = description
+            db.commit()
+
+            self.logger.info("work's description has been updated successfully")
+
+        except Exception as e:
+            self.logger.exception("error while updating work's description")
+
     def mainloop(self):
         self.update_process_data()
         works_updated = 0
@@ -28,6 +40,11 @@ class TagUpdaterTask(ProcessTask):
                 for work in works:
                     if not work.was_removed:
                         self.logger.info(f"updating {work.name}, {works_count - works_updated} to go...")
+
+                        self.logger.info("starting description update...")
+
+                        self.__update_description(work)
+                        self.logger.info("starting chapters update...")
 
                         for chapter in work.chapters:
                             if not chapter.was_removed:

@@ -12,12 +12,27 @@ class WorkUpdaterTask(ProcessTask):
 
         self.work_id = work_id
 
+    def __update_description(self, work):
+        try:
+            description = works_utils.get_work_description(work.work_id)
+
+            work.description = description
+            db.commit()
+
+            self.logger.info("work's description has been updated successfully")
+
+        except Exception as e:
+            self.logger.exception("error while updating work's description")
+
     def mainloop(self):
         self.update_process_data()
 
         try:
             work = models.Work.query.filter_by(work_id=self.work_id, owner_id=self.owner_id).first()
-            self.logger.info(f"{work.name} force update")
+            self.logger.info(f"{work.name} force update, updating description...")
+
+            self.__update_description(work)
+            self.logger.info("starting chapters update...")
 
             for chapter in work.chapters:
                 if not chapter.was_removed:
