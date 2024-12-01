@@ -1,10 +1,10 @@
 from ao3_web_reader.utils import works_utils
-from ao3_web_reader.modules.tasks.task_base import ProcessTask
+from ao3_web_reader.modules.tasks.task_base import TaskBase
 from ao3_web_reader.consts import ProcessesConsts
 from ao3_web_reader import processes_manager, db
 
 
-class WorkUpdateTaskBase(ProcessTask):
+class WorkUpdateTaskBase(TaskBase):
     def __init__(self, owner_id):
         super().__init__(owner_id)
 
