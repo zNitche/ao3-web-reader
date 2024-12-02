@@ -12,7 +12,7 @@ class AuthManager:
         token = secrets.token_hex(128)
         self.__auth_db.set_value(token, user_id, ttl=600)
 
-        session['auth_token'] = token
+        session["auth_token"] = token
 
     def refresh(self, token: str):
         self.__auth_db.update_ttl(token, ttl=3600)
@@ -38,3 +38,6 @@ class AuthManager:
             return None
 
         return models.User.query.filter_by(id=user_id).first()
+
+    def get_auth_token_for_current_user(self):
+        return session.get("auth_token")

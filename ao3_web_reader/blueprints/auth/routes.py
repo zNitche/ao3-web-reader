@@ -33,3 +33,9 @@ def logout():
     auth_manager.logout()
 
     return redirect(url_for("auth.login"))
+
+
+@auth.route("/token", methods=["GET"])
+@login_required
+def user_auth_token():
+    return auth_manager.get_auth_token_for_current_user()
