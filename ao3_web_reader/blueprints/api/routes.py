@@ -1,10 +1,10 @@
-from flask import Blueprint, Response
-from ao3_web_reader import processes_manager, auth_manager
+from flask import Blueprint, Response, abort
+from ao3_web_reader import processes_manager, auth_manager, models
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.consts import ProcessesConsts
 
 
-api = Blueprint("api", __name__, template_folder="templates", static_folder="static", url_prefix="/api")
+api = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api.route("/healthcheck", methods=["GET"])
@@ -35,3 +35,18 @@ def running_scraping_processes():
     }
 
     return response
+
+@api.route("/<tag_name>/all-works", methods=["GET"])
+@login_required
+def tag_all_works(tag_name):
+    user = auth_manager.current_user()
+    tag = models.Tag.query.filter_by(name=tag_name, owner_id=user.id).first()
+
+    if tag is None:
+        abort(404)
+
+    return [{
+        "name": work.name,
+        "work_id": work.work_id,
+        "id": work.id,
+    } for work in tag.works]
