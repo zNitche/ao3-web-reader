@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import redirect, url_for, session, abort, g
+from flask import redirect, url_for, session, abort, g, request
 from ao3_web_reader import auth_manager
 
 
@@ -7,6 +7,9 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_token = session.get("auth_token")
+
+        if not auth_token:
+            auth_token = request.headers.get("AUTHENTICATION")
 
         if not auth_token or not auth_manager.token_exists(auth_token):
             abort(401)
