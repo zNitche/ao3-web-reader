@@ -7,6 +7,13 @@ from datetime import datetime
 import time, random
 
 
+WORKS_EXIST_CHECK_JOBS_MIN_DELAY = 3
+WORKS_EXIST_CHECK_JOBS_MAX_DELAY = 6
+
+WORKS_UPDATER_JOBS_MIN_DELAY = 5
+WORKS_UPDATER_JOBS_MAX_DELAY = 10
+
+
 class WorksUpdaterProcess(BackgroundProcessBase):
     def __init__(self):
         super().__init__(startup_delay=60)
@@ -45,6 +52,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
             removed_chapters_ids = list(set(work_chapters_ids).difference(source_chapters_ids))
 
             for chapter_id in removed_chapters_ids:
+                self.logger.info(f"{chapter_id} has been marked as removed")
                 chapter = self.get_chapter_by_id(work.chapters, chapter_id)
 
                 if chapter:
@@ -61,10 +69,13 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
     def update_works_states(self, works):
         for work in works:
+            self.logger.info(f"updating state of {work.name}")
+
             if not works_utils.check_if_work_exists(work.work_id):
+                self.logger.info(f"{work.name} was removed...")
                 work.was_removed = True
 
-            time.sleep(random.randrange(1, Config.WORKS_EXIST_CHECK_JOBS_DELAY))
+            time.sleep(random.randrange(WORKS_EXIST_CHECK_JOBS_MIN_DELAY, WORKS_EXIST_CHECK_JOBS_MAX_DELAY))
 
         self.db.commit()
 
@@ -109,19 +120,23 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                     self.logger.info(f"updating works states")
                     self.update_works_states(works)
 
-                    for id, work in enumerate(works):
+                    for id, work in enumerate(works, start=1):
                         if not work.was_removed:
-                            self.logger.info(f"updating {work.name} chapters")
+                            self.logger.info(f"updating chapters of {work.name}")
 
                             if id > 0:
-                                time.sleep(random.randrange(2, Config.WORKS_UPDATER_JOBS_DELAY))
+                                time.sleep(random.randrange(WORKS_UPDATER_JOBS_MIN_DELAY, WORKS_UPDATER_JOBS_MAX_DELAY))
 
                             chapters_struct = works_utils.get_chapters_struct(work.work_id)
+                            self.logger.info(f"got {work.name} chapters structure, {len(chapters_struct)} entries has been found")
 
                             if len(chapters_struct) > 0:
-                                for chapter_struct in chapters_struct:
+                                for chapter_index, chapter_struct in enumerate(chapters_struct):
+                                    self.logger.info(f"processing entry no. {chapter_index}")
+
                                     if self.check_if_new_chapter(chapter_struct.get(ChaptersConsts.ID),
                                                                  work.chapters):
+                                        self.logger.info(f"new chapter has been found {chapter_index}, processing...")
 
                                         chapter_struct_data = works_utils.get_chapter_data_struct(chapter_struct)
                                         new_chapter = models_utils.create_chapter_model(chapter_struct_data)
@@ -129,7 +144,10 @@ class WorksUpdaterProcess(BackgroundProcessBase):
 
                                         self.add_chapter(work, new_chapter)
 
+                                self.logger.info(f"checking {work.name} for removed chapters.")
                                 self.check_chapters_for_removed_ones(chapters_struct, work)
+
+                                self.logger.info(f"updating {work.name} chapters order ids")
                                 self.update_chapters_order_ids(work.chapters)
 
                         processed_works += 1
