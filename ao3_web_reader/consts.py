@@ -36,7 +36,7 @@ class AO3Consts:
     AO3_URL = "https://archiveofourown.org"
     AO3_WORKS_URL = AO3_URL + "/works/{work_id}"
     AO3_WORKS_NAVIGATION_URL = AO3_URL + "/works/{work_id}/navigate"
-    AO3_CHAPTER_URL = AO3_WORKS_URL + "/chapters/{chapter_id}"
+    AO3_CHAPTER_URL = AO3_WORKS_URL + "/chapters/{chapter_id}?view_adult=true"
 
 
 class ProcessesConsts:
