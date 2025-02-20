@@ -32,12 +32,16 @@ def get_chapters_struct(work_id):
         for id, item in enumerate(chapters_nav_children):
             chapter_href = item.findChild("a")
             chapter_date = item.findChild("span", class_="datetime").text.replace("(", "").replace(")", "")
-            chapter_url = AO3Consts.AO3_URL + chapter_href.attrs["href"]
+
+            chapter_nav_href = chapter_href.attrs["href"]
+
+            chapter_id = chapter_nav_href.split("/")[-1]
+            chapter_url = AO3Consts.AO3_CHAPTER_URL.format(chapter_id=chapter_id, work_id=work_id)
 
             chapters_data.append({
                 ChaptersConsts.WORK_ID: work_id,
                 ChaptersConsts.NAME: chapter_href.text,
-                ChaptersConsts.ID: chapter_url.split("/")[-1],
+                ChaptersConsts.ID: chapter_id,
                 ChaptersConsts.URL: chapter_url,
                 ChaptersConsts.DATE: datetime.strptime(chapter_date, "%Y-%m-%d"),
                 ChaptersConsts.ORDER_ID: id
@@ -101,10 +105,10 @@ def get_work_soup(work_id):
 def get_work_name(work_id, work_soup=None):
     work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
-    name_wrapper = work_soup.find("h2", class_="title heading")
-    raw_name = name_wrapper.text
+    header = work_soup.find("h4", class_="heading")
+    name_wrapper = header.findChild("a")
 
-    name = raw_name.replace("\n", "").strip()
+    name = name_wrapper.text.replace("\n", "").strip()
 
     return name
 
@@ -112,8 +116,7 @@ def get_work_name(work_id, work_soup=None):
 def get_work_description(work_id, work_soup=None):
     work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
-    description_wrapper_container = work_soup.find("div", class_="summary module")
-    description_wrapper = description_wrapper_container.find("blockquote", class_="userstuff")
+    description_wrapper = work_soup.find("blockquote", class_="userstuff")
     raw_description = description_wrapper.text
 
     return raw_description
