@@ -1,11 +1,11 @@
-import dotenv
+from load_dotenv import load_dotenv
 import os
 
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), 'ao3_web_reader'))
 
-dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".env"))
+load_dotenv(".env")
 
 
 class Config:
