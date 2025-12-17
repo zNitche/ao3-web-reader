@@ -1,4 +1,5 @@
 from load_dotenv import load_dotenv
+from datetime import timedelta
 import os
 
 
@@ -14,6 +15,11 @@ class Config:
     MIGRATIONS_DIR_PATH = os.path.join(CURRENT_DIR, "database", "migrations")
 
     LOGS_DIR_PATH = os.path.join(CURRENT_DIR, "logs")
+
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = bool(int(os.getenv("HTTPS_ONLY", 1)))
+    SESSION_COOKIE_SAMESITE = "Lax"
+    PERMANENT_SESSION_LIFETIME = timedelta(days=1)
 
     APP_PORT = 8000
     APP_HOST = "0.0.0.0"

@@ -31,14 +31,18 @@ And here we are, below you can find a list of things that have been done.
 
 
 ### Production Setup
-1. Clone this repo.
+1. Clone this repo (for stable experiance switch to one of the release tags).
 2. Create `.env` config file and change config values (`DB_PATH` and `LOGS_PATH`).
 ```
 cp .env.template .env
 ```
-3. Run docker container.
+3. (Optional) Enable HTTPS, generate new certificates, or provide your own
 ```
-sudo docker compose up -d
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+```
+4. Run docker container.
+```
+docker compose up -d
 ```
 
 ### Dev Setup
@@ -54,7 +58,7 @@ pip3 install -r requirements/requirements-dev.txt
 ```
 5. Run DEV docker-compose.
 ```
-sudo docker compose -f docker-compose-dev.yml up
+docker compose -f docker-compose-dev.yml up
 ```
 
 
@@ -67,7 +71,7 @@ python3 migrate.py
 ### Accounts Management
 1. Bash into container.
 ```
-sudo docker container exec -it ao3_web_reader bash
+docker container exec -it ao3_web_reader bash
 ```
 2. Run accounts manager cli `python3 users_manager_cli.py`.
 
