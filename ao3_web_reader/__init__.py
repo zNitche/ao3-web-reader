@@ -1,3 +1,6 @@
+__version__ = "2.0.0"
+
+
 import os
 from flask import Flask
 from ao3_web_reader.modules.managers import ProcessesManager
