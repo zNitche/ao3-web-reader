@@ -6,3 +6,4 @@ database/
 .env
 .pytest_cache/
 *.json
+.DS_Store
