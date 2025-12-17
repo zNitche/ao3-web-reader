@@ -1,11 +1,9 @@
-import tempfile
-import os
 from flask import Blueprint, render_template, flash, redirect, url_for, abort, send_file
 from ao3_web_reader import models, db, forms, auth_manager, processes_manager
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.modules.tasks import TagUpdaterTask
 from ao3_web_reader.authentication.decorators import login_required
-from ao3_web_reader.utils import works_utils
+from ao3_web_reader.utils import requests_utils
 
 
 tags = Blueprint("tags", __name__, template_folder="templates", static_folder="static", url_prefix="/tags")
@@ -57,18 +55,10 @@ def download_tag(tag_id):
     user = auth_manager.current_user()
     tag = models.Tag.query.filter_by(owner_id=user.id, id=tag_id).first()
 
-    if tag:
-        with tempfile.NamedTemporaryFile() as tmpfile:
-            file_path = os.path.join(tempfile.gettempdir(), tmpfile.name)
+    if not tag:
+        abort(404)
 
-            with open(file_path, "a") as file:
-                for work in tag.works:
-                    work_name = works_utils.serialize_work_name(work.name)
-                    file.write(f"{work.work_id}-{work_name}{'-F' if work.favorite else ''}\n")
-
-            return send_file(file_path, as_attachment=True, max_age=0, download_name=f"{tag.name}.txt")
-
-    abort(404)
+    return requests_utils.send_tag_as_zip(user.id, tag.works, tag.name)
 
 
 @tags.route("/<tag_id>/force-update", methods=["POST"])
