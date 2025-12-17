@@ -1,16 +1,5 @@
 ### Exporting works as HTML
 
-
-#### Export works
-1. single work can be exported via web app
-
-2. all works in tag
-   1. login and get session token from `/auth/token`
-   2. run script
-   ```
-   python3 export_works.py --url <url_to_web_app>
-   ```
-
 #### Convert html ebook to another formats using Calibre
 1. for single file
 ```
