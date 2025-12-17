@@ -18,7 +18,7 @@ class BackgroundProcessBase:
         self.processes_cache = RedisClient(db_id=0)
         self.processes_manager = ProcessesManager(cache_db=self.processes_cache)
 
-        self.process = multiprocessing.Process(target=self.__runner)
+        self.process = multiprocessing.Process(target=self._runner)
         self.process_pid = None
 
     def _setup(self):
@@ -48,7 +48,7 @@ class BackgroundProcessBase:
     def get_process_name(self):
         return type(self).__name__
 
-    def __runner(self):
+    def _runner(self):
         self._setup()
         time.sleep(self.startup_delay)
 
