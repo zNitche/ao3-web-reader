@@ -50,7 +50,7 @@ class Work(Base):
     favorite = Column(Boolean, nullable=True, default=False)
     was_removed = Column(Boolean, unique=False, nullable=False, default=False)
 
-    chapters = relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy=True)
+    chapters = relationship("Chapter", backref="work", cascade="all, delete-orphan", lazy="subquery")
     update_messages = relationship("UpdateMessage", backref="work", cascade="all, delete-orphan", lazy=True)
 
     def get_not_removed_chapters(self):
