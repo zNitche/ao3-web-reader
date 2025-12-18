@@ -25,6 +25,9 @@ class AddWorkForm(FormBase):
     tag_name = SelectField("Tag", choices=[], validators=[DataRequired()])
 
     def validate_work_id(self, work_id):
+        if not self._user:
+            raise Exception("error while validating work_id, user is None")
+
         if not works_utils.check_if_work_is_accessible(work_id.data):
             raise ValidationError(MessagesConsts.CANT_ACCESS_WORK)
 
@@ -34,6 +37,9 @@ class AddWorkForm(FormBase):
             raise ValidationError(MessagesConsts.WORK_ALREADY_ADDED)
 
     def validate_tag_name(self, tag_name):
+        if not self._user:
+            raise Exception("error while validating tag_name, user is None")
+
         tag = models.Tag.query.filter_by(name=tag_name.data, owner_id=self._user.id).first()
 
         if not tag:
@@ -44,6 +50,9 @@ class AddTagForm(FormBase):
     tag_name = StringField("Tag name", validators=[DataRequired()])
 
     def validate_tag_name(self, tag_name):
+        if not self._user:
+            raise Exception("error while validating tag_name, user is None")
+
         tag = models.Tag.query.filter_by(name=tag_name.data).first()
 
         if tag and tag.owner_id == self._user.id:

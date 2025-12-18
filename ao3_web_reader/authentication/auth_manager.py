@@ -28,8 +28,8 @@ class AuthManager:
 
         return True if user_id is not None else False
 
-    def current_user(self):
-        return g.current_user if hasattr(g, "current_user") else None
+    def current_user(self) -> models.User:
+        return g.get("current_user", None)
 
     def user_for_token(self, token: str):
         user_id = self.__auth_db.get_value(token)

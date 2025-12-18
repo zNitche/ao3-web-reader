@@ -1,14 +1,14 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import Select, create_engine, Engine, exc, select, func
+from sqlalchemy.orm import scoped_session, sessionmaker, Session
 from sqlalchemy import exc
 from ao3_web_reader.db import Base
 
 
 class Database:
     def __init__(self):
-        self.engine = None
-        self.session_maker = None
-        self.session = None
+        self.engine: Engine | None = None
+        self.session_maker: sessionmaker[Session] | None = None
+        self.session: scoped_session[Session] = None  # type: ignore
 
     def setup(self, db_uri):
         self.engine = create_engine(db_uri)
@@ -25,6 +25,9 @@ class Database:
         return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
     def get_session(self):
+        if self.session_maker is None:
+            raise Exception("session_maker doesn't exist!")
+
         return scoped_session(self.session_maker)
 
     def close_session(self, exception=None):

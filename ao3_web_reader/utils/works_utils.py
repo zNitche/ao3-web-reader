@@ -21,22 +21,29 @@ def check_if_work_is_accessible(work_id):
 def get_chapters_struct(work_id):
     chapters_data = []
 
-    html_nav_content = requests.get(AO3Consts.AO3_WORKS_NAVIGATION_URL.format(work_id=work_id)).text
+    html_nav_content = requests.get(
+        AO3Consts.AO3_WORKS_NAVIGATION_URL.format(work_id=work_id)).text
     nav_soup = BeautifulSoup(html_nav_content, "html.parser")
 
     chapters_nav = nav_soup.find("ol", class_="chapter index group")
 
     if chapters_nav:
-        chapters_nav_children = chapters_nav.findChildren("li", recursive=True)
+        chapters_nav_children = chapters_nav.find_all("li", recursive=True)
 
         for id, item in enumerate(chapters_nav_children):
-            chapter_href = item.findChild("a")
-            chapter_date = item.findChild("span", class_="datetime").text.replace("(", "").replace(")", "")
+            chapter_href = item.find("a")
+            chapter_date = item.find("span", class_="datetime")
 
-            chapter_nav_href = chapter_href.attrs["href"]
+            if not chapter_href or not chapter_date:
+                raise Exception(
+                    "error while getting chapters struct, chapter_href or chapter_date is None")
+
+            chapter_date = chapter_date.text.replace("(", "").replace(")", "")
+            chapter_nav_href: str = chapter_href.attrs["href"]  # type: ignore
 
             chapter_id = chapter_nav_href.split("/")[-1]
-            chapter_url = AO3Consts.AO3_CHAPTER_URL.format(chapter_id=chapter_id, work_id=work_id)
+            chapter_url = AO3Consts.AO3_CHAPTER_URL.format(
+                chapter_id=chapter_id, work_id=work_id)
 
             chapters_data.append({
                 ChaptersConsts.WORK_ID: work_id,
@@ -45,7 +52,7 @@ def get_chapters_struct(work_id):
                 ChaptersConsts.URL: chapter_url,
                 ChaptersConsts.DATE: datetime.strptime(chapter_date, "%Y-%m-%d"),
                 ChaptersConsts.ORDER_ID: id
-                }
+            }
             )
 
     return chapters_data
@@ -96,7 +103,8 @@ def get_chapter_data_struct(chapter_struct):
 
 
 def get_work_soup(work_id):
-    html_work_content = requests.get(AO3Consts.AO3_WORKS_URL.format(work_id=work_id)).text
+    html_work_content = requests.get(
+        AO3Consts.AO3_WORKS_URL.format(work_id=work_id)).text
     work_soup = BeautifulSoup(html_work_content, "html.parser")
 
     return work_soup
@@ -106,7 +114,14 @@ def get_work_name(work_id, work_soup=None):
     work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
     header = work_soup.find("h4", class_="heading")
-    name_wrapper = header.findChild("a")
+
+    if not header:
+        raise Exception("error while getting work name, header is None")
+
+    name_wrapper = header.find("a")
+
+    if not name_wrapper:
+        raise Exception("error while getting work name, name_wrapper is None")
 
     name = name_wrapper.text.replace("\n", "").strip()
 
@@ -117,6 +132,11 @@ def get_work_description(work_id, work_soup=None):
     work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
     description_wrapper = work_soup.find("blockquote", class_="userstuff")
+
+    if not description_wrapper:
+        raise Exception(
+            "error while getting work description, description_wrapper is None")
+
     raw_description = description_wrapper.text
 
     return raw_description
@@ -133,11 +153,13 @@ def get_work_struct(work_id):
 
 
 def get_work(work_id, chapters_struct=None, progress_callback=None, delay_between_chapters=1):
-    chapters_struct = chapters_struct if chapters_struct is not None else get_chapters_struct(work_id)
+    chapters_struct = chapters_struct if chapters_struct is not None else get_chapters_struct(
+        work_id)
     work_data_struct = get_work_struct(work_id)
 
     for id, chapter_struct in enumerate(chapters_struct):
-        work_data_struct[WorksConsts.CHAPTERS_DATA].append(get_chapter_data_struct(chapter_struct))
+        work_data_struct[WorksConsts.CHAPTERS_DATA].append(
+            get_chapter_data_struct(chapter_struct))
 
         if progress_callback is not None:
             progress_callback(id, len(chapters_struct))
@@ -146,11 +168,14 @@ def get_work(work_id, chapters_struct=None, progress_callback=None, delay_betwee
 
     return work_data_struct
 
+
 def get_chapter(work_id, chapter_id):
-    chapter_url = AO3Consts.AO3_CHAPTER_URL.format(chapter_id=chapter_id, work_id=work_id)
+    chapter_url = AO3Consts.AO3_CHAPTER_URL.format(
+        chapter_id=chapter_id, work_id=work_id)
     chapter_content = get_chapter_content(chapter_url)
 
     return chapter_content
+
 
 def serialize_work_name(name):
     return name.replace("/", "-").replace(" ", "_").replace(".", "").replace("'s", "s")

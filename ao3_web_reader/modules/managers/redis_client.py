@@ -54,7 +54,7 @@ class RedisClient:
         with self.db_session() as session:
             data = session.get(key)
 
-        return json.loads(data) if data else None
+        return json.loads(data) if data else None # type: ignore
 
     def get_keys(self):
         with self.db_session() as session:

@@ -13,7 +13,7 @@ class BackgroundProcessBase:
 
         self.db = Database()
 
-        self.logger = None
+        self.logger = Logger()
 
         self.processes_cache = RedisClient(db_id=0)
         self.processes_manager = ProcessesManager(cache_db=self.processes_cache)
@@ -32,7 +32,7 @@ class BackgroundProcessBase:
         self.logger.info("setup has been started...")
 
         cache_db_url = Config.REDIS_SERVER_ADDRESS
-        cache_db_port = int(Config.REDIS_SERVER_PORT)
+        cache_db_port = int(Config.REDIS_SERVER_PORT) if Config.REDIS_SERVER_PORT else None
 
         self.processes_cache.setup(cache_db_url, cache_db_port, flush=False)
 

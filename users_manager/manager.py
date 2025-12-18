@@ -2,13 +2,13 @@ from ao3_web_reader.models import User
 from config import Config
 from werkzeug.security import generate_password_hash
 import sqlalchemy
-import sqlalchemy.orm
+from sqlalchemy.orm import scoped_session, Session
 import os
 
 
 class UsersManager:
     def __init__(self):
-        self.db_session = None
+        self.session: scoped_session[Session] = None # type: ignore
         self.modules = []
 
         self.init_modules()

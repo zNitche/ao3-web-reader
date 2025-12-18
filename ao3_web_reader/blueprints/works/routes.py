@@ -24,7 +24,9 @@ def all_works(tag_name, page_id):
 
     if tag:
         search_string = request.args.get("search") if request.args.get("search") is not None else ""
-        only_favorites = int(request.args.get("only_favorites")) if request.args.get("only_favorites") is not None else 0
+
+        only_favorites = request.args.get("only_favorites")
+        only_favorites = int(only_favorites) if only_favorites is not None else 0
 
         works_query = models.Work.query.filter(models.Work.name.icontains(search_string),
                    models.Work.tag_id == tag.id,

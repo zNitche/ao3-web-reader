@@ -1,4 +1,7 @@
-class TestConfig:
+from ao3_web_reader import Config
+
+
+class TestConfig(Config):
     TESTING = True
     DEBUG_MODE = False
     DATABASE_URI = "sqlite:///:memory:"

@@ -16,11 +16,12 @@ class Logger:
         self.backup_log_files_count = backup_log_files_count
 
         self.logs_path = self.__set_logs_path(logs_filename, logs_path)
-        self.__logger = logging.getLogger(__name__ if logger_name is None else logger_name)
+        self.__logger = logging.getLogger(
+            __name__ if logger_name is None else logger_name)
 
         self.__setup()
 
-    def __set_logs_path(self, filename: str, path: str) -> str | None:
+    def __set_logs_path(self, filename: str | None, path: str | None) -> str | None:
         if filename is None or path is None:
             return None
 
@@ -49,6 +50,9 @@ class Logger:
         self.__logger.addHandler(console_logger)
 
     def __setup_file(self):
+        if not self.logs_path:
+            return
+
         formatter = self.__get_formatter()
 
         file_handler = TimedRotatingFileHandler(filename=self.logs_path,

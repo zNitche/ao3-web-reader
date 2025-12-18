@@ -15,8 +15,9 @@ def login():
 
     if login_form.validate_on_submit():
         user = models.User.query.filter_by(username=login_form.username.data).first()
+        form_password = login_form.password.data
 
-        if user and check_password_hash(user.password, login_form.password.data):
+        if user and form_password and check_password_hash(user.password, form_password):
             auth_manager.login(user.id)
 
             return redirect(url_for("core.home"))
