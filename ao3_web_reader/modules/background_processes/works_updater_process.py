@@ -75,6 +75,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 self.logger.info(f"{work.name} was removed...")
                 work.was_removed = True
 
+            self.update_process_data(ttl=60)
             time.sleep(random.randrange(WORKS_EXIST_CHECK_JOBS_MIN_DELAY, WORKS_EXIST_CHECK_JOBS_MAX_DELAY))
 
         self.db.commit()
@@ -108,7 +109,7 @@ class WorksUpdaterProcess(BackgroundProcessBase):
                 processed_works = 0
 
                 self.is_sync_running = True
-                self.update_process_data(ttl=600)
+                self.update_process_data(ttl=60)
 
                 users = models.User.query.all()
                 works_count = sum([len(user.works) for user in users])
