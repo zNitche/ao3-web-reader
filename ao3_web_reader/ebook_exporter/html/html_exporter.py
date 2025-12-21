@@ -37,7 +37,7 @@ class HTMLExporter:
         return date.strftime(format)
 
     def __prettify(self, content: str):
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, features="html.parser")
         return soup.prettify()
 
     def __build_table_of_contents(self, chapters: list[models.Chapter]):
