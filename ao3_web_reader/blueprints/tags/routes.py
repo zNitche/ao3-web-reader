@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, abort, send_file
+from flask import Blueprint, render_template, flash, redirect, url_for, abort
 from ao3_web_reader import models, db, forms, auth_manager, processes_manager
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
 from ao3_web_reader.modules.tasks import TagUpdaterTask

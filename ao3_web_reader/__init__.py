@@ -26,7 +26,8 @@ def setup_app_managers(app):
     redis_port = int(app.config["REDIS_SERVER_PORT"])
 
     processes_cache.setup(address=redis_address, port=redis_port)
-    auth_db.setup(address=redis_address, port=redis_port, flush=False if is_debug else True)
+    auth_db.setup(address=redis_address, port=redis_port,
+                  flush=False if is_debug else True)
 
 
 def register_blueprints(app):
@@ -43,7 +44,8 @@ def register_blueprints(app):
 def create_app(config_class=Config):
     app = Flask(__name__, instance_relative_config=False)
 
-    app.secret_key = os.urandom(25) if not config_class.DEBUG_MODE else "debug_secret"
+    app.secret_key = os.urandom(
+        25) if not config_class.DEBUG_MODE else "debug_secret"
     app.config.from_object(config_class)
 
     db.setup(app.config["DATABASE_URI"])
