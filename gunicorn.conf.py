@@ -21,5 +21,4 @@ certfile = "cert.pem" if os.path.exists("cert.pem") else None
 
 __is_ssl_enabled = True if keyfile is not None and certfile is not None else False
 
-ssl_version = ssl.PROTOCOL_TLS if __is_ssl_enabled else None
 cert_reqs = True if __is_ssl_enabled else False
