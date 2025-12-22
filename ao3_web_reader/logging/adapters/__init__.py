@@ -1,0 +1,1 @@
+from ao3_web_reader.logging.adapters.extendable_logs_adapter import ExtendableLogsAdapter
