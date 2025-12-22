@@ -7,3 +7,4 @@ database/
 .pytest_cache/
 *.json
 .DS_Store
+*.pem
