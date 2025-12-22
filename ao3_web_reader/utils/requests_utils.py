@@ -1,4 +1,4 @@
-from flask import Response, stream_with_context
+from flask import Response
 from ao3_web_reader.modules.extra import ZipTagOnTheFly
 
 
@@ -10,6 +10,4 @@ def send_tag_as_zip(user_id, works, tag_name):
         "Content-Disposition": f"attachment; filename={tag_name}.zip",
     }
 
-    generator = zip_on_the_fly.generator()
-
-    return Response(generator, mimetype="application/zip", headers=headers)
+    return Response(zip_on_the_fly.generator(), mimetype="application/zip", headers=headers)
