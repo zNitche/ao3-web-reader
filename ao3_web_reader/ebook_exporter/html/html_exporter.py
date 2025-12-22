@@ -4,7 +4,7 @@ import copy
 from bs4 import BeautifulSoup
 from datetime import datetime
 from ao3_web_reader import models
-from ao3_web_reader.logger import Logger
+from ao3_web_reader.logging import Logger
 
 
 class HTMLExporter:
@@ -16,10 +16,12 @@ class HTMLExporter:
         self.logs_path = os.path.join(
             config.Config.LOGS_DIR_PATH, "ebook_exporters")
 
-        self.logger = Logger(logger_name=f"HTMLExporter_{user_id}",
-                             logs_filename="HTMLExporter.log",
-                             logs_path=self.logs_path,
-                             backup_log_files_count=1)
+        logger_extras = {"user_id": user_id, "work_id": str(work.id)}
+        self.logger = Logger.get_expandable_logger(logger_name="HTML_Exporter",
+                                                   extra=logger_extras,
+                                                   logs_filename="HTML_Exporter.log",
+                                                   logs_path=self.logs_path,
+                                                   backup_log_files_count=1)
 
     def __load_template(self, type: str):
         template_path = os.path.join(
