@@ -10,7 +10,9 @@ services:
       - redis
     container_name: ao3_web_reader
     command: /bin/sh -c "/ao3_web_reader/scripts/entrypoint.sh"
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web_app
     restart: unless-stopped
     ports:
       - ${APP_PORT}:8000
@@ -26,7 +28,9 @@ services:
       - app
     container_name: ao3_web_reader_tasks
     command: /bin/sh -c "/ao3_web_reader/scripts/run_background_tasks.sh"
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.background_tasks
     restart: unless-stopped
     volumes:
       - ${DB_PATH}:/ao3_web_reader/database
