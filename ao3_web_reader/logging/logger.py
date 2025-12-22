@@ -1,4 +1,3 @@
-
 from typing import Any
 import logging
 from ao3_web_reader.logging import common

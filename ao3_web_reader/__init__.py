@@ -8,6 +8,7 @@ from ao3_web_reader.modules.managers.redis_client import RedisClient
 from config import Config
 from ao3_web_reader.db import Database
 from ao3_web_reader.authentication import AuthManager
+from ao3_web_reader.logging import AppLogging
 
 
 db = Database()
@@ -28,6 +29,16 @@ def setup_app_managers(app):
     processes_cache.setup(address=redis_address, port=redis_port)
     auth_db.setup(address=redis_address, port=redis_port,
                   flush=False if is_debug else True)
+    
+
+def setup_app_logging(app):
+    app_logging = AppLogging(
+        app=app,
+        logs_filename="app.log",
+        logs_path=app.config.get("LOGS_DIR_PATH"),
+        backup_log_files_count=3)
+    
+    app_logging.setup()
 
 
 def register_blueprints(app):
@@ -48,6 +59,8 @@ def create_app(config_class=Config):
         25) if not config_class.DEBUG_MODE else "debug_secret"
     app.config.from_object(config_class)
 
+    setup_app_logging(app)
+
     db.setup(app.config["DATABASE_URI"])
     db.create_all()
 
@@ -55,5 +68,7 @@ def create_app(config_class=Config):
         setup_app_managers(app)
 
         register_blueprints(app)
+
+        app.logger.info("app has been created")
 
         return app
