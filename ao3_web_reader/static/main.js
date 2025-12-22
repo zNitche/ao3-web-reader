@@ -1,13 +1,3 @@
-function fallbackToLocalFileLink(el, localPath) {
-    el.href = localPath;
-}
-
-
-function fallbackToLocalJS(el, localPath) {
-    document.write("<script src=" + localPath + "></script>");
-}
-
-
 function updateCloudSyncIcon() {
     getData("/api/sync-status").then((data) => {
       if (data.is_running) {
