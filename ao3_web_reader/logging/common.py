@@ -1,6 +1,5 @@
-from typing import Any
 import os
-from logging import Logger, Formatter, StreamHandler, LoggerAdapter
+from logging import Logger, Formatter, StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 
 
@@ -27,7 +26,7 @@ def set_logs_path(filename: str | None, path: str | None) -> str | None:
     return os.path.join(path, filename)
 
 
-def setup_serial(logger: Logger | LoggerAdapter[Any]):
+def setup_serial(logger: Logger):
     formatter = get_formatter(with_day=False)
 
     console_logger = StreamHandler()
@@ -36,7 +35,7 @@ def setup_serial(logger: Logger | LoggerAdapter[Any]):
     logger.addHandler(console_logger)  # type: ignore
 
 
-def setup_logs_file(logger: Logger | LoggerAdapter[Any], path: str, backup_log_files_count: int):
+def setup_logs_file(logger: Logger, path: str, backup_log_files_count: int):
     formatter = get_formatter()
 
     file_handler = TimedRotatingFileHandler(filename=path,
