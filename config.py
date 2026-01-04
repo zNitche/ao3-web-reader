@@ -23,6 +23,8 @@ class Config:
 
     APP_PORT = 8000
     APP_HOST = "0.0.0.0"
+
+    STYLES_LIBS_FROM_CDN = os.getenv("STYLES_LIBS_FROM_CDN", 0)
     DEBUG_MODE = os.getenv("DEBUG", 0)
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
