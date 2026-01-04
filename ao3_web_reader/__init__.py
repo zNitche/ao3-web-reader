@@ -41,6 +41,12 @@ def setup_app_logging(app):
     app_logging.setup()
 
 
+def setup_jinja_context(app):
+    from ao3_web_reader import jinja_context
+
+    jinja_context.setup_constext_processor(app)
+
+
 def register_blueprints(app):
     from ao3_web_reader import blueprints
 
@@ -60,6 +66,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     setup_app_logging(app)
+    setup_jinja_context(app)
 
     db.setup(app.config["DATABASE_URI"])
     db.create_all()
