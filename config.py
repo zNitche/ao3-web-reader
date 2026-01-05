@@ -4,7 +4,8 @@ import os
 
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-APP_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), 'ao3_web_reader'))
+APP_ROOT = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), 'ao3_web_reader'))
 
 load_dotenv(".env")
 
@@ -24,7 +25,7 @@ class Config:
     APP_PORT = 8000
     APP_HOST = "0.0.0.0"
 
-    STYLES_LIBS_FROM_CDN = os.getenv("STYLES_LIBS_FROM_CDN", 0)
+    STYLES_LIBS_FROM_CDN = int(os.getenv("STYLES_LIBS_FROM_CDN", 0))
     DEBUG_MODE = os.getenv("DEBUG", 0)
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
