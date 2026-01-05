@@ -31,7 +31,7 @@ class Config:
 
     DATABASE_URI = f"sqlite:////{CURRENT_DIR}/database/app.db"
 
-    REDIS_SERVER_ADDRESS = os.getenv("REDIS_SERVER_ADDRESS")
-    REDIS_SERVER_PORT = os.getenv("REDIS_SERVER_PORT")
+    WHIMDB_SERVER_ADDRESS = os.getenv("WHIMDB_SERVER_ADDRESS")
+    WHIMDB_SERVER_PORT = os.getenv("WHIMDB_SERVER_PORT")
 
     WORKS_UPDATER_INTERVAL = int(os.getenv("WORKS_UPDATER_INTERVAL", 7200))

@@ -4,7 +4,7 @@ __version__ = "2.2.1"
 import os
 from flask import Flask
 from ao3_web_reader.modules.managers import ProcessesManager
-from ao3_web_reader.modules.managers.redis_client import RedisClient
+from ao3_web_reader.modules.managers.cache_database import CacheDatabase
 from config import Config
 from ao3_web_reader.db import Database
 from ao3_web_reader.authentication import AuthManager
@@ -13,23 +13,24 @@ from ao3_web_reader.logging import AppLogging
 
 db = Database()
 
-processes_cache = RedisClient(db_id=0)
+processes_cache = CacheDatabase(db_id=0)
 processes_manager = ProcessesManager(cache_db=processes_cache)
 
-auth_db = RedisClient(db_id=1)
+auth_db = CacheDatabase(db_id=1)
 auth_manager = AuthManager(auth_db=auth_db)
 
 
 def setup_app_managers(app):
     is_debug = app.config.get("DEBUG_MODE")
 
-    redis_address = app.config["REDIS_SERVER_ADDRESS"]
-    redis_port = int(app.config["REDIS_SERVER_PORT"])
+    cache_db_address = app.config["WHIMDB_SERVER_ADDRESS"]
+    cache_db_port = int(app.config["WHIMDB_SERVER_PORT"])
 
-    processes_cache.setup(address=redis_address, port=redis_port)
-    auth_db.setup(address=redis_address, port=redis_port,
+    processes_cache.setup(server_address=cache_db_address,
+                          server_port=cache_db_port)
+    auth_db.setup(server_address=cache_db_address, server_port=cache_db_port,
                   flush=False if is_debug else True)
-    
+
 
 def setup_app_logging(app):
     app_logging = AppLogging(
@@ -37,7 +38,7 @@ def setup_app_logging(app):
         logs_filename="app.log",
         logs_path=app.config.get("LOGS_DIR_PATH"),
         backup_log_files_count=3)
-    
+
     app_logging.setup()
 
 

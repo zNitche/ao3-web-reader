@@ -1,11 +1,11 @@
 import secrets
 from flask import g, session
-from ao3_web_reader.modules.managers import RedisClient
+from ao3_web_reader.modules.managers import CacheDatabase
 from ao3_web_reader import models
 
 
 class AuthManager:
-    def __init__(self, auth_db: RedisClient):
+    def __init__(self, auth_db: CacheDatabase):
         self.__auth_db = auth_db
 
     def login(self, user_id: int):

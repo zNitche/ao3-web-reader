@@ -4,7 +4,7 @@ import os
 from config import Config
 from ao3_web_reader.logging import Logger
 from ao3_web_reader.db import Database
-from ao3_web_reader.modules.managers import RedisClient, ProcessesManager
+from ao3_web_reader.modules.managers import CacheDatabase, ProcessesManager
 
 
 class BackgroundProcessBase:
@@ -15,7 +15,7 @@ class BackgroundProcessBase:
 
         self.logger = Logger()
 
-        self.processes_cache = RedisClient(db_id=0)
+        self.processes_cache = CacheDatabase(db_id=0)
         self.processes_manager = ProcessesManager(
             cache_db=self.processes_cache)
 
@@ -33,11 +33,14 @@ class BackgroundProcessBase:
 
         self.logger.info("setup has been started...")
 
-        cache_db_url = Config.REDIS_SERVER_ADDRESS
-        cache_db_port = int(
-            Config.REDIS_SERVER_PORT) if Config.REDIS_SERVER_PORT else None
+        cache_db_url = Config.WHIMDB_SERVER_ADDRESS
+        cache_db_port = Config.WHIMDB_SERVER_PORT
 
-        self.processes_cache.setup(cache_db_url, cache_db_port, flush=False)
+        if not cache_db_url or not cache_db_port:
+            raise Exception("cache databse config missing")
+
+        self.processes_cache.setup(
+            cache_db_url, int(cache_db_port), flush=False)
 
         self.db.setup(Config.DATABASE_URI)
         self.db.create_all()

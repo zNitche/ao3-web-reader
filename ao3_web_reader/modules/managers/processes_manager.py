@@ -1,12 +1,19 @@
+from typing import TYPE_CHECKING
 from ao3_web_reader.consts import ProcessesConsts
+
+if TYPE_CHECKING:
+    from ao3_web_reader.modules.managers import CacheDatabase
 
 
 class ProcessesManager:
-    def __init__(self, cache_db):
+    def __init__(self, cache_db: CacheDatabase):
         self.cache_manager = cache_db
 
     def get_processes_timestamps(self):
         timestamps = self.cache_manager.get_keys()
+
+        if not timestamps or not timestamps:
+            return []
 
         return timestamps
 
@@ -50,8 +57,11 @@ class ProcessesManager:
     def get_process_data(self, timestamp, process_type=None):
         process_data = self.cache_manager.get_value(timestamp)
 
+        if not process_data:
+            return None
+
         if process_type is not None and process_data.get(ProcessesConsts.PROCESS_NAME) != process_type:
-            process_data = None
+            return None
 
         return process_data
 

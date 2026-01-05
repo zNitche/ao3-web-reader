@@ -52,14 +52,14 @@ docker compose up -d
 ```
 cp .env.template .env
 ```
-3. Change `REDIS_SERVER_ADDRESS` in `.env` to `127.0.0.1`
+3. Change `WHIMDB_SERVER_ADDRESS` in `.env` to `127.0.0.1`
 4. Install development dependencies 
 ```
 pip3 install -r requirements/requirements-dev.txt
 ```
-5. Run DEV docker-compose.
+5. Start cache database
 ```
-docker compose -f docker-compose-dev.yml up
+whimdb-server --port 6000
 ```
 
 
