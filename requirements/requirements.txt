@@ -4,4 +4,4 @@ SQLAlchemy==2.0.36
 alembic==1.13.3
 requests==2.32.5
 beautifulsoup4==4.14.3
-whimdb @ git+https://github.com/zNitche/whimdb.git@v1.2.3
+whimdb @ git+https://github.com/zNitche/whimdb.git@v1.2.5
