@@ -4,28 +4,16 @@ import copy
 from bs4 import BeautifulSoup
 from datetime import datetime
 from ao3_web_reader import models
-from ao3_web_reader.logging import Logger
+from ao3_web_reader.ebook_exporter import BaseExporter
 
 
-class HTMLExporter:
+class HTMLExporter(BaseExporter):
     def __init__(self, user_id: str, work: models.Work):
-        self.user_id = user_id
-        self.work = work
-
-        self.extension = "html"
-        self.logs_path = os.path.join(
-            config.Config.LOGS_DIR_PATH, "ebook_exporters")
-
-        logger_extras = {"user_id": user_id, "work_id": str(work.id)}
-        self.logger = Logger.get_expandable_logger(logger_name="HTML_Exporter",
-                                                   extra=logger_extras,
-                                                   logs_filename="HTML_Exporter.log",
-                                                   logs_path=self.logs_path,
-                                                   backup_log_files_count=1)
+        super().__init__(user_id=user_id, work=work, logger_extra={})
 
     def __load_template(self, type: str):
         template_path = os.path.join(
-            config.APP_ROOT, "ebook_exporter", "html", "templates", f"{type}.html")
+            config.APP_ROOT, "ebook_exporter", "templates", "html", f"{type}.html")
 
         if not os.path.exists(template_path):
             raise Exception(f"template file doesn't exist: {template_path}")
@@ -76,7 +64,7 @@ class HTMLExporter:
         return core_template
 
     def __build_chapter(self, chapter: models.Chapter, template: str):
-        self.logger.info(f"building {chapter.title}...")
+        self.logger.debug(f"building {chapter.title}...")
 
         template = self.__replace_template_value(
             template, "title", chapter.title)
@@ -85,7 +73,7 @@ class HTMLExporter:
         template = self.__replace_template_value(
             template, "content", chapter.text)
 
-        self.logger.info(f"{chapter.title} has been completed")
+        self.logger.debug(f"{chapter.title} has been completed")
 
         return template
 
@@ -100,22 +88,22 @@ class HTMLExporter:
         self.logger.info("stating export process...")
 
         try:
-            self.logger.info("building table of contents...")
+            self.logger.debug("building table of contents...")
             table_of_contents = self.__build_table_of_contents(
                 self.work.chapters)
 
-            self.logger.info("building chapters...")
+            self.logger.debug("building chapters...")
             chapter_template = self.__load_template("chapter")
             chapters = []
 
             for chapter in self.work.chapters:
-                self.logger.info(f"building html for {chapter.title}...")
+                self.logger.debug(f"building html for {chapter.title}...")
 
                 chapter_template_cp = copy.copy(chapter_template)
                 chapters.append(self.__build_chapter(
                     chapter, chapter_template_cp))
 
-            self.logger.info("saving exported data...")
+            self.logger.debug("saving exported data...")
 
             self.__write_file(os.path.join(
                 output_dir_path, "index.html"), table_of_contents, prettify)
