@@ -56,9 +56,9 @@
                         </div>
                     </div>
                    <div class="work-management-wrapper">
-                        <a href="{{ url_for('works.download_work', work_id=work.work_id) }}">
+                        <span onclick="showExportWorkObjectModal('{{work.work_id}}')">
                             <img src="{{ url_for('static', filename='icons/download_icon.svg') }}" alt="download work">
-                        </a>
+                        </span>
                         <a href="{{ url_for('works.force_chapters_update', work_id=work.work_id) }}">
                             <img src="{{ url_for('static', filename='icons/refresh.svg') }}">
                         </a>
@@ -117,6 +117,7 @@
     {% include "components/modals/remove_work_modal.html" %}
     {% include "components/modals/chapters_completion_modal.html" %}
     {% include "components/modals/works_favorite_toggle_modal.html" %}
+    {% include "components/modals/export_work_object_modal.html" %}
 </div>
 
 {% endblock %}

@@ -33,3 +33,16 @@ function showWorkFavoriteToggleModal(modalID, text, actionURL) {
 
     modal.show();
 }
+
+function showExportWorkObjectModal(workId) {
+    const modalElem = document.getElementById("exportWorkObjectModal");
+    let modal = new bootstrap.Modal(modalElem);
+
+    let items = modalElem.getElementsByTagName("a");
+
+    for (const item of items) {
+        item.href = item.href.replace("WORK_ID", workId);
+    }
+
+    modal.show();
+}

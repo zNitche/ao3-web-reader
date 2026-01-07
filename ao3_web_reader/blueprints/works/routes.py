@@ -8,7 +8,7 @@ from ao3_web_reader import models, db, processes_manager, forms, auth_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
-from ao3_web_reader.ebook_exporter import HTMLExporter
+from ao3_web_reader.ebook_exporter import HTMLExporter, EpubExporter
 from ao3_web_reader.utils import works_utils
 
 
@@ -203,24 +203,46 @@ def toggle_work_favorite(work_id):
 @login_required
 def download_work(work_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(owner_id=user.id, work_id=work_id).first()
+    user_work = models.Work.query.filter_by(
+        owner_id=user.id, work_id=work_id).first()
+
+    export_target_type = request.args.get("type", None)
 
     if user_work:
         with tempfile.TemporaryDirectory() as tmp_dir_name:
-            exporter = HTMLExporter(user.id, user_work)
-            files_path = os.path.join(tempfile.gettempdir(), tmp_dir_name)
+            match export_target_type:
+                case "html":
+                    exporter = HTMLExporter(user.id, user_work)
+                    files_path = os.path.join(
+                        tempfile.gettempdir(), tmp_dir_name)
 
-            exporter.export(files_path, prettify=True)
-            work_name = works_utils.serialize_work_name(user_work.name)
+                    exporter.export(files_path, prettify=True)
+                    work_name = works_utils.serialize_work_name(user_work.name)
 
-            archive_path = os.path.join(tempfile.gettempdir(), f"{work_name}.zip")
+                    output_file_name = f"{work_name}.zip"
+                    archive_path = os.path.join(
+                        tempfile.gettempdir(), output_file_name)
+                case "epub":
+                    exporter = EpubExporter(user.id, user_work)
+                    files_path = os.path.join(
+                        tempfile.gettempdir(), tmp_dir_name)
+
+                    exporter.export(files_path)
+                    work_name = works_utils.serialize_work_name(user_work.name)
+
+                    output_file_name = f"{work_name}.epub"
+                    archive_path = os.path.join(
+                        tempfile.gettempdir(), output_file_name)
+                case _:
+                    abort(400)
+
             with zipfile.ZipFile(archive_path, mode="w") as archive:
                 for file in os.listdir(files_path):
                     path = os.path.join(files_path, file)
 
                     archive.write(path, arcname=file)
 
-            return send_file(archive_path, as_attachment=True, max_age=0, download_name=f"{work_name}.zip")
+            return send_file(archive_path, as_attachment=True, max_age=0, download_name=output_file_name)
 
     abort(404)
 
