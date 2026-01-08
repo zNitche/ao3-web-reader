@@ -1,8 +1,5 @@
 import os
-import config
 import copy
-from bs4 import BeautifulSoup
-from datetime import datetime
 from ao3_web_reader import models
 from ao3_web_reader.ebook_exporter import BaseExporter
 
@@ -11,39 +8,17 @@ class HTMLExporter(BaseExporter):
     def __init__(self, user_id: str, work: models.Work):
         super().__init__(user_id=user_id, work=work, logger_extra={})
 
-    def __load_template(self, type: str):
-        template_path = os.path.join(
-            config.APP_ROOT, "ebook_exporter", "templates", "html", f"{type}.html")
-
-        if not os.path.exists(template_path):
-            raise Exception(f"template file doesn't exist: {template_path}")
-
-        with open(template_path, "r") as template_file:
-            template_content = template_file.read()
-
-        return template_content
-
-    def __replace_template_value(self, template: str, tag: str, value: str, replace_all=True):
-        return template.replace("{{" + tag + "}}", value, -1 if replace_all else 1)
-
-    def __convert_date(self, date: datetime, format="%d-%m-%Y"):
-        return date.strftime(format)
-
-    def __prettify(self, content: str):
-        soup = BeautifulSoup(content, features="html.parser")
-        return soup.prettify()
-
     def __build_table_of_contents(self, chapters: list[models.Chapter]):
-        core_template = self.__load_template("core")
-        item_template = self.__load_template("chapter_item")
+        core_template = self._load_html_template("core")
+        item_template = self._load_html_template("chapter_item")
 
-        core_template = self.__replace_template_value(
+        core_template = self._replace_html_template_value(
             core_template, "work_name", self.work.name)
-        core_template = self.__replace_template_value(core_template, "work_added_date",
-                                                      self.__convert_date(self.work.date))
-        core_template = self.__replace_template_value(core_template, "work_last_update",
-                                                      self.__convert_date(self.work.last_updated))
-        core_template = self.__replace_template_value(
+        core_template = self._replace_html_template_value(core_template, "work_added_date",
+                                                          self._convert_date(self.work.date))
+        core_template = self._replace_html_template_value(core_template, "work_last_update",
+                                                          self._convert_date(self.work.last_updated))
+        core_template = self._replace_html_template_value(
             core_template, "work_description", self.work.description)
 
         results = []
@@ -51,14 +26,14 @@ class HTMLExporter(BaseExporter):
         for ind, chapter in enumerate(chapters, start=1):
             template = copy.copy(item_template)
 
-            template = self.__replace_template_value(
+            template = self._replace_html_template_value(
                 template, "href", f"{ind}.html")
-            template = self.__replace_template_value(
+            template = self._replace_html_template_value(
                 template, "title", chapter.title)
 
             results.append(template)
 
-        core_template = self.__replace_template_value(
+        core_template = self._replace_html_template_value(
             core_template, "items", "".join(results))
 
         return core_template
@@ -66,11 +41,11 @@ class HTMLExporter(BaseExporter):
     def __build_chapter(self, chapter: models.Chapter, template: str):
         self.logger.debug(f"building {chapter.title}...")
 
-        template = self.__replace_template_value(
+        template = self._replace_html_template_value(
             template, "title", chapter.title)
-        template = self.__replace_template_value(
-            template, "date", self.__convert_date(chapter.date))
-        template = self.__replace_template_value(
+        template = self._replace_html_template_value(
+            template, "date", self._convert_date(chapter.date))
+        template = self._replace_html_template_value(
             template, "content", chapter.text)
 
         self.logger.debug(f"{chapter.title} has been completed")
@@ -80,7 +55,7 @@ class HTMLExporter(BaseExporter):
     def __write_file(self, path: str, content: str, prettify: bool):
         with open(path, "w") as file:
             if prettify:
-                content = self.__prettify(content)
+                content = self._prettify_html(content)
 
             file.write(content)
 
@@ -93,7 +68,7 @@ class HTMLExporter(BaseExporter):
                 self.work.chapters)
 
             self.logger.debug("building chapters...")
-            chapter_template = self.__load_template("chapter")
+            chapter_template = self._load_html_template("chapter")
             chapters = []
 
             for chapter in self.work.chapters:
