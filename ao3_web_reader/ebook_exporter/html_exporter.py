@@ -13,8 +13,7 @@ class HTMLExporter(XHtmlExporter):
 
         try:
             self.logger.debug("building table of contents...")
-            table_of_contents = self._build_index(
-                self.work.chapters)
+            table_of_contents = self._build_index()
 
             self.logger.debug("building chapters...")
             chapter_template = self._load_html_template("chapter")

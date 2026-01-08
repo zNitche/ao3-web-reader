@@ -1,16 +1,9 @@
 ### Exporting works as HTML
 
 #### Convert html ebook to another formats using Calibre
-1. for single file
 ```
 ebook-convert ebook/index.html ebook.azw3
 ```
-
-2. for many files
-```
-python3 ebook_convert.py --path /path/to/ebooks/dir
-```
-
 
 #### Calibre Docker setup
 run calibre in containerized environment

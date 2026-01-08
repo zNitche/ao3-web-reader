@@ -34,7 +34,7 @@ class XHtmlExporter(BaseExporter):
         soup = BeautifulSoup(content, features="html.parser")
         return soup.prettify()
 
-    def _build_index(self, chapters: list[models.Chapter], core_template="core"):
+    def _build_index(self, core_template="core"):
         core_template = self._load_html_template(core_template)
         item_template = self._load_html_template("chapter_item")
 
@@ -49,7 +49,7 @@ class XHtmlExporter(BaseExporter):
 
         results = []
 
-        for ind, chapter in enumerate(chapters, start=1):
+        for ind, chapter in enumerate(self.work.chapters, start=1):
             template = copy.copy(item_template)
 
             template = self._replace_html_template_value(
@@ -78,7 +78,7 @@ class XHtmlExporter(BaseExporter):
 
         return template
 
-    def _write_xhtml_file(self, path: str, content: str, prettify: bool):
+    def _write_xhtml_file(self, path: str, content: str, prettify: bool = True):
         with open(path, "w") as file:
             if prettify:
                 content = self._prettify_html(content)
