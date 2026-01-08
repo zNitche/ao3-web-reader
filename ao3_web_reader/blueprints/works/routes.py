@@ -238,6 +238,7 @@ def download_work(work_id):
                     output_file_name = f"{work_name}.zip"
                     archive_path = os.path.join(
                         tempfile.gettempdir(), output_file_name)
+
                 case "epub":
                     exporter = EpubExporter(user.id, user_work)
                     files_path = os.path.join(
@@ -249,14 +250,28 @@ def download_work(work_id):
                     output_file_name = f"{work_name}.epub"
                     archive_path = os.path.join(
                         tempfile.gettempdir(), output_file_name)
+    
                 case _:
                     abort(400)
 
-            with zipfile.ZipFile(archive_path, mode="w") as archive:
-                for file in os.listdir(files_path):
-                    path = os.path.join(files_path, file)
+            abs_files_path = os.path.abspath(files_path)
+            abs_files_name = os.path.relpath(files_path, os.path.dirname(abs_files_path))
 
-                    archive.write(path, arcname=file)
+            with zipfile.ZipFile(archive_path, mode="w") as archive:
+                for (root, dirs, files) in os.walk(files_path):
+                    root_abs = os.path.abspath(root)
+                    abs_root_name = os.path.relpath(root, os.path.dirname(root_abs))
+
+                    diff_root = bool(abs_files_name != abs_root_name)
+
+                    if diff_root:
+                        archive.write(root, arcname=abs_root_name)
+
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.join(abs_root_name, file) if diff_root else file
+
+                        archive.write(file_path, arcname=arcname)
 
             return send_file(archive_path, as_attachment=True, max_age=0, download_name=output_file_name)
 
