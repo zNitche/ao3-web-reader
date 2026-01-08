@@ -12,9 +12,6 @@ class BaseExporter:
         self.user_id = user_id
         self.work = work
 
-        self.templates_paths = os.path.join(
-            config.APP_ROOT, "ebook_exporter", "templates")
-
         logs_path = os.path.join(
             config.Config.LOGS_DIR_PATH, "ebook_exporters")
 

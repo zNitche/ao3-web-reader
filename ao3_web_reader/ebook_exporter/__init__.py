@@ -1,4 +1,5 @@
 from ao3_web_reader.ebook_exporter.base_exporter import BaseExporter
+from ao3_web_reader.ebook_exporter.xhtml_exporter import XHtmlExporter
 
 from ao3_web_reader.ebook_exporter.html_exporter import HTMLExporter
 from ao3_web_reader.ebook_exporter.epub_exporter import EpubExporter
