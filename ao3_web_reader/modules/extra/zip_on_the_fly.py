@@ -36,23 +36,20 @@ class ZipOnTheFly():
         name = split_filename[0]
 
         for processed_file_name in self.__processed_files_names:
-            is_copy_match = re.search(rf"{name}_copy\(([0-9_]+)\).", processed_file_name)
+            is_copy_match = re.search(
+                rf"{name}_copy\(([0-9_]+)\).", processed_file_name)
 
             if is_copy_match:
                 found = is_copy_match.group(0)
-                id = int(found.replace(f"{name}_copy(", "").replace(").", "")) + 1
+                id = int(found.replace(
+                    f"{name}_copy(", "").replace(").", "")) + 1
 
                 return filename.replace(name, f"{name}_copy({id})")
-        
+
         return filename.replace(name, f"{name}_copy(1)")
 
-    def _handle_file(self, zip_file: ZipFile, zip_stream: ZipFileStream,
-                      file_path: str, file_name: str):
-        
-        file_name = self._parse_duplicated_filename(file_name)
-
-        zip_info = ZipInfo.from_file(
-            filename=file_path, arcname=file_name)
+    def _write_to_archive(self, file_path: str, zip_file: ZipFile,
+                          zip_info: ZipInfo, zip_stream: ZipFileStream):
 
         with open(file=file_path, mode="rb") as file_obj:
             with zip_file.open(zip_info, mode="w") as current_zip_file:
@@ -65,6 +62,17 @@ class ZipOnTheFly():
                     current_zip_file.write(chunk)
 
                     yield zip_stream.get()
+
+    def _handle_file(self, zip_file: ZipFile, zip_stream: ZipFileStream,
+                     file_path: str, file_name: str):
+
+        file_name = self._parse_duplicated_filename(file_name)
+
+        zip_info = ZipInfo.from_file(
+            filename=file_path, arcname=file_name)
+
+        yield from self._write_to_archive(file_path, zip_file,
+                                          zip_info, zip_stream)
 
         self.__processed_files_names.append(file_name)
 
