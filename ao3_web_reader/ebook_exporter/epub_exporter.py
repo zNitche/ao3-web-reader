@@ -13,7 +13,7 @@ class EpubExporter(XHtmlExporter):
     def __init__(self, user_id: str, work: models.Work):
         super().__init__(user_id=user_id, work=work, logger_extra={})
 
-    def __create_metadata_manifest_item(self, manifest_element: ElementTree.Element[str],
+    def __create_metadata_manifest_item(self, manifest_element: ElementTree.Element,
                                         id: str, href: str, media_type: str = "application/xhtml+xml"):
 
         item = ElementTree.SubElement(manifest_element, "item")
@@ -22,7 +22,7 @@ class EpubExporter(XHtmlExporter):
         item.attrib["href"] = href
         item.attrib["media-type"] = media_type
 
-    def __create_ncx_head_metadata_item(self, root_el: ElementTree.Element[str],
+    def __create_ncx_head_metadata_item(self, root_el: ElementTree.Element,
                                         name: str, content: str):
 
         item = ElementTree.SubElement(root_el, "meta")
@@ -30,7 +30,7 @@ class EpubExporter(XHtmlExporter):
         item.attrib["name"] = name
         item.attrib["content"] = content
 
-    def __create_ncx_nav_point(self, root_el: ElementTree.Element[str], id: str,
+    def __create_ncx_nav_point(self, root_el: ElementTree.Element, id: str,
                                play_order: str, chapter_title: str):
 
         nav_point_el = ElementTree.SubElement(root_el, "navPoint")
@@ -43,7 +43,7 @@ class EpubExporter(XHtmlExporter):
         content_el = ElementTree.SubElement(nav_point_el, "content")
         content_el.attrib["src"] = f"{play_order}.html"
 
-    def __dump_xml_to_file(self, path: str, elem: ElementTree.Element[str], pretify=True):
+    def __dump_xml_to_file(self, path: str, elem: ElementTree.Element, pretify=True):
         with open(path, "w") as file:
             elem_str = ElementTree.tostring(
                 elem, encoding="unicode", xml_declaration=True)
