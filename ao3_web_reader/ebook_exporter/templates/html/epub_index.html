@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <title>{{work_name}}</title>
+        <link rel="stylesheet" href="stylesheet.css">
+    </head>
+    <body>
+        <p class="title">
+            <h1 class="title">{{work_name}}</h1>
+        </p>
+        <div class="meta">
+            <dl class="stats">
+              <dt>Added:</dt>
+              <dd>{{work_added_date}}</dd>
+              <dt>Updated:</dt>
+              <dd>{{work_last_update}}</dd>
+            </dl>
+            <h1>{{work_name}}</h1>
+            <p>Summary</p>
+            <blockquote class="userstuff">
+                <p>{{work_description}}</p>
+            </blockquote>
+        </div>
+        <h1>Chapters</h1>
+        <p>
+            {{items}}
+        </p>
+    </body>
+</html>

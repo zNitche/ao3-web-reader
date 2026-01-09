@@ -2,13 +2,14 @@
 # https://www.w3.org/publishing/epub3
 
 import os
+import shutil
 from xml.etree import ElementTree
 from xml.dom import minidom
-from ao3_web_reader import models
-from ao3_web_reader.ebook_exporter import BaseExporter
+from ao3_web_reader import models, __version__
+from ao3_web_reader.ebook_exporter import XHtmlExporter
 
 
-class EpubExporter(BaseExporter):
+class EpubExporter(XHtmlExporter):
     def __init__(self, user_id: str, work: models.Work):
         super().__init__(user_id=user_id, work=work, logger_extra={})
 
@@ -42,11 +43,11 @@ class EpubExporter(BaseExporter):
         content_el = ElementTree.SubElement(nav_point_el, "content")
         content_el.attrib["src"] = f"{play_order}.html"
 
-    def __dump_to_file(self, path: str, elem: ElementTree.Element[str], pretify=True):
+    def __dump_xml_to_file(self, path: str, elem: ElementTree.Element[str], pretify=True):
         with open(path, "w") as file:
             elem_str = ElementTree.tostring(
                 elem, encoding="unicode", xml_declaration=True)
-            
+
             if pretify:
                 elem_str = minidom.parseString(elem_str).toprettyxml()
 
@@ -121,10 +122,10 @@ class EpubExporter(BaseExporter):
         head_el = ElementTree.SubElement(ncx_el, "head")
 
         self.__create_ncx_head_metadata_item(
-            head_el, "dtb:uid", f"ao3-reader-{self.work.id}")
+            head_el, "dtb:uid", f"ao3-reader-{self.work.work_id}")
         self.__create_ncx_head_metadata_item(head_el, "dtb:depth", "2")
         self.__create_ncx_head_metadata_item(
-            head_el, "dtb:generator", "ao3-web-reader (2.3.0)")
+            head_el, "dtb:generator", f"ao3-web-reader ({__version__})")
         self.__create_ncx_head_metadata_item(
             head_el, "dtb:totalPageCount", "0")
         self.__create_ncx_head_metadata_item(head_el, "dtb:maxPageNumber", "0")
@@ -140,12 +141,93 @@ class EpubExporter(BaseExporter):
 
         return ncx_el
 
+    def __build_container_xml(self):
+        container_el = ElementTree.Element("container")
+        container_el.attrib["version"] = "1.0"
+        container_el.attrib["xmlns"] = "urn:oasis:names:tc:opendocument:xmlns:container"
+
+        rootfiles_el = ElementTree.SubElement(container_el, "rootfiles")
+
+        rootfile_el = ElementTree.SubElement(rootfiles_el, "rootfile")
+        rootfile_el.attrib["full-path"] = "content.opf"
+        rootfile_el.attrib["media-type"] = "application/oebps-package+xml"
+
+        return container_el
+
+    def __create_stylesheet_css(self, output_dir_path: str):
+        stylesheet_path = os.path.join(
+            self.templates_paths, "css", "stylesheet.css")
+
+        target_path = os.path.join(output_dir_path, "stylesheet.css")
+
+        shutil.copy2(stylesheet_path, target_path)
+
+    def __create_titlepage_xhtml(self, output_dir_path: str):
+        titlepage_xhtml_path = os.path.join(
+            self.templates_paths, "html", "titlepage.xhtml")
+
+        with open(titlepage_xhtml_path, "r") as titlepage_xhtml_file:
+            titlepage_xhtml = titlepage_xhtml_file.read()
+
+        titlepage_xhtml = self._replace_html_template_value(
+            titlepage_xhtml, "work_name", self.work.name)
+
+        out_path = os.path.join(output_dir_path, "titlepage.xhtml")
+
+        with open(out_path, "w") as out_file:
+            out_file.write(self._prettify_html(titlepage_xhtml))
+
     def export(self, output_dir_path: str):
-        book_metadata_el = self.__build_book_metadata_xml()
-        navigation_control_el = self.__build_navigation_control_xml()
+        self.logger.info("stating export process...")
 
-        content_opf_path = os.path.join(output_dir_path, "content.opf")
-        toc_ncx_path = os.path.join(output_dir_path, "toc.ncx")
+        try:
+            # content.opf
+            book_metadata_el = self.__build_book_metadata_xml()
 
-        self.__dump_to_file(content_opf_path, book_metadata_el)
-        self.__dump_to_file(toc_ncx_path, navigation_control_el)
+            content_opf_path = os.path.join(output_dir_path, "content.opf")
+            self.__dump_xml_to_file(content_opf_path, book_metadata_el)
+
+            # toc.ncx
+            navigation_control_el = self.__build_navigation_control_xml()
+
+            toc_ncx_path = os.path.join(output_dir_path, "toc.ncx")
+            self.__dump_xml_to_file(toc_ncx_path, navigation_control_el)
+
+            # META-INF / container.xml
+            meta_inf_path = os.path.join(output_dir_path, "META-INF")
+            os.mkdir(meta_inf_path)
+
+            container_xml_el = self.__build_container_xml()
+
+            container_xml_path = os.path.join(meta_inf_path, "container.xml")
+            self.__dump_xml_to_file(container_xml_path, container_xml_el)
+
+            # mimetype
+            mimetype_file_path = os.path.join(output_dir_path, "mimetype")
+
+            with open(mimetype_file_path, "w") as mimetype_file:
+                mimetype_file.write("application/epub+zip")
+
+            # titlepage.xhtml
+            self.__create_titlepage_xhtml(output_dir_path)
+
+            # stylesheet.css
+            self.__create_stylesheet_css(output_dir_path)
+
+            # index.html
+            index_html = self._build_index("epub_index")
+            self._write_xhtml_file(os.path.join(
+                output_dir_path, "index.html"), index_html)
+
+            # chapters
+            chapter_template = self._load_html_template("epub_chapter")
+
+            for ind, chapter in enumerate(self.work.chapters, start=1):
+                content = self._build_chapter(chapter, chapter_template)
+                out_path = os.path.join(output_dir_path, f"{ind}.html")
+
+                with open(out_path, "w") as file:
+                    file.write(self._prettify_html(content))
+
+        except Exception as e:
+            self.logger.exception(f"error while exporting {self.work.name}")
