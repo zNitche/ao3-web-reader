@@ -9,7 +9,7 @@ AO3 web reader / scraper app created using Flask, SQLite, Redis and Bootstrap, s
 - Downloading works.
 - Downloading tags (streming zip archive on the fly).
 - Force updating chapters, works and tags.
-- Exporting works for ebook readers (html format), read [this](docs/ebook_export/README.md).
+- Exporting works for ebook readers (html/epub), read [this](docs/ebook_export/README.md).
 
 
 Hello there, It's been almost 2 years since I started working on this project, a lot of time right?
