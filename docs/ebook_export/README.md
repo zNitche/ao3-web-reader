@@ -1,8 +1,12 @@
 ### Exporting works as HTML
 
+#### Exporting data from app
+- tags & works can exported as `zip` archive containing `html` files (can be converted to any format using `calibre`).
+- additionally work can be exported as `epub` archive. 
+
 #### Convert html ebook to another formats using Calibre
 ```
-ebook-convert ebook/index.html ebook.azw3
+ebook-convert ebook/index.html ebook.epub
 ```
 
 #### Calibre Docker setup
