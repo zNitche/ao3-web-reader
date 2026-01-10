@@ -1,12 +1,17 @@
+function getModalById(id) {
+    const modalElem = document.getElementById(id);
+    return new bootstrap.Modal(modalElem);
+}
+
 function showRunLongRunningTaskModal(modalId, actionUrl) {
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    const modal = getModalById(modalId);
     document.getElementById("run-long-running-task-form").action = actionUrl;
 
     modal.show();
 }
 
-function showRemoveModal(modalID, itemName, actionURL) {
-    let modal = new bootstrap.Modal(document.getElementById(modalID));
+function showRemoveModal(modalId, itemName, actionURL) {
+    let modal = getModalById(modalId);
 
     document.getElementById("remove-modal-item-name").innerHTML = itemName;
     document.getElementById("remove-modal-form").action = actionURL;
@@ -15,8 +20,8 @@ function showRemoveModal(modalID, itemName, actionURL) {
 }
 
 
-function showChaptersCompletionModal(modalID, text, actionURL) {
-    let modal = new bootstrap.Modal(document.getElementById(modalID));
+function showChaptersCompletionModal(modalId, text, actionURL) {
+    let modal = getModalById(modalId);
 
     document.getElementById("chapter-completion-modal-text").innerHTML = text;
     document.getElementById("chapters-completion-form").action = actionURL;
@@ -25,8 +30,8 @@ function showChaptersCompletionModal(modalID, text, actionURL) {
 }
 
 
-function showWorkFavoriteToggleModal(modalID, text, actionURL) {
-    let modal = new bootstrap.Modal(document.getElementById(modalID));
+function showWorkFavoriteToggleModal(modalId, text, actionURL) {
+    let modal = getModalById(modalId);
 
     document.getElementById("work-favorite-modal-text").innerHTML = text;
     document.getElementById("work-favorite-form").action = actionURL;

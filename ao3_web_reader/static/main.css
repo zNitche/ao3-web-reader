@@ -151,6 +151,10 @@ body {
     color: #ffffff;
 }
 
+.work-management-wrapper img {
+    cursor: pointer;
+}
+
 .modal-content {
     background-color: #4E4E50 !important;
 }
