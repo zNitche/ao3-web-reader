@@ -56,7 +56,16 @@
                         </div>
                     </div>
                    <div class="work-management-wrapper">
-                        <span onclick="showExportWorkObjectModal('{{work.work_id}}')">
+                        <span onclick="showExportWorkObjectModal([
+                            {
+                                href: '{{ url_for('works.download_work', work_id=work.work_id, type='epub') }}',
+                                text: 'epub'
+                            },
+                            {
+                                href: '{{ url_for('works.download_work', work_id=work.work_id, type='html') }}',
+                                text: 'html'
+                            }
+                        ])">
                             <img src="{{ url_for('static', filename='icons/download_icon.svg') }}" alt="download work">
                         </span>
                         <a href="{{ url_for('works.force_chapters_update', work_id=work.work_id) }}">

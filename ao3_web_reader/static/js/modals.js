@@ -39,15 +39,21 @@ function showWorkFavoriteToggleModal(modalId, text, actionURL) {
     modal.show();
 }
 
-function showExportWorkObjectModal(workId) {
+function showExportWorkObjectModal(options) {
     const modalElem = document.getElementById("exportWorkObjectModal");
-    let modal = new bootstrap.Modal(modalElem);
+    const anchorsContainerElem = document.getElementById("export-work-object-content");
 
-    let items = modalElem.getElementsByTagName("a");
+    anchorsContainerElem.innerHTML = "";
 
-    for (const item of items) {
-        item.href = item.href.replace("WORK_ID", workId);
+    for (const option of options) {
+        const anchor = document.createElement("a");
+
+        anchor.innerHTML = option.text;
+        anchor.href = option.href;
+
+        anchorsContainerElem.appendChild(anchor);
     }
-
+    
+    const modal = new bootstrap.Modal(modalElem);
     modal.show();
 }

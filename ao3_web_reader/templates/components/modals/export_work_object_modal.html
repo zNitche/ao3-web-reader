@@ -1,11 +1,7 @@
 <div class="modal fade" id="exportWorkObjectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="export-work-object-content">
-                <a id="export-work-object-link-epub"
-                    href="{{ url_for('works.download_work', work_id='WORK_ID', type='epub') }}">EPUB</a>
-                <a id="export-work-object-link-html"
-                    href="{{ url_for('works.download_work', work_id='WORK_ID', type='html') }}">HTML</a>
+            <div class="export-work-object-content" id="export-work-object-content">
             </div>
         </div>
     </div>
