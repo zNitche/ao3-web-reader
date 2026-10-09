@@ -1,16 +1,29 @@
-FROM python:3.13-slim
+# base
+FROM python:3.13-slim AS base
 
 RUN apt update && apt -y install curl git
 
-COPY docker/scripts ./docker/scripts
-RUN chmod +x ./docker/scripts/setup_user.sh && ./docker/scripts/setup_user.sh
-RUN chmod +x ./docker/scripts/setup_python_venv.sh && ./docker/scripts/setup_python_venv.sh
+COPY docker ./docker
+RUN chmod +x ./docker/setup_user.sh && ./docker/setup_user.sh
 
-ENV PATH="/py_venv/bin:$PATH"
+ENV PY_VENV_DIR="/py_venv"
+RUN python3 -m venv "$PY_VENV_DIR"
+
+ENV PATH="${PY_VENV_DIR}/bin:$PATH"
 
 COPY . /ao3_web_reader
 WORKDIR /ao3_web_reader
 
+RUN pip3 install -r requirements/requirements.txt
+# end
+
+# background_tasks
+FROM base AS background_tasks
+RUN chmod +x scripts/run_background_tasks.sh
+# end
+
+# web_app
+FROM base AS web_app
 RUN curl -o ao3_web_reader/static/libs/bootstrap.min.css  https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css
 RUN curl -o ao3_web_reader/static/libs/bootstrap.bundle.min.js  https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js
 
@@ -18,3 +31,8 @@ RUN pip3 install -r requirements/requirements.txt
 RUN pip3 install -r requirements/requirements-prod.txt
 
 RUN chmod +x scripts/entrypoint.sh
+# end
+
+# whimdb
+FROM base AS whimdb
+# end
