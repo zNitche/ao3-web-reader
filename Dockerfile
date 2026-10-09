@@ -3,8 +3,12 @@ FROM python:3.13-slim AS base
 
 RUN apt update && apt -y install curl git
 
-COPY docker ./docker
-RUN chmod +x ./docker/setup_user.sh && ./docker/setup_user.sh
+ENV USERNAME=ao3wr
+ENV USER_UID=1111
+ENV USER_GID=${USER_UID}
+
+RUN groupadd --gid ${USER_GID} ${USERNAME}
+RUN useradd --uid ${USER_UID} --gid ${USER_GID} -s /bin/bash -m ${USERNAME}
 
 ENV PY_VENV_DIR="/py_venv"
 RUN python3 -m venv "$PY_VENV_DIR"
