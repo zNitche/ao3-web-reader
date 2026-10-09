@@ -12,7 +12,7 @@ services:
     depends_on:
       - whimdb
     container_name: ao3_web_reader
-    command: /bin/sh -c "/ao3_web_reader/scripts/entrypoint.sh"
+    command: /bin/sh -c "./scripts/entrypoint.sh"
     user: "ao3wr"
     build:
       context: .
@@ -21,8 +21,8 @@ services:
     ports:
       - ${APP_PORT}:8000
     volumes:
-      - ${DB_PATH}:/ao3_web_reader/database
-      - ${LOGS_PATH}:/ao3_web_reader/logs
+      - ${DB_PATH}:/home/ao3wr/ao3_web_reader/database
+      - ${LOGS_PATH}:/home/ao3wr/ao3_web_reader/logs
     env_file:
       - .env
 
@@ -31,14 +31,14 @@ services:
       - whimdb
       - web_app
     container_name: ao3_web_reader_tasks
-    command: /bin/sh -c "/ao3_web_reader/scripts/run_background_tasks.sh"
+    command: /bin/sh -c "./scripts/run_background_tasks.sh"
     user: "ao3wr"
     build:
       context: .
       target: background_tasks
     restart: unless-stopped
     volumes:
-      - ${DB_PATH}:/ao3_web_reader/database
-      - ${LOGS_PATH}:/ao3_web_reader/logs
+      - ${DB_PATH}:/home/ao3wr/ao3_web_reader/database
+      - ${LOGS_PATH}:/home/ao3wr/ao3_web_reader/logs
     env_file:
       - .env
