@@ -3,6 +3,7 @@ services:
     command: whimdb-server --port 6000
     container_name: ao3_web_reader_whimdb
     restart: unless-stopped
+    user: "ao3wr"
     build:
       context: .
       dockerfile: docker/Dockerfile.whimdb
@@ -12,6 +13,7 @@ services:
       - whimdb
     container_name: ao3_web_reader
     command: /bin/sh -c "/ao3_web_reader/scripts/entrypoint.sh"
+    user: "ao3wr"
     build:
       context: .
       dockerfile: docker/Dockerfile.web_app
@@ -30,6 +32,7 @@ services:
       - app
     container_name: ao3_web_reader_tasks
     command: /bin/sh -c "/ao3_web_reader/scripts/run_background_tasks.sh"
+    user: "ao3wr"
     build:
       context: .
       dockerfile: docker/Dockerfile.background_tasks
