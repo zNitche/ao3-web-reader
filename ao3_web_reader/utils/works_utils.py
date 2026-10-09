@@ -113,19 +113,19 @@ def get_work_soup(work_id):
 def get_work_name(work_id, work_soup=None):
     work_soup = get_work_soup(work_id) if work_soup is None else work_soup
 
-    header = work_soup.find("h4", class_="heading")
+    header = work_soup.find("h2", class_="heading")
 
     if not header:
         raise Exception("error while getting work name, header is None")
 
-    name_wrapper = header.find("a")
+    work_name = header.text
 
-    if not name_wrapper:
+    if not work_name:
         raise Exception("error while getting work name, name_wrapper is None")
 
-    name = name_wrapper.text.replace("\n", "").strip()
+    work_name = work_name.replace("\n", "").strip()
 
-    return name
+    return work_name
 
 
 def get_work_description(work_id, work_soup=None):
