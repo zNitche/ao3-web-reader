@@ -1,0 +1,17 @@
+{
+    "name": "ao3_web_reader_worker_devcontainer",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "ao3_web_reader_worker",
+    "overrideCommand": true,
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.vscode-pylance",
+                "ms-python.python",
+                "ms-python.autopep8",
+                "ms-python.debugpy"
+            ]
+        }
+    }
+}

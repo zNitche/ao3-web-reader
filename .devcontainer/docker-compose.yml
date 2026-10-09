@@ -1,0 +1,11 @@
+services:
+  ao3_web_reader_worker:
+    container_name: ao3_web_reader_worker_devcontainer
+    build: .
+    restart: "no"
+    user: "ao3_web_reader_worker"
+    volumes:
+      - ..:/workspace
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 8000:8000
