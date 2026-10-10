@@ -38,7 +38,7 @@ class TaskBase:
         }
 
         processes_manager.set_process_data(
-            self.unique_process_name, process_data)
+            self.unique_process_name, process_data, ttl=300)
 
     def finish_process(self):
         processes_manager.remove_process_data(self.unique_process_name)
