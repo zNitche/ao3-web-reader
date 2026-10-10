@@ -19,6 +19,14 @@
     <div class="main-content-container">
         <div id="scraper-processes-container" class="scraper-processes-container"></div>
     </div>
+
+    {% if messages|length > 0 %}
+    <div class="main-content-container">
+        {% for message in messages %}
+        <div>{{message.type}} - {{message.text}}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 <script src="{{ url_for('static', filename='js/scraper_processes.js') }}"></script>
 <script>

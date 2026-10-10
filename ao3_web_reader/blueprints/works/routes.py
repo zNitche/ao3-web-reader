@@ -4,7 +4,7 @@ import os
 from flask import Blueprint, render_template, flash, abort, redirect, \
     url_for, make_response, request, send_file
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
-from ao3_web_reader import models, db, processes_manager, forms, auth_manager
+from ao3_web_reader import models, db, processes_manager, forms, auth_manager, messaging_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
@@ -84,6 +84,8 @@ def add_work():
     tags = models.Tag.query.filter_by(owner_id=user.id).all()
     add_work_form.tag_name.choices = [tag.name for tag in tags]
 
+    messages = messaging_manager.get_messages(user_id=user.id, type=None, remove_on_get=True)
+
     if add_work_form.validate_on_submit():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
@@ -92,7 +94,8 @@ def add_work():
             "ScraperProcess", user.id, work_id)
 
         if len(running_processes) == 0:
-            ScraperTask(user.id, tag_name, work_id).start_process()
+            ScraperTask(user.id, tag_name, work_id,
+                        messaging_manager=messaging_manager).start_process()
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         else:
@@ -101,7 +104,7 @@ def add_work():
 
         return redirect(url_for("works.add_work"))
 
-    return render_template("add_work.html", add_work_form=add_work_form)
+    return render_template("add_work.html", add_work_form=add_work_form, messages=messages)
 
 
 @works.route("/<work_id>/chapters/<chapter_id>/force-update", methods=["POST"])
@@ -250,17 +253,19 @@ def download_work(work_id):
                     output_file_name = f"{work_name}.epub"
                     archive_path = os.path.join(
                         tempfile.gettempdir(), output_file_name)
-    
+
                 case _:
                     abort(400)
 
             abs_files_path = os.path.abspath(files_path)
-            abs_files_name = os.path.relpath(files_path, os.path.dirname(abs_files_path))
+            abs_files_name = os.path.relpath(
+                files_path, os.path.dirname(abs_files_path))
 
             with zipfile.ZipFile(archive_path, mode="w") as archive:
                 for (root, dirs, files) in os.walk(files_path):
                     root_abs = os.path.abspath(root)
-                    abs_root_name = os.path.relpath(root, os.path.dirname(root_abs))
+                    abs_root_name = os.path.relpath(
+                        root, os.path.dirname(root_abs))
 
                     diff_root = bool(abs_files_name != abs_root_name)
 
@@ -269,7 +274,8 @@ def download_work(work_id):
 
                     for file in files:
                         file_path = os.path.join(root, file)
-                        arcname = os.path.join(abs_root_name, file) if diff_root else file
+                        arcname = os.path.join(
+                            abs_root_name, file) if diff_root else file
 
                         archive.write(file_path, arcname=arcname)
 
