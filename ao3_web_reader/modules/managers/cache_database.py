@@ -54,7 +54,19 @@ class CacheDatabase:
         item = self.__query_single_item(key, search_regex=pattern)
 
         return json.loads(item.value) if item else None
-    
+
+    def get_values_for_pattern(self, pattern: str):
+        values = []
+
+        for page in self.client.query_pages(search_regex=pattern):
+            if not page:
+                break
+
+            for item in page:
+                values.append(json.loads(item.value) if item else None)
+
+        return values
+
     def get_keys(self):
         data = self.client.query(search_regex="(.*?)")
 
