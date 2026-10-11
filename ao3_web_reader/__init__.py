@@ -22,7 +22,7 @@ auth_manager = AuthManager(auth_db=auth_db)
 messages_cache = CacheDatabase(db_id=2)
 messaging_manager = MessagingManager(cache_db=messages_cache)
 
-def setup_app_managers(app):
+def setup_app_modules(app: Flask):
     is_debug = app.config.get("DEBUG_MODE")
 
     cache_db_address = app.config["WHIMDB_SERVER_ADDRESS"]
@@ -30,13 +30,14 @@ def setup_app_managers(app):
 
     processes_cache.setup(server_address=cache_db_address,
                           server_port=cache_db_port)
+
     auth_db.setup(server_address=cache_db_address, server_port=cache_db_port,
                   flush=False if is_debug else True)
     messages_cache.setup(server_address=cache_db_address, server_port=cache_db_port,
                       flush=False if is_debug else True)
 
 
-def setup_app_logging(app):
+def setup_app_logging(app: Flask):
     app_logging = AppLogging(
         app=app,
         logs_filename="app.log",
@@ -46,13 +47,13 @@ def setup_app_logging(app):
     app_logging.setup()
 
 
-def setup_jinja_context(app):
+def setup_jinja_context(app: Flask):
     from ao3_web_reader import jinja_context
 
     jinja_context.setup_constext_processor(app)
 
 
-def register_blueprints(app):
+def register_blueprints(app: Flask):
     from ao3_web_reader import blueprints
 
     app.register_blueprint(blueprints.core)
@@ -77,8 +78,7 @@ def create_app(config_class=Config):
     db.create_all()
 
     with app.app_context():
-        setup_app_managers(app)
-
+        setup_app_modules(app)
         register_blueprints(app)
 
         app.logger.info("app has been created")
