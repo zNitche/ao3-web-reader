@@ -32,13 +32,6 @@ class PaginationConsts:
     WORKS_PER_PAGE = 10
 
 
-class AO3Consts:
-    AO3_URL = "https://archiveofourown.org"
-    AO3_WORKS_URL = AO3_URL + "/works/{work_id}"
-    AO3_WORKS_NAVIGATION_URL = AO3_URL + "/works/{work_id}/navigate"
-    AO3_CHAPTER_URL = AO3_WORKS_URL + "/chapters/{chapter_id}?view_adult=true"
-
-
 class ProcessesConsts:
     PID = "pid"
     OWNER_ID = "owner_id"
@@ -49,24 +42,6 @@ class ProcessesConsts:
     PROGRESS = "progress"
 
     IS_RUNNING = "is_running"
-
-
-class WorksConsts:
-    NAME = "name"
-    URL = "url"
-    ID = "id"
-    WORK_ID = "work_id"
-    CHAPTERS_DATA = "chapters_data"
-    CONTENT = "content"
-
-class ChaptersConsts:
-    NAME = "name"
-    URL = "url"
-    ID = "id"
-    CONTENT = "content"
-    DATE = "date"
-    ORDER_ID = "order_id"
-    WORK_ID = "work_id"
 
 
 class UpdateMessagesConsts:
