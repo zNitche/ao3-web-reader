@@ -158,12 +158,12 @@ class Ao3Scraper(ScraperBase):
         chapters_struct = self.get_chapters_structs()
 
         for id, chapter in enumerate(chapters_struct):
+            time.sleep(delay_between_chapters)
+
             chapter.content = self.get_chapter_content(chapter.url)
             work_struct.chapters.append(chapter)
 
             if progress_callback is not None:
                 progress_callback(id, len(chapters_struct))
-
-            time.sleep(delay_between_chapters)
 
         return work_struct
