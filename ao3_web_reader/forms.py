@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, ValidationError, SelectField
 from wtforms.validators import DataRequired
-from ao3_web_reader.utils import works_utils
 from ao3_web_reader.consts import MessagesConsts
 from ao3_web_reader import models
 
@@ -27,9 +26,6 @@ class AddWorkForm(FormBase):
     def validate_work_id(self, work_id):
         if not self._user:
             raise Exception("error while validating work_id, user is None")
-
-        if not works_utils.check_if_work_is_accessible(work_id.data):
-            raise ValidationError(MessagesConsts.CANT_ACCESS_WORK)
 
         work = models.Work.query.filter_by(work_id=work_id.data, owner_id=self._user.id).first()
 

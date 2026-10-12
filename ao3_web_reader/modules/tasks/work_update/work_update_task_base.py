@@ -1,16 +1,16 @@
-from ao3_web_reader.utils import works_utils
 from ao3_web_reader.modules.tasks.task_base import TaskBase
 from ao3_web_reader.consts import ProcessesConsts
-from ao3_web_reader import processes_manager, db
+from ao3_web_reader import processes_manager, db, models
+from ao3_web_reader.modules.scrapers import ScraperBase
 
 
 class WorkUpdateTaskBase(TaskBase):
     def __init__(self, owner_id):
         super().__init__(owner_id)
 
-    def _update_description(self, work):
+    def _update_description(self, work: models.Work, scrapper: ScraperBase):
         try:
-            description = works_utils.get_work_description(work.work_id)
+            description = scrapper.get_work_description()
 
             work.description = description
             db.commit()
@@ -20,10 +20,10 @@ class WorkUpdateTaskBase(TaskBase):
         except Exception as e:
             self.logger.exception("error while updating work's description")
 
-    def _update_chapter(self, work, chapter):
+    def _update_chapter(self, chapter: models.Chapter, scrapper: ScraperBase):
         self.logger.info(f"updating {chapter.title}")
 
-        chapter_data = works_utils.get_chapter(work.work_id, chapter.chapter_id)
+        chapter_data = scrapper.get_chapter_content_for_id(chapter_id=chapter.chapter_id)
 
         if chapter_data:
             chapter.text = chapter_data

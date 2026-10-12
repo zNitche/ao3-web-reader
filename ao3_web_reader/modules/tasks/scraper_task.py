@@ -1,4 +1,4 @@
-from ao3_web_reader.utils import works_utils, models_utils
+from ao3_web_reader.utils import models_utils
 from ao3_web_reader.modules.tasks.task_base import TaskBase
 from ao3_web_reader.modules.managers import MessagingManager, MessageType
 from ao3_web_reader.consts import ProcessesConsts
@@ -26,13 +26,14 @@ class ScraperTask(TaskBase):
 
     def mainloop(self):
         try:
-            self.work_title = works_utils.get_work_name(self.work_id)
+            scrapper = self.get_scrapper(work_id=self.work_id)
+
+            self.work_title = scrapper.get_work_name()
+            work_description = scrapper.get_work_description()
+
             self.update_process_data()
 
-            work_data = works_utils.get_work(
-                self.work_id, progress_callback=self.get_work_update_callback,
-                delay_between_chapters=1)
-            work_description = works_utils.get_work_description(self.work_id)
+            work_data = scrapper.get_work(progress_callback=self.get_work_update_callback)
 
             self.logger.info(f"got {self.work_title} data")
 

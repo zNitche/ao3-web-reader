@@ -2,7 +2,7 @@ from zipfile import ZipFile
 import os
 import tempfile
 from ao3_web_reader.ebook_exporter import HTMLExporter
-from ao3_web_reader.utils import works_utils
+from ao3_web_reader.modules.scrapers import ScraperBase
 from ao3_web_reader.modules.extra.zip_on_the_fly import ZipFileStream, ZipOnTheFly
 
 
@@ -15,7 +15,7 @@ class ZipTagOnTheFly(ZipOnTheFly):
         self.user_id = user_id
 
     def __zip_work(self, root_files_path, work):
-        work_name = works_utils.serialize_work_name(work.name)
+        work_name = ScraperBase.serialize_work_name(work.name)
         archive_name = f"{work_name}.zip"
 
         archive_path = os.path.join(root_files_path, archive_name)

@@ -15,10 +15,12 @@ class WorkUpdaterTask(WorkUpdateTaskBase):
         self.update_process_data()
 
         try:
+            scrapper = self.get_scrapper(work_id=self.work_id)
+            
             work = models.Work.query.filter_by(work_id=self.work_id, owner_id=self.owner_id).first()
             self.logger.info(f"{work.name} force update, updating description...")
 
-            self._update_description(work)
+            self._update_description(work=work, scrapper=scrapper)
             self.logger.info("starting chapters update...")
 
             for chapter in work.chapters:

@@ -1,4 +1,3 @@
-from ao3_web_reader.utils import works_utils
 from ao3_web_reader.modules.tasks.task_base import TaskBase
 from ao3_web_reader.consts import ProcessesConsts
 from ao3_web_reader import models, processes_manager, db
@@ -28,9 +27,10 @@ class ChapterUpdaterTask(TaskBase):
             chapter = models.Chapter.query.filter_by(chapter_id=self.chapter_id, work_id=work.id).first()
 
             if not chapter.was_removed:
-                self.logger.info(f"{chapter.title} force update...")
+                scrapper = self.get_scrapper(work_id=work.work_id)
 
-                chapter_data = works_utils.get_chapter(self.work_id, self.chapter_id)
+                self.logger.info(f"{chapter.title} force update...")
+                chapter_data = scrapper.get_chapter_content_for_id(self.chapter_id)
 
                 if chapter_data:
                     chapter.text = chapter_data

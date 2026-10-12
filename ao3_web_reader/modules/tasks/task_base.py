@@ -1,9 +1,11 @@
 import threading
 import os
+import bs4
 from datetime import datetime
 from ao3_web_reader.consts import ProcessesConsts
 from ao3_web_reader import processes_manager
 from ao3_web_reader.logging import Logger
+from ao3_web_reader.modules.scrapers import ScraperBase, Ao3Scraper
 from config import Config
 
 
@@ -43,3 +45,6 @@ class TaskBase:
     def finish_process(self):
         processes_manager.remove_process_data(self.unique_process_name)
         self.logger.info("task completed")
+
+    def get_scrapper(self, work_id: str) -> ScraperBase:
+        return Ao3Scraper(work_id=work_id)

@@ -9,8 +9,7 @@ from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
 from ao3_web_reader.ebook_exporter import HTMLExporter, EpubExporter
-from ao3_web_reader.utils import works_utils
-
+from ao3_web_reader.modules.scrapers import ScraperBase
 
 works = Blueprint("works", __name__, template_folder="templates",
                   static_folder="static", url_prefix="/works")
@@ -236,7 +235,7 @@ def download_work(work_id):
                         tempfile.gettempdir(), tmp_dir_name)
 
                     exporter.export(files_path, prettify=True)
-                    work_name = works_utils.serialize_work_name(user_work.name)
+                    work_name = ScraperBase.serialize_work_name(user_work.name)
 
                     output_file_name = f"{work_name}.zip"
                     archive_path = os.path.join(
@@ -248,7 +247,7 @@ def download_work(work_id):
                         tempfile.gettempdir(), tmp_dir_name)
 
                     exporter.export(files_path)
-                    work_name = works_utils.serialize_work_name(user_work.name)
+                    work_name = ScraperBase.serialize_work_name(user_work.name)
 
                     output_file_name = f"{work_name}.epub"
                     archive_path = os.path.join(

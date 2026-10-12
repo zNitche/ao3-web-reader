@@ -25,11 +25,12 @@ class TagUpdaterTask(WorkUpdateTaskBase):
 
                 for work in works:
                     if not work.was_removed:
-                        self.logger.info(f"updating {work.name}, {works_count - works_updated} to go...")
+                        scrapper = self.get_scrapper(work_id=work.work_id)
 
+                        self.logger.info(f"updating {work.name}, {works_count - works_updated} to go...")
                         self.logger.info("starting description update...")
 
-                        self._update_description(work)
+                        self._update_description(work=work, scrapper=scrapper)
                         self.logger.info("starting chapters update...")
 
                         for chapter in work.chapters:

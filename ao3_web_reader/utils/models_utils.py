@@ -1,22 +1,22 @@
 from ao3_web_reader import models
-from ao3_web_reader.consts import WorksConsts, ChaptersConsts
+from ao3_web_reader.modules.scrapers import ChapterStruct, WorkStruct
 
 
-def create_chapters_models(work_data):
+def create_chapters_models(work_data: WorkStruct):
     chapters = []
 
-    for chapter_data in work_data[WorksConsts.CHAPTERS_DATA]:
+    for chapter_data in work_data.chapters:
         chapters.append(create_chapter_model(chapter_data))
 
     return chapters
 
 
-def create_chapter_model(chapter_data):
-    chapter_id = chapter_data[ChaptersConsts.ID]
-    title = chapter_data[ChaptersConsts.NAME]
-    content = chapter_data[ChaptersConsts.CONTENT]
-    order_id = chapter_data[ChaptersConsts.ORDER_ID]
-    chapter_date = chapter_data[ChaptersConsts.DATE]
+def create_chapter_model(chapter_data: ChapterStruct):
+    chapter_id = chapter_data.id
+    title = chapter_data.name
+    content = chapter_data.content
+    order_id = chapter_data.order_id
+    chapter_date = chapter_data.date
 
     chapter = models.Chapter(title=title, chapter_id=chapter_id, text=content,
                              order_id=order_id, date=chapter_date, completed=False)
@@ -24,17 +24,18 @@ def create_chapter_model(chapter_data):
     return chapter
 
 
-def create_work_model(work_data, owner_id, tag_id, description):
-    work = models.Work(name=work_data[WorksConsts.NAME],
+def create_work_model(work_data: WorkStruct, owner_id: str, tag_id: str, description: str):
+    work = models.Work(name=work_data.name,
                        owner_id=owner_id,
                        tag_id=tag_id,
-                       work_id=work_data[WorksConsts.WORK_ID],
+                       work_id=work_data.id,
                        description=description)
 
     return work
 
 
 def create_update_message_model(work_id, chapter_name, message_type):
-    message = models.UpdateMessage(work_id=work_id, chapter_name=chapter_name, type=message_type)
+    message = models.UpdateMessage(
+        work_id=work_id, chapter_name=chapter_name, type=message_type)
 
     return message
