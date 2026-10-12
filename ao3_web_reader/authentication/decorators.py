@@ -8,9 +8,6 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         auth_token = session.get("auth_token")
 
-        if not auth_token:
-            auth_token = request.headers.get("AUTHENTICATION")
-
         if not auth_token or not auth_manager.token_exists(auth_token):
             abort(401)
 
