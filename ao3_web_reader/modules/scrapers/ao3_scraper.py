@@ -60,7 +60,7 @@ class Ao3Scraper(ScraperBase):
 
                 chapter_date = chapter_date.text.replace(
                     "(", "").replace(")", "")
-                chapter_nav_href: str = chapter_href.attrs["href"]
+                chapter_nav_href: str = str(chapter_href.attrs["href"])
 
                 chapter_id = chapter_nav_href.split("/")[-1]
                 chapter_url = AO3Consts.AO3_CHAPTER_URL.format(
