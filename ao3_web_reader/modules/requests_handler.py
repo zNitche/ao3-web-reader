@@ -17,19 +17,24 @@ class RequestsHandlerConfig:
 class RequestsHandler():
     def __init__(self) -> None:
         self.__config: RequestsHandlerConfig = self.__get_config()
+        self.__req_session = self.__create_session()
 
     def __get_config(self) -> RequestsHandlerConfig:
         return RequestsHandlerConfig(user_agent=DEFAULT_REQUESTS_USER_AGENT,
                                      delay_between_tries=3, request_retries=5)
 
-    def get(self, url: str, timeout: int = 15) -> requests.Response:
-        headers = {
-            "user-agent": self.__config.user_agent if self.__config.user_agent else ""}
+    def __create_session(self) -> requests.Session:
+        s = requests.Session()
+        s.headers.update(
+            {"User-Agent": self.__config.user_agent if self.__config.user_agent else ""})
 
+        return s
+
+    def get(self, url: str, timeout: int = 15) -> requests.Response:
         retires_count = self.__config.request_retries
 
         for attempt in range(retires_count):
-            response = requests.get(url, timeout=timeout)
+            response = self.__req_session.get(url, timeout=timeout)
 
             if response.ok:
                 return response
