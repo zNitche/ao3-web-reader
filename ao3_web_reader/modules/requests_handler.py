@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 
 DEFAULT_REQUESTS_USER_AGENT = "Mozilla/5.0 (Wayland; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+REQUEST_RECOVERABLE_STATUS_CODES = [495, 496, 502, 525, 526, 503]
 
 
 @dataclass
@@ -30,13 +31,11 @@ class RequestsHandler():
         for attempt in range(retires_count):
             response = requests.get(url, timeout=timeout)
 
-            match(response.status_code):
-                case 200:
-                    return response
-                case 525:
-                    pass
-                case _:
-                    response.raise_for_status()
+            if response.ok:
+                return response
+
+            if response.status_code not in REQUEST_RECOVERABLE_STATUS_CODES:
+                response.raise_for_status()
 
             if attempt < retires_count - 1:
                 time.sleep(self.__config.delay_between_tries ** attempt)
