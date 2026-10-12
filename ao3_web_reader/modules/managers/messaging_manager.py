@@ -51,7 +51,7 @@ class MessagingManager():
                 self.__cache_db.delete_key(key=key)
 
         messages: list[MessageData] = [
-            MessageData(**json.loads(val)) for val in vals
+            MessageData(**val) for val in vals
         ]
 
         return messages
