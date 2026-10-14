@@ -1,6 +1,6 @@
-from sqlalchemy import Select, create_engine, Engine, exc, select, func
+from contextlib import contextmanager
+from sqlalchemy import create_engine, Engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker, Session
-from sqlalchemy import exc
 from ao3_web_reader.db import Base
 
 
@@ -18,8 +18,11 @@ class Database:
     def create_all(self):
         from ao3_web_reader import models
 
-        Base.query = self.session.query_property()
+        if self.session is None or self.engine is None:
+            raise Exception("session doesn't exist!")
+
         Base.metadata.create_all(bind=self.engine)
+        Base.get_db_session = lambda: self.session
 
     def __create_session_maker(self):
         return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
@@ -43,18 +46,45 @@ class Database:
 
         self.commit()
 
-    def add(self, obj):
-        self.session.add(obj)
-        self.commit()
+    def add(self, obj, commit_on_completion=True):
+        if self.session is None:
+            raise Exception("session doesn't exist!")
 
-    def remove(self, obj):
+        self.session.add(obj)
+
+        if commit_on_completion:
+            self.commit()
+
+    def remove(self, obj, commit_on_completion=True):
+        if self.session is None:
+            raise Exception("session doesn't exist!")
+
         self.session.delete(obj)
-        self.commit()
+
+        if commit_on_completion:
+            self.commit()
 
     def commit(self):
+        if self.session is None:
+            raise Exception("session doesn't exist!")
+
         try:
             self.session.commit()
 
         except Exception as exception:
             self.session.rollback()
             raise exception
+
+    @contextmanager
+    def session_context(self):
+        session = self.get_session()
+
+        try:
+            yield session
+
+        except Exception as e:
+            session.rollback()
+            raise
+
+        finally:
+            session.remove()

@@ -6,6 +6,9 @@ def main():
     db = Database()
     db.setup(Config.DATABASE_URI)
 
+    if db.engine is None:
+        raise Exception("can't create database engine, exiting...")
+
     migrations.init_migrations(Config.MIGRATIONS_DIR_PATH, db.engine)
     migrations.migrate(Config.MIGRATIONS_DIR_PATH, db.engine)
 

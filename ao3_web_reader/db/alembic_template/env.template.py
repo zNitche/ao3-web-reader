@@ -1,3 +1,5 @@
+# https://github.com/sqlalchemy/alembic/blob/main/alembic/templates/generic/env.py
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -43,6 +45,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        render_as_batch=True
     )
 
     with context.begin_transaction():
@@ -74,7 +77,8 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            process_revision_directives=process_revision_directives
+            process_revision_directives=process_revision_directives,
+            render_as_batch=True
         )
 
         with context.begin_transaction():
