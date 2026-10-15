@@ -17,13 +17,16 @@ def get_config(migrations_dir: str, db_engine: Engine):
 
 def init_migrations(migrations_dir: str, db_engine: Engine):
     if not os.path.exists(migrations_dir):
+        env_template_path = os.path.join(
+                    PROJECT_ROOT, "ao3_web_reader", "db", "alembic_template", "env.template.py")
+        target_path = os.path.join(migrations_dir, "env.py")
+
         cfg = get_config(migrations_dir, db_engine)
 
         command.init(cfg, migrations_dir)
 
-        env_template_path = os.path.join(
-            PROJECT_ROOT, "io_remastered", "db", "alembic_template", "env.template.py")
-        shutil.copy2(env_template_path, os.path.join(migrations_dir, "env.py"))
+        os.makedirs(exist_ok=True, name=os.path.dirname(target_path))
+        shutil.copy2(env_template_path, target_path)
 
         command.stamp(cfg, "head", purge=True)
 
