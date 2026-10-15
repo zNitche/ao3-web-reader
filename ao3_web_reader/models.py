@@ -64,8 +64,12 @@ class Work(Base):
         Integer, ForeignKey("tags.id"), nullable=False)
     owner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
 
-    chapters: Mapped["Chapter"] = relationship("Chapter", back_populates="work",
-                            cascade="all, delete-orphan", lazy="subquery")
+    owner: Mapped["User"] = relationship("User", back_populates="works")
+
+    tag: Mapped["Tag"] = relationship("Tag", back_populates="works")
+
+    chapters: Mapped[list["Chapter"]] = relationship("Chapter", back_populates="work",
+                                               cascade="all, delete-orphan", lazy="subquery")
     update_messages: Mapped["UpdateMessage"] = relationship(
         "UpdateMessage", back_populates="work", cascade="all, delete-orphan", lazy=True)
 
@@ -88,10 +92,11 @@ class Tag(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
 
-    works: Mapped[list["Work"]] = relationship(
-        "Work", back_populates="tag", cascade="all, delete-orphan", lazy=False)
     owner_id: Mapped[list["Work"]] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=False)
+
+    works: Mapped[list["Work"]] = relationship(
+            "Work", back_populates="tag", cascade="all, delete-orphan", lazy=False)
 
     owner: Mapped["User"] = relationship("User", back_populates="tags")
 
@@ -121,13 +126,17 @@ class UpdateMessage(Base):
     __tablename__ = "update_messages"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    chapter_name: Mapped[str] = mapped_column(String, unique=False, nullable=True)
+    chapter_name: Mapped[str] = mapped_column(
+        String, unique=False, nullable=True)
     type: Mapped[str] = mapped_column(String, unique=False, nullable=False,
-                         default=UpdateMessagesConsts.MESSAGE_ADDED_TYPE)
+                                      default=UpdateMessagesConsts.MESSAGE_ADDED_TYPE)
     date: Mapped[datetime.datetime] = mapped_column(DATETIME, unique=False,
-                         nullable=False, default=datetime.datetime.now(tz=datetime.timezone.utc))
+                                                    nullable=False, default=datetime.datetime.now(tz=datetime.timezone.utc))
 
-    work_id: Mapped[int] = mapped_column(Integer, ForeignKey("works.id"), nullable=False)
+    work: Mapped["Work"] = relationship(
+        "Work", back_populates="update_messages")
+    work_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("works.id"), nullable=False)
 
     def get_message_by_type(self) -> str | None:
         message = None
