@@ -1,6 +1,7 @@
 from typing import Self
 from sqlalchemy import Select, func, select, ScalarResult, MetaData
 from sqlalchemy.orm import scoped_session, DeclarativeBase, Session
+from ao3_web_reader.db.helpers import Query
 
 
 class Base(DeclarativeBase):
@@ -22,7 +23,11 @@ class Base(DeclarativeBase):
         return select(cls)
 
     @classmethod
-    def query(cls, select_exp: Select) -> ScalarResult[Self]:
+    def query(cls: type[Self]) -> Query[Self]:
+        return Query(cls)
+
+    @classmethod
+    def scalar(cls, select_exp: Select) -> ScalarResult[Self]:
         return cls.get_db_session().scalars(select_exp)
 
     @classmethod
