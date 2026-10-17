@@ -5,14 +5,14 @@ from sqlalchemy import ScalarResult, Sequence
 
 # additional for pylance I guess...
 if TYPE_CHECKING:
-    from ao3_web_reader.db import Base
+    from ao3_web_reader.db import ModelBase
 
 # some syntax sugar for avoiding calling
 # next_chapter = Chapter.query(Chapter.select().filter_by(work_id=self.work_id)).first()
 # instead we can
 # next_chapter = Chapter.query().filter_by(work_id=self.work_id).first()
 
-T = TypeVar("T", bound="Base")
+T = TypeVar("T", bound="ModelBase")
 
 class Query(Generic[T]):
     def __init__(self, cls: type[T]) -> None:

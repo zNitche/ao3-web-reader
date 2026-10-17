@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from sqlalchemy import create_engine, Engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker, Session
-from ao3_web_reader.db import Base
+from ao3_web_reader.db import ModelBase
 
 
 class Database:
@@ -21,8 +21,9 @@ class Database:
         if self.session is None or self.engine is None:
             raise Exception("session doesn't exist!")
 
-        Base.metadata.create_all(bind=self.engine)
-        Base.get_db_session = lambda: self.session
+        ModelBase.metadata.create_all(bind=self.engine)
+        ModelBase.get_db_session = lambda: self.session
+
 
     def __create_session_maker(self):
         return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)

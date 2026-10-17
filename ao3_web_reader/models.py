@@ -1,11 +1,11 @@
 import datetime
 from sqlalchemy import Integer, String, Boolean, ForeignKey, DATETIME
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from ao3_web_reader.db import Base
+from ao3_web_reader.db import ModelBase
 from ao3_web_reader.consts import UpdateMessagesConsts
 
 
-class Chapter(Base):
+class Chapter(ModelBase):
     __tablename__ = "chapters"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -42,7 +42,7 @@ class Chapter(Base):
         return prev_chapter
 
 
-class Work(Base):
+class Work(ModelBase):
     __tablename__ = "works"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -90,7 +90,7 @@ class Work(Base):
         return all([chapter.completed for chapter in self.chapters])
 
 
-class Tag(Base):
+class Tag(ModelBase):
     __tablename__ = "tags"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -108,7 +108,7 @@ class Tag(Base):
         return [work for work in self.works if work.favorite]
 
 
-class User(Base):
+class User(ModelBase):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -126,7 +126,7 @@ class User(Base):
         return [work for work in self.works if work.favorite]
 
 
-class UpdateMessage(Base):
+class UpdateMessage(ModelBase):
     __tablename__ = "update_messages"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

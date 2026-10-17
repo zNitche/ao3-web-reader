@@ -4,7 +4,7 @@ from sqlalchemy.orm import scoped_session, DeclarativeBase, Session
 from ao3_web_reader.db.helpers import Query
 
 
-class Base(DeclarativeBase):
+class ModelBase(DeclarativeBase):
     # https://alembic.sqlalchemy.org/en/latest/naming.html
     metadata = MetaData(naming_convention={
         "ix": "ix_%(column_0_label)s",

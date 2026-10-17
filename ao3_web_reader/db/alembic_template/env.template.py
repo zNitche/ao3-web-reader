@@ -18,10 +18,10 @@ if config.config_file_name is not None:
 
 
 def get_target_metadata():
-    from ao3_web_reader.db import Base
+    from ao3_web_reader.db import ModelBase
     from ao3_web_reader import models
 
-    return Base.metadata
+    return ModelBase.metadata
 
 
 target_metadata = get_target_metadata()

@@ -1,10 +1,11 @@
-from typing import Any
+from typing import TypeVar
 from sqlalchemy import Select
-from ao3_web_reader.db.base import Base
+from ao3_web_reader.db.model_base import ModelBase
 
+T = TypeVar("T", bound="ModelBase")
 
 class Pagination:
-    def __init__(self, db_model: type[Base], query: Select[Any], page_id: int, items_per_page=25):
+    def __init__(self, db_model: type[T], query: Select[T], page_id: int, items_per_page=25):
         self.__db_model = db_model
         self.__query = query
 
@@ -36,7 +37,9 @@ class Pagination:
         self.has_next = count > offset + self.items_per_page
         self.next_num = self.page_id + 1 if self.has_next else self.page_id
 
-        return self.__db_model.query(self.__query.limit(self.items_per_page).offset(offset)).unique().all()
+        query_exp = self.__query.limit(self.items_per_page).offset(offset)
+
+        return self.__db_model.scalar(query_exp).unique().all()
 
     def __validate_page_id(self) -> bool:
         return True if self.__get_offset() <= self.total_items_count else False
