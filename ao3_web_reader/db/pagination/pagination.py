@@ -1,15 +1,15 @@
 from typing import TypeVar
 from sqlalchemy import Select
+from ao3_web_reader.db.helpers import Query
 from ao3_web_reader.db.model_base import ModelBase
 
 T = TypeVar("T", bound="ModelBase")
 
 class Pagination:
-    def __init__(self, db_model: type[T], query: Select[T], page_id: int, items_per_page=25):
-        self.__db_model = db_model
+    def __init__(self, query: Query[T], page_id: int, items_per_page=25):
         self.__query = query
 
-        self.total_items_count = self.__get_files_count()
+        self.total_items_count = self.__get_items_count()
 
         self.page_id = page_id
         self.items_per_page = items_per_page
@@ -22,8 +22,8 @@ class Pagination:
 
         self.items = self.__query_items()
 
-    def __get_files_count(self):
-        count = self.__db_model.count(self.__query)
+    def __get_items_count(self):
+        count = self.__query.count()
         return count if count is not None else 0
 
     def __get_offset(self):
@@ -37,9 +37,9 @@ class Pagination:
         self.has_next = count > offset + self.items_per_page
         self.next_num = self.page_id + 1 if self.has_next else self.page_id
 
-        query_exp = self.__query.limit(self.items_per_page).offset(offset)
+        self.__query.limit(self.items_per_page).offset(offset)
 
-        return self.__db_model.scalar(query_exp).unique().all()
+        return self.__query.resolve().unique().all()
 
     def __validate_page_id(self) -> bool:
         return True if self.__get_offset() <= self.total_items_count else False

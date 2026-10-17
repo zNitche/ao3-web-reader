@@ -31,7 +31,7 @@ class AuthManager:
     def current_user(self) -> models.User:
         return g.get("current_user", None)
 
-    def user_for_token(self, token: str):
+    def user_for_token(self, token: str) -> models.User | None:
         user_id = self.__auth_db.get_value(token)
 
         if user_id is None:

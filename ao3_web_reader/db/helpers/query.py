@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, TypeVar, Generic, Self, Any
 from sqlalchemy import ScalarResult, Select, ColumnExpressionArgument
 
@@ -44,3 +45,9 @@ class Query(Generic[T]):
 
     def count(self) -> int | None:
         return self.__model.count(self.__statement)
+
+    def first(self) -> T | None:
+        return self.resolve().first()
+
+    def all(self) -> Sequence[T]:
+        return self.resolve().all()
