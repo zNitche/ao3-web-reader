@@ -27,7 +27,7 @@ class ModelBase(DeclarativeBase):
         return Query(cls)
 
     @classmethod
-    def scalar(cls, select_exp: Select) -> ScalarResult[Self]:
+    def scalars(cls, select_exp: Select) -> ScalarResult[Self]:
         return cls.get_db_session().scalars(select_exp)
 
     @classmethod

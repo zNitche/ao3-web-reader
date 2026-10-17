@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar, Generic
-from sqlalchemy import ScalarResult, Sequence
+from typing import TYPE_CHECKING, TypeVar, Generic, Self, Any
+from sqlalchemy import ScalarResult, Select, ColumnExpressionArgument
 
 # additional for pylance I guess...
 if TYPE_CHECKING:
@@ -14,17 +14,33 @@ if TYPE_CHECKING:
 
 T = TypeVar("T", bound="ModelBase")
 
+
 class Query(Generic[T]):
     def __init__(self, cls: type[T]) -> None:
         self.__model: type[T] = cls
+        self.__statement: Select[T] = self.__model.select()
 
-    def filter_by(self, **kwargs) -> ScalarResult[T]:
-        return self.__model.get_db_session().scalars(self.__model.select().filter_by(**kwargs))
+    def __return_self(self, stm: Select[T]) -> Self:
+        self.__statement = stm
+        return self
 
-    def all(self) -> Sequence[T]:
-        select = self.__model.select()
-        return self.__model.get_db_session().scalars(select).all()  # type: ignore
+    def resolve(self) -> ScalarResult[T]:
+        return self.__model.get_db_session().scalars(self.__statement)
 
-    def first(self) -> T | None:
-        select = self.__model.select()
-        return self.__model.get_db_session().scalars(select).first()
+    def order_by(self, *clauses: ColumnExpressionArgument[Any]) -> Self:
+        return self.__return_self(self.__statement.order_by(*clauses))
+
+    def filter(self, *criteria: ColumnExpressionArgument[bool]) -> Self:
+        return self.__return_self(self.__statement.filter(*criteria))
+
+    def filter_by(self, **kwargs) -> Self:
+        return self.__return_self(self.__statement.filter_by(**kwargs))
+
+    def limit(self, limit: int):
+        return self.__return_self(self.__statement.limit(limit))
+
+    def offset(self, offset: int):
+        return self.__return_self(self.__statement.offset(offset))
+
+    def count(self) -> int | None:
+        return self.__model.count(self.__statement)
