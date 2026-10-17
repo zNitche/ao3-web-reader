@@ -15,7 +15,7 @@ def home(page_id):
     user = auth_manager.current_user()
     user_works_ids = [work.id for work in user.works]
 
-    messages_query = models.UpdateMessage.query.filter(models.UpdateMessage.work_id.in_(user_works_ids)).order_by(
+    messages_query = models.UpdateMessage.query().filter(models.UpdateMessage.work_id.in_(user_works_ids)).order_by(
         models.UpdateMessage.date.desc())
 
     messages_pagination = Pagination(query=messages_query,

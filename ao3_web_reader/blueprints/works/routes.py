@@ -20,7 +20,7 @@ works = Blueprint("works", __name__, template_folder="templates",
 @login_required
 def all_works(tag_name, page_id):
     user = auth_manager.current_user()
-    tag = models.Tag.query.filter_by(owner_id=user.id, name=tag_name).first()
+    tag = models.Tag.query().filter_by(owner_id=user.id, name=tag_name).first()
 
     if tag:
         search_string = request.args.get(

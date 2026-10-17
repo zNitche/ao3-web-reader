@@ -37,7 +37,7 @@ class AuthManager:
         if user_id is None:
             return None
 
-        return models.User.query.filter_by(id=user_id).first()
+        return models.User.query().filter_by(id=user_id).first()
 
     def get_auth_token_for_current_user(self):
         return session.get("auth_token")

@@ -9,31 +9,34 @@ class Chapter(Base):
     __tablename__ = "chapters"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    chapter_id: Mapped[str] = mapped_column(String, unique=False, nullable=False)
+    chapter_id: Mapped[str] = mapped_column(
+        String, unique=False, nullable=False)
     order_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=True)
 
-    title: Mapped[str] = mapped_column(String(200), unique=False, nullable=False)
+    title: Mapped[str] = mapped_column(
+        String(200), unique=False, nullable=False)
     date: Mapped[datetime.datetime] = mapped_column(DATETIME, unique=False,
-                         nullable=False, default=datetime.datetime.now(tz=datetime.timezone.utc))
+                                                    nullable=False, default=datetime.datetime.now(tz=datetime.timezone.utc))
 
     text: Mapped[str] = mapped_column(String, unique=False, nullable=False)
 
     was_removed: Mapped[bool] = mapped_column(
         Boolean, unique=False, nullable=False, default=False)
     completed: Mapped[bool] = mapped_column(Boolean, unique=False,
-                              nullable=True, default=False)
+                                            nullable=True, default=False)
 
-    work_id: Mapped[int] = mapped_column(Integer, ForeignKey("works.id"), nullable=False)
+    work_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("works.id"), nullable=False)
     work: Mapped["Work"] = relationship("Work", back_populates="chapters")
 
     def get_next_chapter(self) -> "Chapter | None":
-        next_chapter = Chapter.query.filter_by(
+        next_chapter = Chapter.query().filter_by(
             work_id=self.work_id, order_id=self.order_id + 1).first()
 
         return next_chapter
 
     def get_prev_chapter(self) -> "Chapter | None":
-        prev_chapter = Chapter.query.filter_by(
+        prev_chapter = Chapter.query().filter_by(
             work_id=self.work_id, order_id=self.order_id - 1).first()
 
         return prev_chapter
@@ -62,14 +65,15 @@ class Work(Base):
 
     tag_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("tags.id"), nullable=False)
-    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    owner_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False)
 
     owner: Mapped["User"] = relationship("User", back_populates="works")
 
     tag: Mapped["Tag"] = relationship("Tag", back_populates="works")
 
     chapters: Mapped[list["Chapter"]] = relationship("Chapter", back_populates="work",
-                                               cascade="all, delete-orphan", lazy="subquery")
+                                                     cascade="all, delete-orphan", lazy="subquery")
     update_messages: Mapped["UpdateMessage"] = relationship(
         "UpdateMessage", back_populates="work", cascade="all, delete-orphan", lazy=True)
 
@@ -96,7 +100,7 @@ class Tag(Base):
         Integer, ForeignKey("users.id"), nullable=False)
 
     works: Mapped[list["Work"]] = relationship(
-            "Work", back_populates="tag", cascade="all, delete-orphan", lazy=False)
+        "Work", back_populates="tag", cascade="all, delete-orphan", lazy=False)
 
     owner: Mapped["User"] = relationship("User", back_populates="tags")
 
