@@ -15,10 +15,10 @@ class TagUpdaterTask(WorkUpdateTaskBase):
         works_updated = 0
 
         try:
-            tag = models.Tag.query.filter_by(owner_id=self.owner_id, id=self.tag_id).first()
+            tag = models.Tag.query().filter_by(owner_id=self.owner_id, id=self.tag_id).first()
 
             if tag:
-                works = models.Work.query.filter_by(owner_id=self.owner_id).all()
+                works = models.Work.query().filter_by(owner_id=self.owner_id).all()
 
                 works_count = len(works)
                 self.logger.info(f"{tag.name} force update")

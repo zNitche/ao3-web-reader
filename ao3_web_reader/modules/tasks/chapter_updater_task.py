@@ -23,8 +23,8 @@ class ChapterUpdaterTask(TaskBase):
         self.update_process_data()
 
         try:
-            work = models.Work.query.filter_by(owner_id=self.owner_id, work_id=self.work_id).first()
-            chapter = models.Chapter.query.filter_by(chapter_id=self.chapter_id, work_id=work.id).first()
+            work = models.Work.query().filter_by(owner_id=self.owner_id, work_id=self.work_id).first()
+            chapter = models.Chapter.query().filter_by(chapter_id=self.chapter_id, work_id=work.id).first()
 
             if not chapter.was_removed:
                 scrapper = self.get_scrapper(work_id=work.work_id)

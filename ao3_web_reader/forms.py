@@ -27,7 +27,7 @@ class AddWorkForm(FormBase):
         if not self._user:
             raise Exception("error while validating work_id, user is None")
 
-        work = models.Work.query.filter_by(work_id=work_id.data, owner_id=self._user.id).first()
+        work = models.Work.query().filter_by(work_id=work_id.data, owner_id=self._user.id).first()
 
         if work:
             raise ValidationError(MessagesConsts.WORK_ALREADY_ADDED)
@@ -36,7 +36,7 @@ class AddWorkForm(FormBase):
         if not self._user:
             raise Exception("error while validating tag_name, user is None")
 
-        tag = models.Tag.query.filter_by(name=tag_name.data, owner_id=self._user.id).first()
+        tag = models.Tag.query().filter_by(name=tag_name.data, owner_id=self._user.id).first()
 
         if not tag:
             raise ValidationError(MessagesConsts.TAG_DOESNT_EXIST)
@@ -49,7 +49,7 @@ class AddTagForm(FormBase):
         if not self._user:
             raise Exception("error while validating tag_name, user is None")
 
-        tag = models.Tag.query.filter_by(name=tag_name.data).first()
+        tag = models.Tag.query().filter_by(name=tag_name.data).first()
 
         if tag and tag.owner_id == self._user.id:
             raise ValidationError(MessagesConsts.TAG_ALREADY_ADDED)

@@ -2,7 +2,7 @@ from ao3_web_reader.models import User
 from config import Config
 from werkzeug.security import generate_password_hash
 import sqlalchemy
-from sqlalchemy.orm import scoped_session, Session
+from sqlalchemy.orm import scoped_session, Session, sessionmaker
 import os
 
 
@@ -43,7 +43,7 @@ class UsersManager:
     def init_db_session(self):
         engine = sqlalchemy.create_engine(Config.DATABASE_URI)
 
-        self.db_session = sqlalchemy.orm.sessionmaker(engine)
+        self.db_session = sessionmaker(engine)
 
     def add_user(self, user_name, password):
         if user_name in self.get_users_names():

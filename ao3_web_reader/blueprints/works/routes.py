@@ -22,34 +22,34 @@ def all_works(tag_name, page_id):
     user = auth_manager.current_user()
     tag = models.Tag.query().filter_by(owner_id=user.id, name=tag_name).first()
 
-    if tag:
-        search_string = request.args.get(
-            "search") if request.args.get("search") is not None else ""
+    if not tag:
+        abort(404)
 
-        only_favorites = request.args.get("only_favorites")
-        only_favorites = int(
-            only_favorites) if only_favorites is not None else 0
+    search_string = request.args.get(
+        "search") if request.args.get("search") is not None else ""
 
-        works_query = models.Work.query.filter(models.Work.name.icontains(search_string),
-                                               models.Work.tag_id == tag.id,
-                                               models.Work.owner_id == user.id,
-                                               models.Work.was_removed == False).\
-            order_by(models.Work.last_updated.desc())
+    only_favorites = request.args.get("only_favorites")
+    only_favorites = int(
+        only_favorites) if only_favorites is not None else 0
 
-        if only_favorites:
-            works_query = works_query.filter(models.Work.favorite == True)
+    works_query = models.Work.query().filter(models.Work.name.icontains(search_string),
+                                            models.Work.tag_id == tag.id,
+                                            models.Work.owner_id == user.id,
+                                            models.Work.was_removed == False).\
+        order_by(models.Work.last_updated.desc())
 
-        works_pagination = Pagination(
-            query=works_query, page_id=page_id, items_per_page=PaginationConsts.WORKS_PER_PAGE)
+    if only_favorites:
+        works_query = works_query.filter(models.Work.favorite == True)
 
-        return render_template("works.html",
-                               tag=tag,
-                               works_pagination=works_pagination,
-                               works=works_pagination.items,
-                               only_favorites=only_favorites,
-                               search_string=search_string)
+    works_pagination = Pagination(
+        query=works_query, page_id=page_id, items_per_page=PaginationConsts.WORKS_PER_PAGE)
 
-    abort(404)
+    return render_template("works.html",
+                            tag=tag,
+                            works_pagination=works_pagination,
+                            works=works_pagination.items,
+                            only_favorites=only_favorites,
+                            search_string=search_string)
 
 
 @works.route("/<tag_name>/removed-works", defaults={"page_id": 1})
@@ -57,21 +57,21 @@ def all_works(tag_name, page_id):
 @login_required
 def removed_works(tag_name, page_id):
     user = auth_manager.current_user()
-    tag = models.Tag.query.filter_by(owner_id=user.id, name=tag_name).first()
+    tag = models.Tag.query().filter_by(owner_id=user.id, name=tag_name).first()
 
-    if tag:
-        works_query = models.Work.query.filter_by(tag_id=tag.id, owner_id=user.id, was_removed=True).order_by(
-            models.Work.last_updated.desc())
+    if not tag:
+        abort(404)
 
-        works_pagination = Pagination(
-            query=works_query, page_id=page_id, items_per_page=PaginationConsts.WORKS_PER_PAGE)
+    works_query = models.Work.query().filter_by(tag_id=tag.id, owner_id=user.id, was_removed=True).order_by(
+        models.Work.last_updated.desc())
 
-        return render_template("works.html",
-                               tag=tag,
-                               works_pagination=works_pagination,
-                               works=works_pagination.items)
+    works_pagination = Pagination(
+        query=works_query, page_id=page_id, items_per_page=PaginationConsts.WORKS_PER_PAGE)
 
-    abort(404)
+    return render_template("works.html",
+                            tag=tag,
+                            works_pagination=works_pagination,
+                            works=works_pagination.items)
 
 
 @works.route("/add", methods=["GET", "POST"])
@@ -80,8 +80,8 @@ def add_work():
     user = auth_manager.current_user()
     add_work_form = forms.AddWorkForm(user=user)
 
-    tags = models.Tag.query.filter_by(owner_id=user.id).all()
-    add_work_form.tag_name.choices = [tag.name for tag in tags]
+    tags = models.Tag.query().filter_by(owner_id=user.id).all()
+    add_work_form.tag_name.choices = [(tag.name, tag.name) for tag in tags]
 
     messages = messaging_manager.get_messages(user_id=user.id, type=None, remove_on_get=True)
 
@@ -110,11 +110,11 @@ def add_work():
 @login_required
 def force_chapter_update(work_id, chapter_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
     if user_work:
-        work_chapter = models.Chapter.query.filter_by(
+        work_chapter = models.Chapter.query().filter_by(
             work_id=user_work.id, chapter_id=chapter_id).first()
 
         running_processes = processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
@@ -138,177 +138,179 @@ def force_chapter_update(work_id, chapter_id):
 @login_required
 def force_chapters_update(work_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
-    if user_work:
-        running_processes = processes_manager.get_processes_data_for_user_and_work("ChaptersUpdaterProcess",
-                                                                                   user.id,
-                                                                                   work_id)
+    if not user_work:
+        abort(404)
 
-        if len(running_processes) == 0:
-            WorkUpdaterTask(user.id, work_id).start_process()
-            flash(MessagesConsts.CHAPTERS_UPDATE_PROCESS_STARTED,
-                  FlashConsts.SUCCESS)
+    running_processes = processes_manager.get_processes_data_for_user_and_work("ChaptersUpdaterProcess",
+                                                                                user.id,
+                                                                                work_id)
 
-        page_id = request.args.get("page_id")
-        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
+    if len(running_processes) == 0:
+        WorkUpdaterTask(user.id, work_id).start_process()
+        flash(MessagesConsts.CHAPTERS_UPDATE_PROCESS_STARTED,
+                FlashConsts.SUCCESS)
 
-    abort(404)
+    page_id = request.args.get("page_id")
+    return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
 
 @works.route("/<work_id>/management/remove", methods=["POST"])
 @login_required
 def remove_work(work_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
-    if user_work:
-        tag_name = user_work.tag.name
-        db.remove(user_work)
+    if not user_work:
+        abort(404)
 
-        flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=tag_name))
+    tag_name = user_work.tag.name
+    db.remove(user_work)
 
-    abort(404)
+    flash(MessagesConsts.WORK_REMOVED, FlashConsts.SUCCESS)
+    return redirect(url_for("works.all_works", tag_name=tag_name))
 
 
 @works.route("/<work_id>/toggle-chapters-completion", methods=["POST"])
 @login_required
 def toggle_chapters_completion(work_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
-    if user_work:
-        for chapter in user_work.chapters:
-            chapter.completed = not chapter.completed
-            db.commit()
+    if not user_work:
+        abort(404)
 
-        page_id = request.args.get("page_id")
+    for chapter in user_work.chapters:
+        chapter.completed = not chapter.completed
+        db.commit()
 
-        flash(MessagesConsts.CHAPTERS_MARKED_AS_COMPLETED.format(
-            work_name=user_work.name), FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
+    page_id = request.args.get("page_id")
 
-    abort(404)
+    flash(MessagesConsts.CHAPTERS_MARKED_AS_COMPLETED.format(
+        work_name=user_work.name), FlashConsts.SUCCESS)
+    return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
+
 
 
 @works.route("/<work_id>/toggle-favorite", methods=["POST"])
 @login_required
 def toggle_work_favorite(work_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
-    if user_work:
-        user_work.favorite = not user_work.favorite
-        db.commit()
+    if not user_work:
+        abort(404)
 
-        page_id = request.args.get("page_id")
+    user_work.favorite = not user_work.favorite
+    db.commit()
 
-        update_message = MessagesConsts.WORK_ADDED_TO_FAVORITES if user_work.favorite \
-            else MessagesConsts.WORK_REMOVED_FROM_FAVORITES
+    page_id = request.args.get("page_id")
 
-        flash(update_message.format(work_name=user_work.name), FlashConsts.SUCCESS)
-        return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
+    update_message = MessagesConsts.WORK_ADDED_TO_FAVORITES if user_work.favorite \
+        else MessagesConsts.WORK_REMOVED_FROM_FAVORITES
 
-    abort(404)
+    flash(update_message.format(work_name=user_work.name), FlashConsts.SUCCESS)
+    return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
+
 
 
 @works.route("/<work_id>/download", methods=["GET"])
 @login_required
 def download_work(work_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
     export_target_type = request.args.get("type", None)
 
-    if user_work:
-        with tempfile.TemporaryDirectory() as tmp_dir_name:
-            match export_target_type:
-                case "html":
-                    exporter = HTMLExporter(user.id, user_work)
-                    files_path = os.path.join(
-                        tempfile.gettempdir(), tmp_dir_name)
+    if not user_work:
+        abort(404)
 
-                    exporter.export(files_path, prettify=True)
-                    work_name = ScraperBase.serialize_work_name(user_work.name)
+    with tempfile.TemporaryDirectory() as tmp_dir_name:
+        match export_target_type:
+            case "html":
+                exporter = HTMLExporter(user.id, user_work)
+                files_path = os.path.join(
+                    tempfile.gettempdir(), tmp_dir_name)
 
-                    output_file_name = f"{work_name}.zip"
-                    archive_path = os.path.join(
-                        tempfile.gettempdir(), output_file_name)
+                exporter.export(files_path, prettify=True)
+                work_name = ScraperBase.serialize_work_name(user_work.name)
 
-                case "epub":
-                    exporter = EpubExporter(user.id, user_work)
-                    files_path = os.path.join(
-                        tempfile.gettempdir(), tmp_dir_name)
+                output_file_name = f"{work_name}.zip"
+                archive_path = os.path.join(
+                    tempfile.gettempdir(), output_file_name)
 
-                    exporter.export(files_path)
-                    work_name = ScraperBase.serialize_work_name(user_work.name)
+            case "epub":
+                exporter = EpubExporter(user.id, user_work)
+                files_path = os.path.join(
+                    tempfile.gettempdir(), tmp_dir_name)
 
-                    output_file_name = f"{work_name}.epub"
-                    archive_path = os.path.join(
-                        tempfile.gettempdir(), output_file_name)
+                exporter.export(files_path)
+                work_name = ScraperBase.serialize_work_name(user_work.name)
 
-                case _:
-                    abort(400)
+                output_file_name = f"{work_name}.epub"
+                archive_path = os.path.join(
+                    tempfile.gettempdir(), output_file_name)
 
-            abs_files_path = os.path.abspath(files_path)
-            abs_files_name = os.path.relpath(
-                files_path, os.path.dirname(abs_files_path))
+            case _:
+                abort(400)
 
-            with zipfile.ZipFile(archive_path, mode="w") as archive:
-                for (root, dirs, files) in os.walk(files_path):
-                    root_abs = os.path.abspath(root)
-                    abs_root_name = os.path.relpath(
-                        root, os.path.dirname(root_abs))
+        abs_files_path = os.path.abspath(files_path)
+        abs_files_name = os.path.relpath(
+            files_path, os.path.dirname(abs_files_path))
 
-                    diff_root = bool(abs_files_name != abs_root_name)
+        with zipfile.ZipFile(archive_path, mode="w") as archive:
+            for (root, dirs, files) in os.walk(files_path):
+                root_abs = os.path.abspath(root)
+                abs_root_name = os.path.relpath(
+                    root, os.path.dirname(root_abs))
 
-                    if diff_root:
-                        archive.write(root, arcname=abs_root_name)
+                diff_root = bool(abs_files_name != abs_root_name)
 
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        arcname = os.path.join(
-                            abs_root_name, file) if diff_root else file
+                if diff_root:
+                    archive.write(root, arcname=abs_root_name)
 
-                        archive.write(file_path, arcname=arcname)
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.join(
+                        abs_root_name, file) if diff_root else file
 
-            return send_file(archive_path, as_attachment=True, max_age=0, download_name=output_file_name)
+                    archive.write(file_path, arcname=arcname)
 
-    abort(404)
+        return send_file(archive_path, as_attachment=True, max_age=0, download_name=output_file_name)
 
 
 @works.route("/<work_id>/chapters")
 @login_required
 def chapters(work_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
-    if user_work:
-        available_chapters = user_work.get_not_removed_chapters()
-        removed_chapters = user_work.get_removed_chapters()
+    if not user_work:
+        abort(404)
 
-        return render_template("chapters.html", work=user_work, available_chapters=available_chapters,
-                               removed_chapters=removed_chapters)
+    available_chapters = user_work.get_not_removed_chapters()
+    removed_chapters = user_work.get_removed_chapters()
 
-    abort(404)
+    return render_template("chapters.html", work=user_work, available_chapters=available_chapters,
+                            removed_chapters=removed_chapters)
 
 
 @works.route("/<work_id>/chapters/<chapter_id>")
 @login_required
 def chapter(work_id, chapter_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
     if user_work:
-        work_chapter = models.Chapter.query.filter_by(
+        work_chapter = models.Chapter.query().filter_by(
             work_id=user_work.id, chapter_id=chapter_id).first()
 
         if work_chapter:
@@ -326,11 +328,11 @@ def chapter(work_id, chapter_id):
 @login_required
 def chapter_toggle_completed_state(work_id, chapter_id):
     user = auth_manager.current_user()
-    user_work = models.Work.query.filter_by(
+    user_work = models.Work.query().filter_by(
         owner_id=user.id, work_id=work_id).first()
 
     if user_work:
-        work_chapter = models.Chapter.query.filter_by(
+        work_chapter = models.Chapter.query().filter_by(
             work_id=user_work.id, chapter_id=chapter_id).first()
 
         if work_chapter:

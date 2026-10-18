@@ -37,7 +37,7 @@ class ScraperTask(TaskBase):
 
             self.logger.info(f"got {self.work_title} data")
 
-            tag = models.Tag.query.filter_by(
+            tag = models.Tag.query().filter_by(
                 owner_id=self.owner_id, name=self.tag_name).first()
 
             work = models_utils.create_work_model(

@@ -5,7 +5,7 @@ from ao3_web_reader.ebook_exporter import XHtmlExporter
 
 
 class HTMLExporter(XHtmlExporter):
-    def __init__(self, user_id: str, work: models.Work):
+    def __init__(self, user_id: int, work: models.Work):
         super().__init__(user_id=user_id, work=work, logger_extra={})
 
     def export(self, output_dir_path: str, prettify=True):

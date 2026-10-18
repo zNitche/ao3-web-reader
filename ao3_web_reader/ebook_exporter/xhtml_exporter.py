@@ -8,7 +8,7 @@ from ao3_web_reader.ebook_exporter import BaseExporter
 
 
 class XHtmlExporter(BaseExporter):
-    def __init__(self, user_id: str, work: models.Work, logger_extra: dict[str, Any]):
+    def __init__(self, user_id: int, work: models.Work, logger_extra: dict[str, Any]):
         super().__init__(user_id=user_id, work=work, logger_extra=logger_extra)
 
         self.templates_paths = os.path.join(

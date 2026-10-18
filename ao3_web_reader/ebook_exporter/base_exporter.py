@@ -8,7 +8,7 @@ from ao3_web_reader.logging import Logger
 
 
 class BaseExporter:
-    def __init__(self, user_id: str, work: models.Work, logger_extra: dict[str, Any]):
+    def __init__(self, user_id: int, work: models.Work, logger_extra: dict[str, Any]):
         self.user_id = user_id
         self.work = work
 

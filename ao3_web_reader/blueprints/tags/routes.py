@@ -13,7 +13,7 @@ tags = Blueprint("tags", __name__, template_folder="templates", static_folder="s
 @login_required
 def all_tags():
     user = auth_manager.current_user()
-    tags = models.Tag.query.filter_by(owner_id=user.id).all()
+    tags = models.Tag.query().filter_by(owner_id=user.id).all()
 
     return render_template("tags.html", tags=tags)
 
@@ -38,22 +38,22 @@ def add_tag():
 @login_required
 def remove_tag(tag_id):
     user = auth_manager.current_user()
-    user_tag = models.Tag.query.filter_by(owner_id=user.id, id=tag_id).first()
+    user_tag = models.Tag.query().filter_by(owner_id=user.id, id=tag_id).first()
 
-    if user_tag:
-        db.remove(user_tag)
+    if not user_tag:
+        abort(404)
 
-        flash(MessagesConsts.TAG_REMOVED, FlashConsts.SUCCESS)
-        return redirect(url_for("tags.all_tags"))
+    db.remove(user_tag)
 
-    abort(404)
+    flash(MessagesConsts.TAG_REMOVED, FlashConsts.SUCCESS)
+    return redirect(url_for("tags.all_tags"))
 
 
 @tags.route("/<tag_id>/download", methods=["GET"])
 @login_required
 def download_tag(tag_id):
     user = auth_manager.current_user()
-    tag = models.Tag.query.filter_by(owner_id=user.id, id=tag_id).first()
+    tag = models.Tag.query().filter_by(owner_id=user.id, id=tag_id).first()
 
     if not tag:
         abort(404)
@@ -65,15 +65,15 @@ def download_tag(tag_id):
 @login_required
 def force_update(tag_id):
     user = auth_manager.current_user()
-    tag = models.Tag.query.filter_by(owner_id=user.id, id=tag_id).first()
+    tag = models.Tag.query().filter_by(owner_id=user.id, id=tag_id).first()
 
-    if tag:
-        running_processes = processes_manager.get_processes_data_for_user("TagUpdaterTask", user.id)
+    if not tag:
+        abort(404)
 
-        if len(running_processes) == 0:
-            TagUpdaterTask(user.id, tag_id).start_process()
-            flash(MessagesConsts.TAG_UPDATE_PROCESS_STARTED, FlashConsts.SUCCESS)
+    running_processes = processes_manager.get_processes_data_for_user("TagUpdaterTask", user.id)
 
-        return redirect(url_for("tags.all_tags"))
+    if len(running_processes) == 0:
+        TagUpdaterTask(user.id, tag_id).start_process()
+        flash(MessagesConsts.TAG_UPDATE_PROCESS_STARTED, FlashConsts.SUCCESS)
 
-    abort(404)
+    return redirect(url_for("tags.all_tags"))

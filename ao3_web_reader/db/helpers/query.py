@@ -21,30 +21,30 @@ class Query(Generic[T]):
         self.__model: type[T] = cls
         self.__statement: Select[T] = self.__model.select()
 
-    def __return_self(self, stm: Select[T]) -> Self:
+    def __propagate(self, stm: Select[T]) -> Self:
         self.__statement = stm
         return self
 
-    def resolve(self) -> ScalarResult[T]:
-        return self.__model.get_db_session().scalars(self.__statement)
-
     def order_by(self, *clauses: ColumnExpressionArgument[Any]) -> Self:
-        return self.__return_self(self.__statement.order_by(*clauses))
+        return self.__propagate(self.__statement.order_by(*clauses))
 
     def filter(self, *criteria: ColumnExpressionArgument[bool]) -> Self:
-        return self.__return_self(self.__statement.filter(*criteria))
+        return self.__propagate(self.__statement.filter(*criteria))
 
     def filter_by(self, **kwargs) -> Self:
-        return self.__return_self(self.__statement.filter_by(**kwargs))
+        return self.__propagate(self.__statement.filter_by(**kwargs))
 
     def limit(self, limit: int):
-        return self.__return_self(self.__statement.limit(limit))
+        return self.__propagate(self.__statement.limit(limit))
 
     def offset(self, offset: int):
-        return self.__return_self(self.__statement.offset(offset))
+        return self.__propagate(self.__statement.offset(offset))
 
     def count(self) -> int | None:
         return self.__model.count(self.__statement)
+
+    def resolve(self) -> ScalarResult[T]:
+        return self.__model.get_db_session().scalars(self.__statement)
 
     def first(self) -> T | None:
         return self.resolve().first()

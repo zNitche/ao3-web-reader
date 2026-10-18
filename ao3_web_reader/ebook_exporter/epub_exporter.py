@@ -10,7 +10,7 @@ from ao3_web_reader.ebook_exporter import XHtmlExporter
 
 
 class EpubExporter(XHtmlExporter):
-    def __init__(self, user_id: str, work: models.Work):
+    def __init__(self, user_id: int, work: models.Work):
         super().__init__(user_id=user_id, work=work, logger_extra={})
 
     def __create_metadata_manifest_item(self, manifest_element: ElementTree.Element,
