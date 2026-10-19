@@ -10,7 +10,8 @@
                 "ms-python.vscode-pylance",
                 "ms-python.python",
                 "ms-python.autopep8",
-                "ms-python.debugpy"
+                "ms-python.debugpy",
+                "samuelcolvin.jinjahtml"
             ]
         }
     }
