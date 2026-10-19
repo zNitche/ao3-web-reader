@@ -4,7 +4,7 @@ import os
 from flask import Blueprint, render_template, flash, abort, redirect, \
     url_for, make_response, request, send_file
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
-from ao3_web_reader import models, db, processes_manager, forms, auth_manager, messaging_manager
+from ao3_web_reader import models, db, processes_manager, forms, auth_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
@@ -83,8 +83,6 @@ def add_work():
     tags = models.Tag.query().filter_by(owner_id=user.id).all()
     add_work_form.tag_name.choices = [(tag.name, tag.name) for tag in tags]
 
-    messages = messaging_manager.get_messages(user_id=user.id, type=None, remove_on_get=True)
-
     if add_work_form.validate_on_submit():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
@@ -93,8 +91,7 @@ def add_work():
             "ScraperProcess", user.id, work_id)
 
         if len(running_processes) == 0:
-            ScraperTask(user.id, tag_name, work_id,
-                        messaging_manager=messaging_manager).start_process()
+            ScraperTask(user.id, tag_name, work_id).start_process()
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         else:
@@ -103,7 +100,7 @@ def add_work():
 
         return redirect(url_for("works.add_work"))
 
-    return render_template("add_work.html", add_work_form=add_work_form, messages=messages)
+    return render_template("add_work.html", add_work_form=add_work_form)
 
 
 @works.route("/<work_id>/chapters/<chapter_id>/force-update", methods=["POST"])

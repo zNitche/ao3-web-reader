@@ -3,7 +3,7 @@ __version__ = "2.3.4"
 
 import os
 from flask import Flask
-from ao3_web_reader.modules.managers import ProcessesManager, MessagingManager
+from ao3_web_reader.modules.managers import ProcessesManager
 from ao3_web_reader.modules.managers.cache_database import CacheDatabase
 from config import Config
 from ao3_web_reader.db import Database
@@ -19,9 +19,6 @@ processes_manager = ProcessesManager(cache_db=processes_cache)
 auth_db = CacheDatabase(db_id=1)
 auth_manager = AuthManager(auth_db=auth_db)
 
-messages_cache = CacheDatabase(db_id=2)
-messaging_manager = MessagingManager(cache_db=messages_cache)
-
 def setup_app_modules(app: Flask):
     is_debug = app.config.get("DEBUG_MODE")
 
@@ -33,8 +30,6 @@ def setup_app_modules(app: Flask):
 
     auth_db.setup(server_address=cache_db_address, server_port=cache_db_port,
                   flush=False if is_debug else True)
-    messages_cache.setup(server_address=cache_db_address, server_port=cache_db_port,
-                      flush=False if is_debug else True)
 
 
 def setup_app_logging(app: Flask):

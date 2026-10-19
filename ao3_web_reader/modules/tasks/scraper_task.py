@@ -1,19 +1,16 @@
 from ao3_web_reader.utils import models_utils
 from ao3_web_reader.modules.tasks.task_base import TaskBase
-from ao3_web_reader.modules.managers import MessagingManager, MessageType
 from ao3_web_reader.consts import ProcessesConsts
 from ao3_web_reader import models, db, processes_manager
 
 
 class ScraperTask(TaskBase):
-    def __init__(self, owner_id, tag_name, work_id, messaging_manager: MessagingManager):
+    def __init__(self, owner_id, tag_name, work_id):
         super().__init__(owner_id)
 
         self.tag_name = tag_name
         self.work_id = work_id
         self.work_title = ""
-
-        self.__messaging_manager = messaging_manager
 
         self.progress = 0
 
@@ -47,8 +44,6 @@ class ScraperTask(TaskBase):
             db.add(work)
 
         except Exception as e:
-            self.__messaging_manager.add_message(
-                type=MessageType.ERROR, message=str(e), user_id=self.owner_id)
             self.logger.exception("scraper mainloop error")
 
         finally:
