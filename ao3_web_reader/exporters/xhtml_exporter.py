@@ -4,7 +4,7 @@ import os
 import config
 from bs4 import BeautifulSoup
 from ao3_web_reader import models
-from ao3_web_reader.ebook_exporter import BaseExporter
+from ao3_web_reader.exporters import BaseExporter
 
 
 class XHtmlExporter(BaseExporter):

@@ -1,7 +1,7 @@
 import os
 import copy
 from ao3_web_reader import models
-from ao3_web_reader.ebook_exporter import XHtmlExporter
+from ao3_web_reader.exporters import XHtmlExporter
 
 
 class HTMLExporter(XHtmlExporter):

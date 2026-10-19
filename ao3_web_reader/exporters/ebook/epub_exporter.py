@@ -6,7 +6,7 @@ import shutil
 from xml.etree import ElementTree
 from xml.dom import minidom
 from ao3_web_reader import models, __version__
-from ao3_web_reader.ebook_exporter import XHtmlExporter
+from ao3_web_reader.exporters import XHtmlExporter
 
 
 class EpubExporter(XHtmlExporter):

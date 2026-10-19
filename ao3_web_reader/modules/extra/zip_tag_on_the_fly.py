@@ -1,7 +1,7 @@
 from zipfile import ZipFile
 import os
 import tempfile
-from ao3_web_reader.ebook_exporter import HTMLExporter
+from ao3_web_reader.exporters import HTMLExporter
 from ao3_web_reader.modules.scrapers import ScraperBase
 from ao3_web_reader.modules.extra.zip_on_the_fly import ZipFileStream, ZipOnTheFly
 
