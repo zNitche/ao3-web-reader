@@ -1,1 +1,1 @@
-from ao3_web_reader.modules.cache_database import CacheDatabase
+from ao3_web_reader.modules.in_memory_database import InMemoryDatabase

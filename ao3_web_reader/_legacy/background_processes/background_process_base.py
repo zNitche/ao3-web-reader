@@ -4,7 +4,7 @@ import os
 from config import Config
 from ao3_web_reader.logging import Logger
 from ao3_web_reader.db import Database
-from ao3_web_reader.modules.managers import CacheDatabase, ProcessesManager
+from ao3_web_reader.modules.managers import InMemoryDatabase, ProcessesManager
 
 
 class BackgroundProcessBase:
@@ -15,7 +15,7 @@ class BackgroundProcessBase:
 
         self.logger = Logger()
 
-        self.processes_cache = CacheDatabase(db_id=0)
+        self.processes_cache = InMemoryDatabase(db_id=0)
         self.processes_manager = ProcessesManager(
             cache_db=self.processes_cache)
 

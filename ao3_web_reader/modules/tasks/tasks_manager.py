@@ -1,19 +1,19 @@
 from flask import current_app
-from ao3_web_reader.modules import CacheDatabase
+from ao3_web_reader.modules import InMemoryDatabase
 from ao3_web_reader.modules.tasks import types, commons
 
 
 class TasksManager():
     def __init__(self) -> None:
         self.__tasks_queue_size: int
-        self.__queue_db: CacheDatabase
+        self.__queue_db: InMemoryDatabase
 
     def setup(self):
         if not current_app:
             raise Exception("used outside flask app context")
 
         self.__tasks_queue_size = current_app.config["TASKS_QUEUE_SIZE"]
-        self.__queue_db = CacheDatabase(
+        self.__queue_db = InMemoryDatabase(
             current_app.config["TASKS_QUEUE_CACHE_DB_ID"])
 
         cache_db_address: str = current_app.config["WHIMDB_SERVER_ADDRESS"]

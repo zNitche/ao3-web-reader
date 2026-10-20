@@ -4,7 +4,7 @@ __version__ = "2.3.4"
 import os
 from flask import Flask
 from ao3_web_reader.modules.tasks import TasksManager
-from ao3_web_reader.modules.cache_database import CacheDatabase
+from ao3_web_reader.modules import InMemoryDatabase
 from config import Config
 from ao3_web_reader.db import Database
 from ao3_web_reader.authentication import AuthManager
@@ -13,7 +13,7 @@ from ao3_web_reader.logging import AppLogging
 
 db = Database()
 
-auth_db = CacheDatabase(db_id=1)
+auth_db = InMemoryDatabase(db_id=1)
 auth_manager = AuthManager(auth_db=auth_db)
 
 tasks_manager = TasksManager()

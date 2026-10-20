@@ -1,4 +1,4 @@
-from ao3_web_reader.modules import CacheDatabase
+from ao3_web_reader.modules import InMemoryDatabase
 from ao3_web_reader.modules.tasks import types, commons
 from ao3_web_reader.logging import Logger
 import os
@@ -24,8 +24,8 @@ class TasksScheduler():
         self.__cache_db_server_address: str = cache_db_server_address
         self.__cache_db_server_port: int = cache_db_server_port
 
-        self.__queue_db: CacheDatabase = CacheDatabase(queue_db_id)
-        self.__processes_db: CacheDatabase = CacheDatabase(processes_db_id)
+        self.__queue_db = InMemoryDatabase(queue_db_id)
+        self.__processes_db = InMemoryDatabase(processes_db_id)
 
         self.__logger = Logger()
 
