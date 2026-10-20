@@ -1,21 +1,22 @@
-from ao3_web_reader.modules.background_processes import WorksUpdaterProcess
-from ao3_web_reader.logging import Logger
+from ao3_web_reader.modules.tasks import TasksScheduler
 from config import Config
 
 
 def main():
-    logger = Logger.get_logger(logger_name="tasks_scheduler",
-                               logs_filename="tasks_scheduler.log",
-                               logs_path=Config.LOGS_DIR_PATH,
-                               backup_log_files_count=1)
+    cache_db_address = Config.WHIMDB_SERVER_ADDRESS
+    cache_db_port = Config.WHIMDB_SERVER_PORT
 
-    processes = [WorksUpdaterProcess]
+    if not cache_db_address or cache_db_address == -1:
+        raise Exception("invalid cache database connection details")
 
-    try:
-        pass
+    scheduler = TasksScheduler(cache_db_server_address=cache_db_address,
+                               cache_db_server_port=cache_db_port,
+                               queue_db_id=Config.TASKS_QUEUE_CACHE_DB_ID,
+                               processes_db_id=Config.TASKS_PROCESSES_CACHE_DB_ID,
+                               workers_count=2)
 
-    except Exception as e:
-        logger.exception(f"failed to start background process: {str(e)}")
+    scheduler.setup(logs_path=Config.LOGS_DIR_PATH)
+    scheduler.start()
 
 
 if __name__ == '__main__':

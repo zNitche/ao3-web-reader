@@ -4,12 +4,13 @@ import os
 from flask import Blueprint, render_template, flash, abort, redirect, \
     url_for, make_response, request, send_file
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
-from ao3_web_reader import models, db, forms, auth_manager
+from ao3_web_reader import models, db, forms, auth_manager, tasks_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
 from ao3_web_reader.exporters import HTMLExporter
 from ao3_web_reader.exporters.ebook import EpubExporter
 from ao3_web_reader.modules.scrapers import ScraperBase
+from ao3_web_reader.modules.tasks.types import TaskBody
 
 works = Blueprint("works", __name__, template_folder="templates",
                   static_folder="static", url_prefix="/works")
@@ -90,6 +91,8 @@ def add_work():
         running_processes = []
 
         if len(running_processes) == 0:
+            tasks_manager.add_task_to_queue(task_body=TaskBody(runner="123"))
+
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         else:

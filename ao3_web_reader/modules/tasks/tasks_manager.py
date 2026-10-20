@@ -20,7 +20,7 @@ class TasksManager():
         cache_db_port: int = current_app.config["WHIMDB_SERVER_PORT"]
 
         self.__queue_db.setup(server_address=cache_db_address, server_port=cache_db_port,
-                              flush=True)
+                              flush=False)
 
         current_app.logger.info("ProcessesManager setup has been completed")
 
@@ -37,7 +37,7 @@ class TasksManager():
         self.__queue_db.set_value(
             key=key_for_task, value=task.body.to_dict(), ttl=(20 * 60))
 
-    def get_tasks(self) -> list[types.Task]:
+    def get_enqueued_tasks(self) -> list[types.Task]:
         raw_values = self.__queue_db.get_items()
         return commons.parse_tasks(raw_values)
 

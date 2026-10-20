@@ -1,6 +1,8 @@
 from ao3_web_reader.modules import CacheDatabase
+from ao3_web_reader.modules.tasks import types, commons
 from ao3_web_reader.logging import Logger
-import os, time
+import os
+import time
 from dataclasses import dataclass
 
 
@@ -13,11 +15,10 @@ class TasksScheduler():
     def __init__(self, cache_db_server_address: str,
                  cache_db_server_port: int,
                  queue_db_id: int, processes_db_id: int,
-                 tasks_queue_size: int = 20, workers_count: int = 2) -> None:
+                 workers_count: int = 2) -> None:
 
         self.__is_running: bool = False
 
-        self.__tasks_queue_size: int = tasks_queue_size
         self.__workers_count: int = workers_count
 
         self.__cache_db_server_address: str = cache_db_server_address
@@ -61,7 +62,13 @@ class TasksScheduler():
         except:
             self.__logger.exception("events loop error")
 
+    def __get_enqueued_tasks(self) -> list[types.Task]:
+        raw_values = self.__queue_db.get_items()
+        return commons.parse_tasks(raw_values)
+
     def __mainloop(self) -> None:
         while self.__is_running:
-            time.sleep(10)
+            enqueued_tasks = self.__get_enqueued_tasks()
+            print(f"tasks in queue: {enqueued_tasks}")
 
+            time.sleep(10)

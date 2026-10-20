@@ -38,4 +38,4 @@ class Task():
         }
 
     def generate_cache_db_key(self) -> str:
-        return f"{self.uuid}_{self.priority}_{self.owner_id}"
+        return f"{self.uuid}_{self.priority.value}_{self.owner_id}"
