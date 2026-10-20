@@ -1,6 +1,6 @@
 import secrets
 from flask import g, session
-from ao3_web_reader.modules.managers import CacheDatabase
+from ao3_web_reader.modules import CacheDatabase
 from ao3_web_reader import models
 
 

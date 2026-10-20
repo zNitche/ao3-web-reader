@@ -32,18 +32,6 @@ class PaginationConsts:
     WORKS_PER_PAGE = 10
 
 
-class ProcessesConsts:
-    PID = "pid"
-    OWNER_ID = "owner_id"
-    WORK_ID = "work_id"
-    CHAPTER_ID = "chapter_id"
-    WORK_TITLE = "work_title"
-    PROCESS_NAME = "process_name"
-    PROGRESS = "progress"
-
-    IS_RUNNING = "is_running"
-
-
 class UpdateMessagesConsts:
     MESSAGE_ADDED_TYPE = "added"
     MESSAGE_REMOVED_TYPE = "removed"

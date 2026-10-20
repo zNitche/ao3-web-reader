@@ -3,8 +3,8 @@ __version__ = "2.3.4"
 
 import os
 from flask import Flask
-from ao3_web_reader.modules.managers import ProcessesManager
-from ao3_web_reader.modules.managers.cache_database import CacheDatabase
+from ao3_web_reader.modules.tasks import TasksManager
+from ao3_web_reader.modules.cache_database import CacheDatabase
 from config import Config
 from ao3_web_reader.db import Database
 from ao3_web_reader.authentication import AuthManager
@@ -13,23 +13,22 @@ from ao3_web_reader.logging import AppLogging
 
 db = Database()
 
-processes_cache = CacheDatabase(db_id=0)
-processes_manager = ProcessesManager(cache_db=processes_cache)
-
 auth_db = CacheDatabase(db_id=1)
 auth_manager = AuthManager(auth_db=auth_db)
+
+tasks_manager = TasksManager()
+
 
 def setup_app_modules(app: Flask):
     is_debug = app.config.get("DEBUG_MODE")
 
     cache_db_address = app.config["WHIMDB_SERVER_ADDRESS"]
-    cache_db_port = int(app.config["WHIMDB_SERVER_PORT"])
-
-    processes_cache.setup(server_address=cache_db_address,
-                          server_port=cache_db_port)
+    cache_db_port = app.config["WHIMDB_SERVER_PORT"]
 
     auth_db.setup(server_address=cache_db_address, server_port=cache_db_port,
                   flush=False if is_debug else True)
+
+    tasks_manager.setup()
 
 
 def setup_app_logging(app: Flask):

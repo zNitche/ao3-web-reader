@@ -50,6 +50,14 @@ class CacheDatabase:
     def set_value(self, key: str, value: dict | str | int | bool, ttl=60):
         self.client.set(key=key, value=json.dumps(value), ttl=ttl)
 
+    def get_items(self, pattern: str = "(.*?)") -> list[tuple[str, dict]]:
+        data = self.client.query(search_regex=pattern)
+
+        if not data or not data.value:
+            return []
+
+        return [(item.key, json.loads(item.value)) for item in data.value]
+
     def get_value(self, key: str | None = None, pattern: str | None = None):
         item = self.__query_single_item(key, search_regex=pattern)
 
@@ -105,3 +113,6 @@ class CacheDatabase:
 
             for key_to_remove in keys_to_remove:
                 self.client.remove(key=key_to_remove)
+
+    def count_db_keys(self) -> int:
+        return self.client.db_key_count()

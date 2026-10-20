@@ -1,7 +1,7 @@
 import bs4
 from dataclasses import dataclass
 from datetime import datetime
-from ao3_web_reader.modules import RequestsHandler
+from ao3_web_reader.modules.helpers import RequestsHandler
 
 
 @dataclass

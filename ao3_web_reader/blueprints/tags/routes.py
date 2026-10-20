@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, abort
-from ao3_web_reader import models, db, forms, auth_manager, processes_manager
+from ao3_web_reader import models, db, forms, auth_manager
 from ao3_web_reader.consts import FlashConsts, MessagesConsts
-from ao3_web_reader.modules.tasks import TagUpdaterTask
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.utils import requests_utils
 
@@ -70,10 +69,9 @@ def force_update(tag_id):
     if not tag:
         abort(404)
 
-    running_processes = processes_manager.get_processes_data_for_user("TagUpdaterTask", user.id)
 
-    if len(running_processes) == 0:
-        TagUpdaterTask(user.id, tag_id).start_process()
+    if len([]) == 0:
+        # TagUpdaterTask(user.id, tag_id).start_process()
         flash(MessagesConsts.TAG_UPDATE_PROCESS_STARTED, FlashConsts.SUCCESS)
 
     return redirect(url_for("tags.all_tags"))

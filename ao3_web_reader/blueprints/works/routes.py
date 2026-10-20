@@ -4,11 +4,11 @@ import os
 from flask import Blueprint, render_template, flash, abort, redirect, \
     url_for, make_response, request, send_file
 from ao3_web_reader.consts import FlashConsts, MessagesConsts, PaginationConsts
-from ao3_web_reader import models, db, processes_manager, forms, auth_manager
+from ao3_web_reader import models, db, forms, auth_manager
 from ao3_web_reader.authentication.decorators import login_required
 from ao3_web_reader.db import Pagination
-from ao3_web_reader.modules.tasks import ScraperTask, ChapterUpdaterTask, WorkUpdaterTask
-from ao3_web_reader.ebook_exporter import HTMLExporter, EpubExporter
+from ao3_web_reader.exporters import HTMLExporter
+from ao3_web_reader.exporters.ebook import EpubExporter
 from ao3_web_reader.modules.scrapers import ScraperBase
 
 works = Blueprint("works", __name__, template_folder="templates",
@@ -33,9 +33,9 @@ def all_works(tag_name, page_id):
         only_favorites) if only_favorites is not None else 0
 
     works_query = models.Work.query().filter(models.Work.name.icontains(search_string),
-                                            models.Work.tag_id == tag.id,
-                                            models.Work.owner_id == user.id,
-                                            models.Work.was_removed == False).\
+                                             models.Work.tag_id == tag.id,
+                                             models.Work.owner_id == user.id,
+                                             models.Work.was_removed == False).\
         order_by(models.Work.last_updated.desc())
 
     if only_favorites:
@@ -45,11 +45,11 @@ def all_works(tag_name, page_id):
         query=works_query, page_id=page_id, items_per_page=PaginationConsts.WORKS_PER_PAGE)
 
     return render_template("works.html",
-                            tag=tag,
-                            works_pagination=works_pagination,
-                            works=works_pagination.items,
-                            only_favorites=only_favorites,
-                            search_string=search_string)
+                           tag=tag,
+                           works_pagination=works_pagination,
+                           works=works_pagination.items,
+                           only_favorites=only_favorites,
+                           search_string=search_string)
 
 
 @works.route("/<tag_name>/removed-works", defaults={"page_id": 1})
@@ -69,9 +69,9 @@ def removed_works(tag_name, page_id):
         query=works_query, page_id=page_id, items_per_page=PaginationConsts.WORKS_PER_PAGE)
 
     return render_template("works.html",
-                            tag=tag,
-                            works_pagination=works_pagination,
-                            works=works_pagination.items)
+                           tag=tag,
+                           works_pagination=works_pagination,
+                           works=works_pagination.items)
 
 
 @works.route("/add", methods=["GET", "POST"])
@@ -87,11 +87,9 @@ def add_work():
         work_id = add_work_form.work_id.data
         tag_name = add_work_form.tag_name.data
 
-        running_processes = processes_manager.get_processes_data_for_user_and_work(
-            "ScraperProcess", user.id, work_id)
+        running_processes = []
 
         if len(running_processes) == 0:
-            ScraperTask(user.id, tag_name, work_id).start_process()
             flash(MessagesConsts.SCRAPING_PROCESS_STARTED, FlashConsts.SUCCESS)
 
         else:
@@ -114,12 +112,7 @@ def force_chapter_update(work_id, chapter_id):
         work_chapter = models.Chapter.query().filter_by(
             work_id=user_work.id, chapter_id=chapter_id).first()
 
-        running_processes = processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
-                                                                                      user.id,
-                                                                                      chapter_id)
-
-        if len(running_processes) == 0:
-            ChapterUpdaterTask(user.id, work_id, chapter_id).start_process()
+        if len([]) == 0:
             flash(MessagesConsts.CHAPTER_SCRAPING_PROCESS_STARTED,
                   FlashConsts.SUCCESS)
 
@@ -141,14 +134,10 @@ def force_chapters_update(work_id):
     if not user_work:
         abort(404)
 
-    running_processes = processes_manager.get_processes_data_for_user_and_work("ChaptersUpdaterProcess",
-                                                                                user.id,
-                                                                                work_id)
-
-    if len(running_processes) == 0:
-        WorkUpdaterTask(user.id, work_id).start_process()
+    if len([]) == 0:
+        # WorkUpdaterTask(user.id, work_id).start_process()
         flash(MessagesConsts.CHAPTERS_UPDATE_PROCESS_STARTED,
-                FlashConsts.SUCCESS)
+              FlashConsts.SUCCESS)
 
     page_id = request.args.get("page_id")
     return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
@@ -192,7 +181,6 @@ def toggle_chapters_completion(work_id):
     return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
 
 
-
 @works.route("/<work_id>/toggle-favorite", methods=["POST"])
 @login_required
 def toggle_work_favorite(work_id):
@@ -213,7 +201,6 @@ def toggle_work_favorite(work_id):
 
     flash(update_message.format(work_name=user_work.name), FlashConsts.SUCCESS)
     return redirect(url_for("works.all_works", tag_name=user_work.tag.name, page_id=page_id))
-
 
 
 @works.route("/<work_id>/download", methods=["GET"])
@@ -296,7 +283,7 @@ def chapters(work_id):
     removed_chapters = user_work.get_removed_chapters()
 
     return render_template("chapters.html", work=user_work, available_chapters=available_chapters,
-                            removed_chapters=removed_chapters)
+                           removed_chapters=removed_chapters)
 
 
 @works.route("/<work_id>/chapters/<chapter_id>")
@@ -311,12 +298,10 @@ def chapter(work_id, chapter_id):
             work_id=user_work.id, chapter_id=chapter_id).first()
 
         if work_chapter:
-            running_processes = processes_manager.get_processes_data_for_user_and_chapter("ChapterUpdaterProcess",
-                                                                                          user.id,
-                                                                                          chapter_id)
+
             return render_template("chapter.html",
                                    chapter=work_chapter,
-                                   updating_chapter=True if len(running_processes) > 0 else False)
+                                   updating_chapter=False)
 
     abort(404)
 
