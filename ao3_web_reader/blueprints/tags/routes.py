@@ -13,7 +13,7 @@ tags = Blueprint("tags", __name__, template_folder="templates", static_folder="s
 @login_required
 def all_tags():
     user = auth_manager.current_user()
-    tags = models.Tag.query().filter_by(owner_id=user.id).all()
+    tags = models.Tag.query().filter_by(owner_id=user.id).resolve().unique().all()
 
     return render_template("tags.html", tags=tags)
 

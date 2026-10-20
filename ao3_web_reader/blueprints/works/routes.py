@@ -80,7 +80,7 @@ def add_work():
     user = auth_manager.current_user()
     add_work_form = forms.AddWorkForm(user=user)
 
-    tags = models.Tag.query().filter_by(owner_id=user.id).all()
+    tags = models.Tag.query().filter_by(owner_id=user.id).resolve().unique().all()
     add_work_form.tag_name.choices = [(tag.name, tag.name) for tag in tags]
 
     if add_work_form.validate_on_submit():
